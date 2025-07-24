@@ -81,7 +81,8 @@ To get the project running locally, each team member must follow these steps.
     npm install swiper
 
     # For maps
-    npm install leaflet react-leaflet
+    npm install leaflet
+    npm install react-leaflet
     ```
 
 4.  **Start the frontend development server:**
