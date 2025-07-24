@@ -1,7 +1,7 @@
 import Item from "../models/Item.js";
 
-// @desc    Create a new item
-// @route   POST /api/items
+// @desc    Get a single item by ID
+// @route   GET /api/items/:id
 export const getItemById = async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
@@ -16,16 +16,19 @@ export const getItemById = async (req, res) => {
   }
 };
 
+// @desc    Create a new item
+// @route   POST /api/items
+// @access  Private
 export const createItem = async (req, res) => {
   try {
-    const { name, description, category, imageUrl, address } = req.body; // Removed 'location'
+    const { name, description, category, imageUrl, address } = req.body;
 
     const item = new Item({
       name,
       description,
       category,
       imageUrl,
-      address, // Use simple text address
+      address,
       user: req.user._id,
     });
 
@@ -38,30 +41,19 @@ export const createItem = async (req, res) => {
   }
 };
 
-// @desc    Fetch all items
+// @desc    Fetch all items (with search by keyword)
 // @route   GET /api/items
-// export const getItems = async (req, res) => {
-//   try {
-//     const items = await Item.find({}).sort({ createdAt: -1 });
-//     res.json(items);
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: "Error fetching items", error: error.message });
-//   }
-// };
-
+// @access  Public
 export const getItems = async (req, res) => {
   try {
     const keyword = req.query.keyword
       ? {
-          // Search in both name and category fields
           $or: [
             { name: { $regex: req.query.keyword, $options: "i" } },
             { category: { $regex: req.query.keyword, $options: "i" } },
           ],
         }
-      : {}; // If no keyword, the object is empty and finds all items
+      : {};
 
     const items = await Item.find({ ...keyword }).sort({ createdAt: -1 });
     res.json(items);
@@ -74,6 +66,7 @@ export const getItems = async (req, res) => {
 
 // @desc    Delete an item
 // @route   DELETE /api/items/:id
+// @access  Private
 export const deleteItem = async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
@@ -88,5 +81,67 @@ export const deleteItem = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error deleting item", error: error.message });
+  }
+};
+
+// -------------------------------
+// NEW: Review Controllers
+// -------------------------------
+
+// @desc    Get all reviews for a specific item
+// @route   GET /api/items/:id/reviews
+// @access  Public
+export const getItemReviews = async (req, res) => {
+  try {
+    const item = await Item.findById(req.params.id).select(
+      "reviews numReviews averageRating"
+    );
+
+    if (!item) return res.status(404).json({ message: "Item not found" });
+
+    res.json({
+      reviews: item.reviews,
+      numReviews: item.numReviews,
+      averageRating: item.averageRating,
+    });
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    res.status(500).json({ message: "Failed to fetch reviews" });
+  }
+};
+
+// @desc    Add a review to a specific item
+// @route   POST /api/items/:id/reviews
+// @access  Private
+export const addItemReview = async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+    const item = await Item.findById(req.params.id);
+
+    if (!item) return res.status(404).json({ message: "Item not found" });
+
+    const alreadyReviewed = item.reviews.find(
+      (r) => r.user.toString() === req.user._id.toString()
+    );
+
+    if (alreadyReviewed) {
+      return res.status(400).json({ message: "You have already reviewed this item" });
+    }
+
+    const review = {
+      user: req.user._id,
+      name: req.user.name || "Anonymous",
+      rating: Number(rating),
+      comment,
+    };
+
+    item.reviews.push(review);
+    item.calcRating(); // method in model to update numReviews & averageRating
+    await item.save();
+
+    res.status(201).json({ message: "Review added", reviews: item.reviews });
+  } catch (error) {
+    console.error("Error adding review:", error);
+    res.status(500).json({ message: "Failed to add review" });
   }
 };

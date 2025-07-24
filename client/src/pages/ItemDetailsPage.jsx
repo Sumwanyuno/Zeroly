@@ -3,6 +3,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+import Reviews from "../components/Reviews";
+import StarRating from "../components/StarRating"; // ADDED
 
 const ItemDetailsPage = () => {
   const [item, setItem] = useState(null);
@@ -41,7 +43,6 @@ const ItemDetailsPage = () => {
       alert("Request sent successfully!");
     } catch (error) {
       console.error("Failed to send request:", error);
-      // Use the specific error message from the backend if it exists
       const message =
         error.response?.data?.message || "Failed to send request.";
       alert(message);
@@ -80,6 +81,13 @@ const ItemDetailsPage = () => {
               <h1 className="text-4xl font-bold text-gray-800 mb-4">
                 {item.name}
               </h1>
+              {/* Average rating display */}
+              <div className="mb-4 flex items-center gap-2">
+                <StarRating value={item.averageRating || 0} readOnly />
+                <span className="text-sm text-gray-600">
+                  ({item.numReviews || 0} reviews)
+                </span>
+              </div>
               <p className="text-gray-700 mb-6">{item.description}</p>
 
               <div className="border-t pt-4">
@@ -90,7 +98,6 @@ const ItemDetailsPage = () => {
               </div>
               <div className="mt-8">
                 {userInfo && !isOwner && (
-                  // Show "Request Item" button if user is logged in AND is NOT the owner
                   <button
                     onClick={handleRequest}
                     className="w-full py-3 px-6 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition"
@@ -99,13 +106,11 @@ const ItemDetailsPage = () => {
                   </button>
                 )}
                 {isOwner && (
-                  // Show a message if the user is the owner
                   <p className="mt-4 p-3 bg-blue-100 text-blue-800 text-center rounded-md">
                     You are the owner of this item.
                   </p>
                 )}
                 {!userInfo && (
-                  // Show a message prompting user to log in if they are not logged in
                   <p className="mt-4 p-3 bg-yellow-100 text-yellow-800 text-center rounded-md">
                     <Link to="/login" className="font-semibold hover:underline">
                       Log in
@@ -115,6 +120,10 @@ const ItemDetailsPage = () => {
                 )}
               </div>
             </div>
+          </div>
+          {/* --- REVIEWS SECTION --- */}
+          <div className="mt-10">
+            <Reviews itemId={item._id} />
           </div>
         </div>
       </div>
