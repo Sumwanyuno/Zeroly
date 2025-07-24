@@ -4,6 +4,9 @@ import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import MapPicker from "../components/MapPicker"; // Adjust path if needed
+import 'leaflet/dist/leaflet.css';
+
 
 const UploadPage = () => {
   const [name, setName] = useState("");
@@ -104,9 +107,12 @@ const UploadPage = () => {
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             placeholder="Address / Pickup Location"
-            required
             className="w-full p-3 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
           />
+          <p className="text-sm text-gray-600 mb-2">Or select on map:</p>
+          <MapPicker onPick={(selectedAddress) => setAddress(selectedAddress)} />
+
+
           <input
             type="file"
             onChange={(e) => setImage(e.target.files[0])}

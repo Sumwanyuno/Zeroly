@@ -88,7 +88,7 @@ To get the project running locally, each team member must follow these steps.
 
 ## 🧑‍💻 The Team
 
-- **Samarth** (Leader)
+- **Samarth Khare** (Leader)
 - **Sneha**
 - **Shivam Gupta**
 - **Prateek Amar Batham**

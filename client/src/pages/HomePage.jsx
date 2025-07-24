@@ -192,6 +192,8 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import ItemCard from "../components/ItemCard";
 import Hero from "../components/Hero";
+import StarRating from "../components/StarRating";
+
 
 const HomePage = () => {
   const [items, setItems] = useState([]);

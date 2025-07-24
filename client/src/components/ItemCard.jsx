@@ -29,6 +29,8 @@
 // client/src/components/ItemCard.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import StarRating from "./StarRating";
+
 
 const ItemCard = ({ item, onDelete }) => {
   return (
@@ -50,6 +52,11 @@ const ItemCard = ({ item, onDelete }) => {
             {item.name}
           </Link>
         </h3>
+        <div className="flex items-center gap-1 mt-1">
+          <StarRating value={item.averageRating || 0} readOnly size={16} />
+          <span className="text-sm text-gray-500">({item.numReviews || 0})</span>
+        </div>
+
         <p className="text-gray-600 text-sm h-10 overflow-hidden">
           {item.description}
         </p>
