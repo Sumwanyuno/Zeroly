@@ -68,7 +68,6 @@ To get the project running locally, each team member must follow these steps.
     npm install
     ```
 3.  **Install additional required packages:**
-    _(Note: These should be included by `npm install`, but run these commands if you encounter errors related to routing or styling)._
 
     ```bash
     # For page navigation
