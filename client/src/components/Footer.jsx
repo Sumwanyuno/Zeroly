@@ -71,10 +71,7 @@ const Footer = () => {
             . All Rights Reserved
           </p>
           <p className="text-sm mt-2">
-            Designed by Samarth
-            <a href="https://bootstrapmade.com/" className="text-blue-500">
-              BootstrapMade
-            </a>
+            Designed by Team Zeroly
           </p>
         </div>
       </div>
