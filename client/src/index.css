@@ -1,1 +1,24 @@
 @import "tailwindcss";
+
+/* --- ADD YOUR CUSTOM CSS BELOW THIS LINE --- */
+
+@layer components {
+    .glowing-border {
+        @apply rounded-lg;
+        /* Apply rounded corners */
+        outline: none;
+        /* Remove default outline */
+        border: 3px solid rgba(52, 211, 153, 0.3);
+        /* Subtle, always visible green border (INCREASED TO 3PX) */
+        box-shadow: none;
+        /* No glow by default */
+        transition: box-shadow 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        /* Smooth transitions */
+    }
+    .glowing-border:hover {
+        border-color: rgba(52, 211, 153, 0.8);
+        /* Border becomes more opaque on hover */
+        box-shadow: 0 0 15px rgba(52, 211, 153, 0.8);
+        /* Intense green glow on hover */
+    }
+}
