@@ -31,66 +31,64 @@ To get the project running locally, each team member must follow these steps.
 
 ### 🖥️ Backend Setup
 
-1.  **Navigate to the `server` directory:**
-    ```bash
-    cd server
-    ```
-2.  **Install all backend dependencies:**
-    ```bash
-    npm install
-    ```
-3.  **Create your own `.env` file** in the `server` directory. Copy the structure below and replace the placeholder values with **your own secret keys**.
+1.  **Navigate to the `server` directory:**
+    ```bash
+    cd server
+    ```
+2.  **Install all backend dependencies:**
+    ```bash
+    npm install
+    ```
+3.  **Create your own `.env` file** in the `server` directory. Copy the structure below and replace the placeholder values with **your own secret keys**.
 
-    ```
-    MONGO_URI=your_mongodb_connection_string_here
-    JWT_SECRET=a_long_random_secret_string
-    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-    CLOUDINARY_API_KEY=your_cloudinary_api_key
-    CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-    ```
+    ```
+    MONGO_URI=your_mongodb_connection_string_here
+    JWT_SECRET=a_long_random_secret_string
+    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+    CLOUDINARY_API_KEY=your_cloudinary_api_key
+    CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+    ```
 
-4.  **Start the backend server:**
-    ```bash
-    npm run dev
-    ```
-    > The backend will now be running on `http://localhost:5000`.
+4.  **Start the backend server:**
+    ```bash
+    npm run dev
+    ```
+    > The backend will now be running on `http://localhost:5000`.
 
 ---
 
 ### 🎨 Frontend Setup
 
-1.  **Open a new terminal**. Navigate to the `client` directory:
-    ```bash
-    cd client
-    ```
-2.  **Install all primary frontend dependencies:**
-    ```bash
-    npm install
-    ```
-3.  **Install additional required packages:**
-    _(Note: These should be included by `npm install`, but run these commands if you encounter errors related to routing or styling)._
+1.  **Open a new terminal**. Navigate to the `client` directory:
+    ```bash
+    cd client
+    ```
+2.  **Install all primary frontend dependencies:**
+    ```bash
+    npm install
+    ```
+3.  **Install additional required packages:**
+    _(Note: These should be included by `npm install`, but run these commands if you encounter errors related to routing or styling)._
 
-    ```bash
-    # For page navigation
-    npm install react-router-dom
+    ```bash
+    # For page navigation
+    npm install react-router-dom
 
-    # For styling with Tailwind CSS
-    npm install -D tailwindcss @tailwindcss/vite
+    # For styling with Tailwind CSS
+    npm install -D tailwindcss @tailwindcss/vite
 
     # For carousels/sliders
     npm install swiper
 
     # For maps
-    npm install leaflet
-    ```
-    npm install react-leaflet
-    ```
+    npm install leaflet react-leaflet
+    ```
 
-4.  **Start the frontend development server:**
-    ```bash
-    npm run dev
-    ```
-    > The frontend will now be running on `http://localhost:5173`.
+4.  **Start the frontend development server:**
+    ```bash
+    npm run dev
+    ```
+    > The frontend will now be running on `http://localhost:5173`.
 
 ---
 
