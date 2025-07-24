@@ -1,33 +1,49 @@
 // client/src/App.jsx
-import { Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+
+import React from "react";
+import { Routes, Route } from "react-router-dom"; // Removed BrowserRouter import
 import HomePage from "./pages/HomePage";
-import UploadPage from "./pages/UploadPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import ProfilePage from "./pages/ProfilePage";
-import ProtectedRoute from "./components/ProtectedRoute";
+import UploadPage from "./pages/UploadPage";
 import ItemDetailsPage from "./pages/ItemDetailsPage";
 import RequestsDashboard from "./pages/RequestsDashboard";
+import ProfilePage from "./pages/ProfilePage";
+import LeaderboardPage from "./pages/LeaderboardPage";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
+// Removed: import { AuthProvider } from './context/AuthContext'; // AuthProvider is now in main.jsx
 
 function App() {
   return (
-    <div className="font-sans">
+    // Removed <Router> wrapper as it's now in main.jsx
+    // Removed <AuthProvider> wrapper as it's now in main.jsx
+    <>
       <Header />
-      <main>
+      <main className="py-3">
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/upload" element={<UploadPage />} />
+          <Route path="/" element={<HomePage />} exact />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/item/:id" element={<ItemDetailsPage />} />
-          <Route path="/requests" element={<RequestsDashboard />} />
+          <Route path="/items/:id" element={<ItemDetailsPage />} />
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
+          <Route
+            path="/upload"
+            element={<ProtectedRoute element={UploadPage} />}
+          />
+          <Route
+            path="/requests"
+            element={<ProtectedRoute element={RequestsDashboard} />}
+          />
+          <Route
+            path="/profile"
+            element={<ProtectedRoute element={ProfilePage} />}
+          />
         </Routes>
       </main>
       <Footer />
-    </div>
+    </>
   );
 }
 

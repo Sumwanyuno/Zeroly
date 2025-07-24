@@ -1,6 +1,6 @@
 // server/controllers/userController.js
 import User from "../models/User.js";
-import Item from "../models/Item.js";
+import Item from "../models/Item.js"; // Keep this import if you need to fetch items in getUserProfile
 import jwt from "jsonwebtoken";
 
 // Function to generate a token
@@ -19,11 +19,14 @@ export const registerUser = async (req, res) => {
   // --- End of Debugging Logs ---
 
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone, address } = req.body; // Added phone and address from User model
 
     // Check if all data was received
-    if (!name || !email || !password) {
-      console.log("Validation failed: Missing name, email, or password.");
+    if (!name || !email || !password || !phone || !address) {
+      // Added phone and address to validation
+      console.log(
+        "Validation failed: Missing name, email, password, phone, or address."
+      );
       return res.status(400).json({ message: "Please enter all fields" });
     }
 
@@ -34,7 +37,8 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const user = await User.create({ name, email, password });
+    // When a new user registers, their points will default to 0 as defined in the User model.
+    const user = await User.create({ name, email, password, phone, address }); // Added phone and address to creation
 
     if (user) {
       console.log("User created successfully in database.");
@@ -42,6 +46,9 @@ export const registerUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        phone: user.phone, // Include phone in response
+        address: user.address, // Include address in response
+        points: user.points, // Include points in register response
         token: generateToken(user._id),
       });
     } else {
@@ -68,6 +75,9 @@ export const loginUser = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      phone: user.phone, // Include phone in login response
+      address: user.address, // Include address in login response
+      points: user.points, // Include points in login response
       token: generateToken(user._id),
     });
   } else {
@@ -75,6 +85,8 @@ export const loginUser = async (req, res) => {
   }
 };
 
+// @desc    Get user profile
+// @route   GET /api/users/profile
 export const getUserProfile = async (req, res) => {
   try {
     // req.user is added by the protect middleware, so we know who is logged in
@@ -88,12 +100,81 @@ export const getUserProfile = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        phone: user.phone, // Include phone in profile response
+        address: user.address, // Include address in profile response
+        points: user.points, // Include points in profile response
         items: items, // Return the user's items along with their profile
       });
     } else {
       res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
+    console.error("Error fetching user profile:", error.message);
     res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// @desc    Update user profile
+// @route   PUT /api/users/profile
+// @access  Private
+// (This function was not in your provided code, but is often part of a user controller.
+//  Including a basic version for completeness and to allow profile updates.)
+export const updateUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      user.name = req.body.name || user.name;
+      user.email = req.body.email || user.email;
+      user.phone = req.body.phone || user.phone; // Allow updating phone
+      user.address = req.body.address || user.address; // Allow updating address
+
+      if (req.body.password) {
+        user.password = req.body.password;
+      }
+
+      const updatedUser = await user.save();
+
+      res.json({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        address: updatedUser.address,
+        points: updatedUser.points, // Include points in updated profile response
+        token: generateToken(updatedUser._id),
+      });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error updating user profile:", error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// @desc    Get leaderboard data
+// @route   GET /api/users/leaderboard
+// @access  Public
+export const getLeaderboard = async (req, res) => {
+  try {
+    // Fetch all users, select only 'name' and 'points' fields, and convert to plain JS objects
+    const users = await User.find({}).select("name points").lean();
+
+    // Sort users by points in descending order
+    users.sort((a, b) => b.points - a.points);
+
+    // Add rank and serial number
+    const leaderboard = users.map((user, index) => ({
+      serialNumber: index + 1,
+      rank: index + 1, // Rank is the same as serial number here
+      name: user.name, // Use 'name' as per your User model
+      itemPoints: user.points,
+    }));
+
+    res.json(leaderboard);
+  } catch (error) {
+    console.error("Error fetching leaderboard:", error.message);
+    res.status(500).json({ message: "Server Error fetching leaderboard" });
   }
 };

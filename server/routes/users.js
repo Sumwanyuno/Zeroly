@@ -2,15 +2,17 @@
 import express from "express";
 import {
   registerUser,
-  loginUser,
+  loginUser, // Changed from authUser to loginUser to match userController.js
   getUserProfile,
+  getLeaderboard, // Import the new getLeaderboard function
 } from "../controllers/userController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.post("/register", registerUser);
-router.post("/login", loginUser);
+router.post("/login", loginUser); // Changed from authUser to loginUser
 router.route("/profile").get(protect, getUserProfile);
+router.get("/leaderboard", getLeaderboard); // New route for leaderboard
 
 export default router;

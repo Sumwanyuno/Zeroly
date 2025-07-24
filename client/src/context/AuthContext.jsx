@@ -1,7 +1,13 @@
 // client/src/context/AuthContext.jsx
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react"; // Added useContext
 
 export const AuthContext = createContext(null);
+
+// Custom hook to use the Auth Context
+export const useAuth = () => {
+  // Exported useAuth hook
+  return useContext(AuthContext);
+};
 
 export const AuthProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null);
