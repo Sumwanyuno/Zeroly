@@ -1,5 +1,5 @@
 // client/src/App.jsx
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
@@ -11,6 +11,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ItemDetailsPage from "./pages/ItemDetailsPage";
 import RequestsDashboard from "./pages/RequestsDashboard";
 import ChatPage from "./pages/ChatPage";
+import Leaderboard from './pages/Leaderboard';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/item/:id" element={<ItemDetailsPage />} />
           <Route path="/requests" element={<RequestsDashboard />} />
           <Route path="/chat/:chatId" element={<ChatPage />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
         </Routes>
       </main>
       <Footer />
