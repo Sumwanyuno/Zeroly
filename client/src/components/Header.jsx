@@ -168,9 +168,6 @@ const Header = () => {
 
         <nav className="hidden md:flex items-center space-x-8">
           <NavLink
-
-            to="/"
-
             to="/#hero-section"
 
             className={({ isActive }) =>
