@@ -14,36 +14,43 @@ const Leaderboard = () => {
   }, []);
 
   return (
-    <div className="p-6 bg-gradient-to-br from-green-50 to-green-100 min-h-screen">
-      <h1 className="text-4xl font-bold text-center text-green-800 mb-8">
-        Zeroly Leaderboard
-      </h1>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white shadow-lg rounded-xl overflow-hidden">
-          <thead className="bg-green-700 text-white text-lg">
-            <tr>
-              <th className="py-3 px-4">#</th>
-              <th className="py-3 px-4">Username</th>
-              <th className="py-3 px-4">Items Uploaded</th>
-              <th className="py-3 px-4">Points</th>
-              <th className="py-3 px-4">Rank</th>
-            </tr>
-          </thead>
-          <tbody className="text-center text-gray-700 text-md">
-            {leaders.map((user) => (
-              <tr
-                key={user.username}
-                className="hover:bg-green-100 transition duration-150"
-              >
-                <td className="py-3 px-4">{user.serial}</td>
-                <td className="py-3 px-4">{user.username}</td>
-                <td className="py-3 px-4">{user.itemCount}</td>
-                <td className="py-3 px-4">{user.points}</td>
-                <td className="py-3 px-4">{user.rank}</td>
+    <div className="p-8 min-h-screen bg-gradient-to-br from-green-50 to-green-200">
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-5xl font-extrabold text-center text-green-900 mb-12 drop-shadow-sm">
+          🌿 Zeroly Leaderboard
+        </h1>
+        <div className="overflow-x-auto rounded-2xl shadow-2xl border border-green-300 bg-white">
+          <table className="min-w-full text-sm text-gray-700">
+            <thead className="bg-green-700 text-white text-md uppercase tracking-wide">
+              <tr>
+                <th className="py-4 px-6 text-left">#</th>
+                <th className="py-4 px-6 text-left">Username</th>
+                <th className="py-4 px-6 text-left">Items Uploaded</th>
+                <th className="py-4 px-6 text-left">Points</th>
+                <th className="py-4 px-6 text-left">Rank</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {leaders.map((user, index) => (
+                <tr
+                  key={user.username}
+                  className={`hover:bg-green-100 transition-all duration-200 ${
+                    index % 2 === 0 ? 'bg-white' : 'bg-green-50'
+                  }`}
+                >
+                  <td className="py-4 px-6 font-semibold">{user.serial}</td>
+                  <td className="py-4 px-6">{user.username}</td>
+                  <td className="py-4 px-6">{user.itemCount}</td>
+                  <td className="py-4 px-6">{user.points}</td>
+                  <td className="py-4 px-6">{user.rank}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-8 text-center text-gray-600 text-sm">
+          💡 Keep uploading to climb the ranks and make your community greener!
+        </p>
       </div>
     </div>
   );
