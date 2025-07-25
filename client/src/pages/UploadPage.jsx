@@ -1,4 +1,3 @@
-//
 // client/src/pages/UploadPage.jsx
 import React, { useState, useContext } from "react";
 import axios from "axios";
@@ -7,6 +6,9 @@ import { AuthContext } from "../context/AuthContext";
 import MapPicker from "../components/MapPicker"; // Adjust path if needed
 import 'leaflet/dist/leaflet.css';
 
+// Define your API base URL here.
+// IMPORTANT: Replace 5001 with the actual port your backend server is running on.
+const API_BASE_URL = "http://localhost:5001/api"; // <-- Added this line for the base URL
 
 const UploadPage = () => {
   const [name, setName] = useState("");
@@ -26,6 +28,13 @@ const UploadPage = () => {
       return;
     }
 
+    // Ensure user is logged in before attempting upload
+    if (!userInfo || !userInfo.token) {
+        alert("You must be logged in to list an item.");
+        navigate("/login"); // Redirect to login if not authenticated
+        return;
+    }
+
     setUploading(true);
     const formData = new FormData();
     formData.append("image", image);
@@ -34,13 +43,13 @@ const UploadPage = () => {
       const uploadConfig = {
         headers: {
           "Content-Type": "multipart/form-data",
-          // This line is now corrected with backticks
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
 
+      // Use the full API_BASE_URL for the upload request
       const { data: uploadData } = await axios.post(
-        "/api/upload",
+        `${API_BASE_URL}/upload`, // <-- Changed this line
         formData,
         uploadConfig
       );
@@ -56,12 +65,12 @@ const UploadPage = () => {
       const itemConfig = {
         headers: {
           "Content-Type": "application/json",
-          // This line is also corrected with backticks
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
 
-      await axios.post("/api/items", newItem, itemConfig);
+      // Use the full API_BASE_URL for the item creation request
+      await axios.post(`${API_BASE_URL}/items`, newItem, itemConfig); // <-- Changed this line
 
       setUploading(false);
       alert("Item created successfully!");
@@ -69,7 +78,23 @@ const UploadPage = () => {
     } catch (error) {
       console.error("Error creating item:", error);
       setUploading(false);
-      alert("Failed to create item.");
+
+      let errorMessage = "Failed to create item. Please try again.";
+      if (error.response) {
+        if (error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response.status === 401 || error.response.status === 403) {
+          errorMessage = "Authentication required. Please log in again.";
+          navigate("/login"); // Redirect to login on 401/403
+        } else {
+          errorMessage = `Server responded with status: ${error.response.status} - ${error.response.statusText || "Unknown Error"}`;
+        }
+      } else if (error.request) {
+        errorMessage = "Network error: Could not connect to the server.";
+      } else {
+        errorMessage = `An unexpected error occurred: ${error.message}`;
+      }
+      alert(`Submission Error: ${errorMessage}`);
     }
   };
 

@@ -39,6 +39,11 @@ const NotificationBtn = () => {
     setIsOpen(!isOpen);
   };
 
+  // Calculate unread count based on pending requests
+  const unreadCount = receivedRequests.filter(
+    (req) => req.status === "Pending"
+  ).length;
+
   return (
     <div className="relative">
       <button
@@ -59,7 +64,8 @@ const NotificationBtn = () => {
             d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
           ></path>
         </svg>
-        {(sentRequests.length > 0 || receivedRequests.length > 0) && (
+        {/* Show dot if there are any pending received requests */}
+        {unreadCount > 0 && (
           <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
         )}
       </button>
@@ -79,16 +85,30 @@ const NotificationBtn = () => {
                 {receivedRequests.length > 0 ? (
                   receivedRequests.map((req) => (
                     <div key={req._id} className="p-2 border-b text-sm">
-                      <p>
-                        <span className="font-bold">{req.requester.name}</span>{" "}
-                        requested{" "}
-                        <Link
-                          to={`/item/${req.item._id}`}
-                          className="font-bold hover:underline"
-                        >
-                          {req.item.name}
-                        </Link>
-                      </p>
+                      {/* 👇 **Start Change 1** 👇 */}
+                      {req.item ? (
+                        <p>
+                          <span className="font-bold">
+                            {req.requester.name}
+                          </span>{" "}
+                          requested{" "}
+                          <Link
+                            to={`/item/${req.item._id}`}
+                            className="font-bold hover:underline"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            {req.item.name}
+                          </Link>
+                        </p>
+                      ) : (
+                        <p>
+                          <span className="font-bold">
+                            {req.requester.name}
+                          </span>{" "}
+                          requested an item that has been deleted.
+                        </p>
+                      )}
+                      {/* 👆 **End Change 1** 👆 */}
                       <p className="text-xs text-gray-500">{req.status}</p>
                     </div>
                   ))
@@ -107,16 +127,24 @@ const NotificationBtn = () => {
                 {sentRequests.length > 0 ? (
                   sentRequests.map((req) => (
                     <div key={req._id} className="p-2 border-b text-sm">
-                      <p>
-                        You requested{" "}
-                        <Link
-                          to={`/item/${req.item._id}`}
-                          className="font-bold hover:underline"
-                        >
-                          {req.item.name}
-                        </Link>{" "}
-                        from <span className="font-bold">{req.owner.name}</span>
-                      </p>
+                      {/* 👇 **Start Change 2** 👇 */}
+                      {req.item ? (
+                        <p>
+                          You requested{" "}
+                          <Link
+                            to={`/item/${req.item._id}`}
+                            className="font-bold hover:underline"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            {req.item.name}
+                          </Link>{" "}
+                          from{" "}
+                          <span className="font-bold">{req.owner.name}</span>
+                        </p>
+                      ) : (
+                        <p>You requested an item that has been deleted.</p>
+                      )}
+                      {/* 👆 **End Change 2** 👆 */}
                       <p className="text-xs text-gray-500">{req.status}</p>
                     </div>
                   ))
