@@ -8,66 +8,97 @@ const ChatPage = () => {
   const { chatId } = useParams();
   const { userInfo } = useContext(AuthContext);
   const socket = useSocket();
+
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
 
-  // fetch existing messages
+  // --------------------------
+  // 1. Fetch existing messages
+  // --------------------------
   useEffect(() => {
     const fetchMsgs = async () => {
-      const { data } = await axios.get(`/api/chat/${chatId}/messages`, {
-        headers: { Authorization: `Bearer ${userInfo.token}` },
-      });
-      setMessages(data);
+      try {
+        const { data } = await axios.get(`/api/chat/${chatId}/messages`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        setMessages(data);
+        console.log("Fetched messages:", data);
+      } catch (error) {
+        console.error("Failed to fetch chat messages:", error);
+      }
     };
     fetchMsgs();
   }, [chatId, userInfo.token]);
 
-  // listen socket
+  // --------------------------
+  // 2. Listen to socket events
+  // --------------------------
   useEffect(() => {
     if (!socket) return;
+
+    console.log("Joining room:", chatId);
     socket.emit("joinRoom", chatId);
 
     const handler = (msg) => {
+      console.log("Received new message:", msg);
       if (msg.chatId === chatId) {
         setMessages((prev) => [...prev, msg]);
       }
     };
 
     socket.on("new-message", handler);
-    return () => {
-      socket.off("new-message", handler);
-    };
+    return () => socket.off("new-message", handler);
   }, [socket, chatId]);
 
+  // --------------------------
+  // 3. Send message
+  // --------------------------
   const send = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
 
-    // save to DB
-    const { data } = await axios.post(
-      `/api/chat/${chatId}/messages`,
-      { text },
-      { headers: { Authorization: `Bearer ${userInfo.token}` } }
-    );
+    try {
+      // Save to DB
+      const { data } = await axios.post(
+        `/api/chat/${chatId}/messages`,
+        { text },
+        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+      );
 
-    // emit to room
-    socket?.emit("send-message", {
-      roomId: chatId,
-      chatId,
-      text: data.text,
-      sender: userInfo._id,
-      createdAt: data.createdAt,
-    });
+      console.log("Message saved to DB:", data);
 
-    setText("");
+      // Emit socket event
+      socket?.emit("send-message", {
+        roomId: chatId, // Must match the room ID
+        chatId,
+        text: data.text,
+        sender: userInfo._id,
+        createdAt: data.createdAt,
+      });
+
+      setMessages((prev) => [...prev, data]); // Optimistic UI
+      setText("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      alert("Message failed to send. Check server logs.");
+    }
   };
 
+  // --------------------------
+  // 4. UI
+  // --------------------------
   return (
     <div className="max-w-2xl mx-auto p-4">
       <div className="border p-4 h-96 overflow-y-auto mb-4 bg-white">
+        {messages.length === 0 && (
+          <p className="text-gray-500 text-center">No messages yet.</p>
+        )}
         {messages.map((m) => (
           <div key={m._id || Math.random()} className="mb-2">
-          <strong>{m.sender?.name || (m.sender === userInfo._id ? "You" : "Other")}:</strong> {m.text}
+            <strong>
+              {m.sender?.name || (m.sender === userInfo._id ? "You" : "Other")}:
+            </strong>{" "}
+            {m.text}
           </div>
         ))}
       </div>
@@ -79,7 +110,12 @@ const ChatPage = () => {
           onChange={(e) => setText(e.target.value)}
           placeholder="Type a message"
         />
-        <button className="bg-blue-600 text-white rounded px-4">Send</button>
+        <button
+          type="submit"
+          className="bg-blue-600 text-white rounded px-4 hover:bg-blue-700"
+        >
+          Send
+        </button>
       </form>
     </div>
   );
