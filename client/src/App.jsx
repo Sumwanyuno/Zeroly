@@ -10,6 +10,7 @@ import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ItemDetailsPage from "./pages/ItemDetailsPage";
 import RequestsDashboard from "./pages/RequestsDashboard";
+import ChatPage from "./pages/ChatPage";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/item/:id" element={<ItemDetailsPage />} />
           <Route path="/requests" element={<RequestsDashboard />} />
+          <Route path="/chat/:chatId" element={<ChatPage />} />
         </Routes>
       </main>
       <Footer />

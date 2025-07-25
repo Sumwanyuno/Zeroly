@@ -1,16 +1,19 @@
 // client/src/pages/ItemDetailsPage.jsx
 import React, { useState, useEffect, useContext } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import Reviews from "../components/Reviews";
 import StarRating from "../components/StarRating"; // ADDED
+
+
 
 const ItemDetailsPage = () => {
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const { userInfo } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -26,6 +29,21 @@ const ItemDetailsPage = () => {
 
     fetchItem();
   }, [id]);
+
+  const handleMessageOwner = async () => {
+    if (!userInfo) return navigate("/login");
+    try {
+      const { data } = await axios.post(
+        "/api/chat/start",
+        { itemId: item._id },
+        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+      );
+      navigate(`/chat/${data._id}`);
+    } catch (e) {
+      alert(e.response?.data?.message || "Failed to start chat");
+    }
+  };
+
 
   const handleRequest = async () => {
     if (!userInfo) {
@@ -101,13 +119,24 @@ const ItemDetailsPage = () => {
               </div>
               <div className="mt-8">
                 {userInfo && !isOwner && (
-                  <button
-                    onClick={handleRequest}
-                    className="w-full py-3 px-6 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition"
-                  >
-                    Request This Item
-                  </button>
+                  <>
+                    <button
+                      onClick={handleRequest}
+                      className="w-full py-3 px-6 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition"
+                    >
+                      Request This Item
+                    </button>
+
+                    {/* Message Owner Button */}
+                    <button
+                      onClick={handleMessageOwner}
+                      className="w-full py-3 px-6 mt-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                    >
+                      Message Owner
+                    </button>
+                  </>
                 )}
+
                 {isOwner && (
                   <p className="mt-4 p-3 bg-blue-100 text-blue-800 text-center rounded-md">
                     You are the owner of this item.
