@@ -1,11 +1,10 @@
+
 // client/src/components/Footer.jsx
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 
 // --- IMPORTANT: Ensure these imports match your actual PNG filenames and paths ---
-// You MUST place your monochrome social media logo PNG files
-// into your client/src/assets/img/ folder for these imports to work.
 import facebookLogo from '../assets/img/facebook-logo.png';
 import instagramLogo from '../assets/img/instagram-logo.png';
 import linkedinLogo from '../assets/img/linkedin-logo.png';
@@ -14,13 +13,37 @@ import youtubeLogo from '../assets/img/youtube-logo.png';
 
 
 const Footer = () => {
+  const navigate = useNavigate(); // Initialize useNavigate hook
+
+  // --- UPDATED: Function to handle the click and navigate ---
+  const scrollToHero = (e) => {
+    e.preventDefault(); // Prevent default anchor behavior
+    console.log("Footer pointer clicked. Attempting to navigate to /#hero-section");
+
+    // Check if already on the homepage
+    if (window.location.pathname === '/') {
+        // If on homepage, just scroll
+        const element = document.getElementById('hero-section');
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+            console.log("Already on homepage, scrolled directly.");
+        } else {
+            console.log("Already on homepage, but hero-section not found.");
+        }
+    } else {
+        // If on a different page, navigate to homepage with hash
+        navigate('/#hero-section');
+        console.log("Navigating to homepage with hash.");
+    }
+  };
+
   return (
-    <footer className="bg-emerald-800 text-white py-12"> {/* --- UPDATED: Dark Green background, White text --- */}
+    <footer className="bg-emerald-800 text-white py-12">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* About Section (now "Products & Services") */}
+          {/* Products & Services */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Products & Services</h3> {/* Removed text-gray-800, now inherits white */}
+            <h3 className="text-xl font-bold mb-4">Products & Services</h3>
             <p>
               • Item Listings<br/>
               • Community Exchange & Sharing<br/>
@@ -31,29 +54,28 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Useful Links - FULLY UPDATED with Item Listing link */}
+          {/* Useful Links */}
           <div>
             <h4 className="font-bold text-lg mb-4">Useful Links</h4>
             <ul>
               <li className="mb-2">
-                <Link to="/" className="hover:text-gray-300"> {/* Changed hover color for dark background */}
+                <Link to="/" className="hover:text-gray-300">
                   Home
                 </Link>
               </li>
-              {/* --- Item Listing Link --- */}
+              {/* Item Listing Link */}
               <li className="mb-2">
-                <Link to="/" className="hover:text-gray-300"> {/* Changed hover color for dark background */}
+                <Link to="/#hero-section" className="hover:text-gray-300">
                   Item Listing
                 </Link>
               </li>
-              {/* --- END LINK --- */}
               <li className="mb-2">
-                <Link to="/about" className="hover:text-gray-300"> {/* Changed hover color for dark background */}
+                <Link to="/about" className="hover:text-gray-300">
                   About us
                 </Link>
               </li>
               <li className="mb-2">
-                <Link to="/terms" className="hover:text-gray-300"> {/* Changed hover color for dark background */}
+                <Link to="/terms" className="hover:text-gray-300">
                   Terms & Conditions
                 </Link>
               </li>
@@ -77,52 +99,65 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Social Media Section - FULLY UPDATED with PNGs and filter invert */}
+          {/* Social Media Section */}
           <div>
             <h4 className="font-bold text-lg mb-4">Join Our Community</h4>
-            <p className="mb-4">Follow us on social media to stay updated.</p> {/* Added mb-4 for spacing */}
-            <div className="flex space-x-4"> {/* Flex container for icons */}
-              {/* Facebook Icon */}
+            <p className="mb-4">Follow us on social media to stay updated.</p>
+            <div className="flex space-x-4">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
                  className="inline-block" title="Facebook">
-                {/* --- ADDED filter invert: will turn black/dark logos white --- */}
-                <img src={facebookLogo} alt="Facebook" className="w-6 h-6 filter invert" /> 
+                <img src={facebookLogo} alt="Facebook" className="w-6 h-6 filter invert" />
               </a>
-              {/* Instagram Icon */}
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
                  className="inline-block" title="Instagram">
-                {/* --- ADDED filter invert: will turn black/dark logos white --- */}
                 <img src={instagramLogo} alt="Instagram" className="w-6 h-6 filter invert" />
               </a>
-              {/* LinkedIn Icon */}
               <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
                  className="inline-block" title="LinkedIn">
-                {/* --- ADDED filter invert: will turn black/dark logos white --- */}
                 <img src={linkedinLogo} alt="LinkedIn" className="w-6 h-6 filter invert" />
               </a>
-              {/* YouTube Icon */}
               <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
                  className="inline-block" title="YouTube">
-                {/* --- ADDED filter invert: will turn black/dark logos white --- */}
                 <img src={youtubeLogo} alt="YouTube" className="w-6 h-6 filter invert" />
               </a>
             </div>
           </div>
-          {/* --- END: Social Media Section --- */}
 
         </div>
 
-        <div className="text-center mt-10 pt-8 border-t border-emerald-700"> {/* Changed border color for dark background */}
-          <p>
+        <div className="text-center mt-10 pt-8 border-t border-emerald-700 flex flex-col sm:flex-row justify-center items-center">
+          <p className="mb-2 sm:mb-0 sm:mr-4">
             © Copyright{" "}
             <strong>
               <span>Zeroly</span>
             </strong>
             . All Rights Reserved
           </p>
-          <p className="text-sm mt-2">
+          <p className="text-sm sm:mr-4">
             Designed by Team Zeroly
           </p>
+          {/* --- UPDATED: Back to Top Pointer with onClick handler and useNavigate --- */}
+          <a
+            href="/#hero-section" // Keep href for accessibility/fallback
+            onClick={scrollToHero} // Use onClick to trigger our custom function
+            className="text-white hover:text-gray-300 transition-colors duration-300 mt-2 sm:mt-0"
+            title="Back to Top"
+          >
+            <svg
+              className="w-6 h-6 inline-block ml-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M5 10l7-7m0 0l7 7m-7-7v18"
+              ></path>
+            </svg>
+          </a>
         </div>
       </div>
     </footer>
