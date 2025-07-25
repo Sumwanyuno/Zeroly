@@ -1,86 +1,70 @@
-// server/index.js
-import express from "express";
-import cors from "cors";
-import http from "http"; // <-- Add this
-import { Server } from "socket.io"; // <-- Add this
-import jwt from "jsonwebtoken"; // <-- For auth if needed
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import http from 'http';
+import { Server } from 'socket.io';
+import connectDB from './config/db.js';
 
-import connectDB from "./config/db.js";
-import itemRoutes from "./routes/items.js";
-import userRoutes from "./routes/users.js";
-import uploadRoutes from "./routes/uploadRoutes.js";
-import requestRoutes from "./routes/requestRoutes.js";
-import chatRoutes from "./routes/chatRoutes.js";
+import itemRoutes from './routes/items.js';
+import userRoutes from './routes/users.js';
+import uploadRoutes from './routes/uploadRoutes.js';
+import requestRoutes from './routes/requestRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 import leaderboardRoutes from './routes/leaderboardRoutes.js';
 
-
-
+// Connect MongoDB
 connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-app.use(cors());
+// CORS setup
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 app.use(express.json());
 
-app.use("/api/chat", chatRoutes);
-app.use("/api/items", itemRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/upload", uploadRoutes);
-app.use("/api/requests", requestRoutes);
-app.use("/api/leaderboard", leaderboardRoutes);
+// Routes
+app.use('/api/items', itemRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/requests', requestRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/leaderboard', leaderboardRoutes);
 
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true, time: new Date() });
+});
 
-
-// ---- Socket.IO Setup ----
+// Socket.io setup
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173"], // Your frontend URL
-    methods: ["GET", "POST"],
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
     credentials: true,
   },
 });
 
-// Optional: JWT authentication for sockets
-io.use((socket, next) => {
-  try {
-    const token =
-      socket.handshake.auth?.token || socket.handshake.query?.token;
-    if (!token) return next(new Error("No token provided"));
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // Only assign what exists
-    socket.user = { _id: decoded.id };
-
-    next();
-  } catch (e) {
-    next(new Error("Socket authentication failed"));
-  }
-});
-
-io.on("connection", (socket) => {
-  console.log("User connected:", socket.user?._id || socket.id);
-
-  if (socket.user?._id) {
-    socket.join(socket.user._id);
-  }
-
-  socket.on("send-message", ({ conversationId, text }) => {
-    io.to(conversationId).emit("new-message", {
-      user: socket.user?._id || "Anonymous",
-      text,
-      time: new Date(),
-    });
+  socket.on('send-message', (data) => {
+    io.emit('new-message', data);
   });
 
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
   });
 });
 
-
-// ---- Start the server ----
+// Start server
 server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
