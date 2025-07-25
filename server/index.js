@@ -30,12 +30,7 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/requests", requestRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 
-app.get('/',req,res)=>{
-  res.send({
-    activeStatus:true,
-    error:false,
-  })
-}
+
 
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);
