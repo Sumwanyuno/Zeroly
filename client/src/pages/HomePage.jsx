@@ -1,12 +1,13 @@
 
+
 // // client/src/pages/HomePage.jsx
 
-// import React, { useState, useEffect, useContext, useRef, useLayoutEffect } from "react"; // Import useRef and useLayoutEffect
+// import React, { useState, useEffect, useContext, useRef, useLayoutEffect } from "react";
 // import axios from "axios";
 // import { Link, useLocation } from "react-router-dom";
 // import { AuthContext } from "../context/AuthContext";
 // import ItemCard from "../components/ItemCard";
-// import Hero from "../components/Hero"; // Hero component is now ref-forwarding
+// import Hero from "../components/Hero";
 // import StarRating from "../components/StarRating";
 
 // const API_BASE_URL = "http://localhost:5001/api";
@@ -18,12 +19,9 @@
 //   const [keyword, setKeyword] = useState("");
 //   const location = useLocation();
 
-//   // --- NEW: Create refs for sections to scroll to ---
 //   const heroSectionRef = useRef(null);
 //   const aboutUsSectionRef = useRef(null);
 
-
-//   // Effect to fetch items (no changes here)
 //   useEffect(() => {
 //     const fetchItems = async () => {
 //       setLoading(true);
@@ -40,11 +38,10 @@
 //     fetchItems();
 //   }, [keyword]);
 
-//   // --- UPDATED: useLayoutEffect for scrolling to refs ---
 //   useLayoutEffect(() => {
 //     console.log("HomePage useLayoutEffect triggered. Location hash:", location.hash);
 //     if (location.hash) {
-//       const id = location.hash.substring(1); // Get element ID without '#'
+//       const id = location.hash.substring(1);
 
 //       let elementToScroll = null;
 //       if (id === 'hero-section' && heroSectionRef.current) {
@@ -54,7 +51,6 @@
 //         elementToScroll = aboutUsSectionRef.current;
 //         console.log("Found aboutUsSectionRef:", elementToScroll);
 //       } else {
-//         // Fallback to getElementById if ref isn't found (e.g., for other potential anchors)
 //         elementToScroll = document.getElementById(id);
 //         console.log(`Fallback: Found element by ID "${id}":`, elementToScroll);
 //       }
@@ -68,7 +64,7 @@
 //     } else {
 //       console.log("No hash in URL.");
 //     }
-//   }, [location]); // Re-run effect when location (including hash) changes
+//   }, [location]);
 
 
 //   const handleSearchSubmit = (e) => {
@@ -99,7 +95,6 @@
 
 //   return (
 //     <div className="bg-green-50 min-h-screen font-sans">
-//       {/* --- UPDATED: Pass the ref to the Hero component --- */}
 //       <Hero ref={heroSectionRef} />
 
 //       <div className="container mx-auto p-4 py-8 md:px-8">
@@ -166,10 +161,10 @@
 //           </div>
 //         )}
 
-//         {/* About Us Section (ADDED REF) */}
+//         {/* About Us Section */}
 //         <div
-//           ref={aboutUsSectionRef} // <--- ATTACH THE REF HERE
-//           id="about-us-section" // Keep ID for consistency, but ref is primary for scrolling
+//           ref={aboutUsSectionRef}
+//           id="about-us-section"
 //           className="mt-16 py-12 px-6 bg-white rounded-xl shadow-lg md:px-12
 //                     transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-102"
 //         >
@@ -197,8 +192,9 @@
 //             </p>
 //           </div>
 //           <div className="text-center mt-8">
+//             {/* --- UPDATED: Learn More About Us button links to FAQ page --- */}
 //             <Link
-//               to="/about"
+//               to="/faq" // <--- CHANGED `to` PROP TO /faq
 //               className="inline-block bg-green-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-green-700 transition duration-300 transform hover:scale-105"
 //             >
 //               Learn More About Us
@@ -215,6 +211,10 @@
 
 // client/src/pages/HomePage.jsx
 
+// client/src/pages/HomePage.jsx
+
+// client/src/pages/HomePage.jsx
+
 import React, { useState, useEffect, useContext, useRef, useLayoutEffect } from "react";
 import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
@@ -225,6 +225,10 @@ import StarRating from "../components/StarRating";
 
 const API_BASE_URL = "http://localhost:5001/api";
 
+// --- IMAGE IMPORTS (MUST BE AT THE TOP LEVEL) ---
+import ctaBg from "../assets/img/cta-bg.jpg";
+
+
 const HomePage = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -234,6 +238,7 @@ const HomePage = () => {
 
   const heroSectionRef = useRef(null);
   const aboutUsSectionRef = useRef(null);
+
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -374,17 +379,23 @@ const HomePage = () => {
           </div>
         )}
 
-        {/* About Us Section */}
+        {/* About Us Section with Background Image */}
         <div
           ref={aboutUsSectionRef}
           id="about-us-section"
-          className="mt-16 py-12 px-6 bg-white rounded-xl shadow-lg md:px-12
-                    transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-102"
+          className="mt-16 py-12 px-6 rounded-xl shadow-lg md:px-12
+                    transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-102
+                    bg-cover bg-center relative overflow-hidden"
+          style={{ backgroundImage: `url(${ctaBg})` }}
         >
-          <h2 className="text-3xl md:text-4xl font-extrabold text-green-800 text-center mb-6">
+          {/* Optional: Overlay for text readability */}
+          <div className="absolute inset-0 bg-black opacity-50 z-0 rounded-xl"></div>
+
+          {/* --- UPDATED: About Zeroly heading color to brighter green --- */}
+          <h2 className="text-3xl md:text-4xl font-extrabold text-green-400 text-center mb-6 relative z-10 drop-shadow-lg"> {/* Changed text-green-800 to text-green-400 */}
             About Zeroly
           </h2>
-          <div className="text-gray-700 leading-relaxed text-lg text-justify">
+          <div className="text-white leading-relaxed text-lg text-justify relative z-10">
             <p className="mb-4">
               Zeroly is a sustainable sharing platform that connects people who want to donate unused items with those who need them. Our goal is to reduce waste, promote reuse, and support a circular economy.
               We focus on local giving, encouraging communities to declutter responsibly, conserve resources, and strengthen social bonds.
@@ -404,10 +415,9 @@ const HomePage = () => {
               - A dynamic leaderboard highlights top contributors—those who donate or receive the most, encouraging active participation.
             </p>
           </div>
-          <div className="text-center mt-8">
-            {/* --- UPDATED: Learn More About Us button links to FAQ page --- */}
+          <div className="text-center mt-8 relative z-10">
             <Link
-              to="/faq" // <--- CHANGED `to` PROP TO /faq
+              to="/faq"
               className="inline-block bg-green-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-green-700 transition duration-300 transform hover:scale-105"
             >
               Learn More About Us
