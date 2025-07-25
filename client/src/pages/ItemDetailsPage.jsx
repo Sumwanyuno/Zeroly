@@ -1,10 +1,13 @@
-// client/src/pages/ItemDetailsPage.jsx
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import Reviews from "../components/Reviews";
 import StarRating from "../components/StarRating"; // ADDED
+
+// Define your API base URL here.
+// IMPORTANT: Replace 5001 with the actual port your backend server is running on.
+const API_BASE_URL = "http://localhost:5001/api"; // <-- Added this line for the base URL
 
 const ItemDetailsPage = () => {
   const [item, setItem] = useState(null);
@@ -15,7 +18,8 @@ const ItemDetailsPage = () => {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const { data } = await axios.get(`/api/items/${id}`);
+        // Update the API call to use the full API_BASE_URL
+        const { data } = await axios.get(`${API_BASE_URL}/items/${id}`); // <-- Changed this line
         setItem(data);
       } catch (error) {
         console.error("Failed to fetch item details:", error);
@@ -39,7 +43,8 @@ const ItemDetailsPage = () => {
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
-      await axios.post("/api/requests", { itemId: item._id }, config);
+      // Update the API call to use the full API_BASE_URL
+      await axios.post(`${API_BASE_URL}/requests`, { itemId: item._id }, config); // <-- Changed this line
       alert("Request sent successfully!");
     } catch (error) {
       console.error("Failed to send request:", error);

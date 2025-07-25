@@ -3,6 +3,10 @@ import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 
+// Define your API base URL here.
+// IMPORTANT: Replace 5001 with the actual port your backend server is running on.
+const API_BASE_URL = "http://localhost:5001/api"; // <-- Added this line for the base URL
+
 const RequestsDashboard = () => {
   const [sentRequests, setSentRequests] = useState([]);
   const [receivedRequests, setReceivedRequests] = useState([]);
@@ -10,21 +14,26 @@ const RequestsDashboard = () => {
   const { userInfo } = useContext(AuthContext);
 
   const fetchRequests = async () => {
-    if (!userInfo) return;
+    if (!userInfo) {
+      setLoading(false); // Ensure loading state is false if no user info
+      return;
+    }
     setLoading(true);
     try {
       const config = {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
-      const { data: sentData } = await axios.get("/api/requests/sent", config);
+      // Update API calls to use the full API_BASE_URL
+      const { data: sentData } = await axios.get(`${API_BASE_URL}/requests/sent`, config); // <-- Changed this line
       const { data: receivedData } = await axios.get(
-        "/api/requests/received",
+        `${API_BASE_URL}/requests/received`, // <-- Changed this line
         config
       );
       setSentRequests(sentData);
       setReceivedRequests(receivedData);
     } catch (error) {
       console.error("Failed to fetch requests:", error);
+      // Optionally provide user feedback here, e.g., alert("Failed to load requests.");
     } finally {
       setLoading(false);
     }
@@ -32,24 +41,39 @@ const RequestsDashboard = () => {
 
   useEffect(() => {
     fetchRequests();
-  }, [userInfo]);
+  }, [userInfo]); // Re-fetch requests when userInfo changes (e.g., after login/logout)
 
   const handleUpdateStatus = async (requestId, status) => {
+    if (!userInfo) {
+      alert("You must be logged in to update request status.");
+      return;
+    }
     try {
       const config = {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
-      await axios.put(`/api/requests/${requestId}`, { status }, config);
+      // Update API call to use the full API_BASE_URL
+      await axios.put(`${API_BASE_URL}/requests/${requestId}`, { status }, config); // <-- Changed this line
       // Refresh the list to show the updated status
       fetchRequests();
+      alert("Request status updated successfully!"); // User feedback for success
     } catch (error) {
       console.error("Failed to update request status:", error);
-      alert("Failed to update status. Please try again.");
+      alert(error.response?.data?.message || "Failed to update status. Please try again.");
     }
   };
 
   if (loading) {
     return <p className="text-center mt-8">Loading requests...</p>;
+  }
+
+  // Display message if no user info is available (not logged in)
+  if (!userInfo) {
+    return (
+      <p className="text-center mt-8 p-4 bg-yellow-100 text-yellow-800 rounded-md max-w-md mx-auto">
+        Please <Link to="/login" className="font-semibold hover:underline">log in</Link> to view your requests.
+      </p>
+    );
   }
 
   return (
@@ -71,7 +95,6 @@ const RequestsDashboard = () => {
                   key={req._id}
                   className="py-4 flex justify-between items-center"
                 >
-                  {/* 👇 **Start Change 1** 👇 */}
                   {req.item ? (
                     <div>
                       <p className="text-md">
@@ -112,7 +135,6 @@ const RequestsDashboard = () => {
                       </p>
                     </div>
                   )}
-                  {/* 👆 **End Change 1** 👆 */}
 
                   {req.status === "Pending" && req.item && (
                     <div className="flex space-x-2">
@@ -145,7 +167,6 @@ const RequestsDashboard = () => {
             <ul className="divide-y divide-gray-200">
               {sentRequests.map((req) => (
                 <li key={req._id} className="py-4">
-                  {/* 👇 **Start Change 2** 👇 */}
                   {req.item ? (
                     <p className="text-md">
                       You requested{" "}
@@ -162,7 +183,6 @@ const RequestsDashboard = () => {
                       You requested an item that is no longer available.
                     </p>
                   )}
-                  {/* 👆 **End Change 2** 👆 */}
                   <p
                     className={`text-sm font-bold ${
                       req.status === "Accepted"

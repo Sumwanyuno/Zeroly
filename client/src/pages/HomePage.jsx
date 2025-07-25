@@ -185,15 +185,17 @@
 
 // export default HomePage;
 
-// client/src/pages/HomePage.jsx
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import ItemCard from "../components/ItemCard";
 import Hero from "../components/Hero";
-import StarRating from "../components/StarRating";
+import StarRating from "../components/StarRating"; // Assuming this component exists
 
+// Define your API base URL here.
+// IMPORTANT: Replace 5001 with the actual port your backend server is running on.
+const API_BASE_URL = "http://localhost:5001/api"; // <-- Added this line for the base URL
 
 const HomePage = () => {
   const [items, setItems] = useState([]);
@@ -208,7 +210,7 @@ const HomePage = () => {
       setLoading(true);
       try {
         // 2. Update the API call to include the keyword in the request
-        const { data } = await axios.get(`/api/items?keyword=${keyword}`);
+        const { data } = await axios.get(`${API_BASE_URL}/items?keyword=${keyword}`); // <-- Changed this line
         setItems(data);
       } catch (error) {
         console.error("Error fetching items:", error);
@@ -256,7 +258,7 @@ const HomePage = () => {
       const config = {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
-      await axios.delete(`/api/items/${id}`, config);
+      await axios.delete(`${API_BASE_URL}/items/${id}`, config); // <-- Changed this line
       setItems((prev) => prev.filter((item) => item._id !== id));
       alert("Item deleted successfully!");
     } catch (error) {
@@ -331,7 +333,6 @@ const HomePage = () => {
                 onDelete={handleDelete}
               />
             ))}
-
           </div>
         )}
       </div>

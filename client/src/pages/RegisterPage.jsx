@@ -1,102 +1,11 @@
-// import React, { useState, useContext } from "react";
-// import axios from "axios";
-// import { useNavigate, Link } from "react-router-dom"; // Import Link
-// import { AuthContext } from "../context/AuthContext";
-
-// const RegisterPage = () => {
-//   const [name, setName] = useState("");
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const { login } = useContext(AuthContext);
-//   const navigate = useNavigate();
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//       const { data } = await axios.post("/api/users/register", {
-//         name,
-//         email,
-//         password,
-//       });
-//       login(data);
-//       navigate("/");
-//     } catch (error) {
-//       console.error("Registration failed:", error);
-//       alert("Registration failed. The email might already be in use.");
-//     }
-//   };
-
-//   return (
-//     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-emerald-50 to-white px-4">
-//       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-xl border border-emerald-200">
-//         <h1 className="text-3xl font-bold text-center text-emerald-700">
-//           Create an Account
-//         </h1>
-//         <form onSubmit={handleSubmit} className="space-y-5">
-//           <div>
-//             <label className="block mb-1 font-medium text-emerald-800">
-//               Name
-//             </label>
-//             <input
-//               type="text"
-//               value={name}
-//               onChange={(e) => setName(e.target.value)}
-//               required
-//               className="w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-//             />
-//           </div>
-//           <div>
-//             <label className="block mb-1 font-medium text-emerald-800">
-//               Email
-//             </label>
-//             <input
-//               type="email"
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//               required
-//               className="w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-//             />
-//           </div>
-//           <div>
-//             <label className="block mb-1 font-medium text-emerald-800">
-//               Password
-//             </label>
-//             <input
-//               type="password"
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               required
-//               className="w-full px-4 py-2 border border-emerald-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-//             />
-//           </div>
-//           <button
-//             type="submit"
-//             className="w-full px-4 py-3 font-semibold text-white bg-emerald-600 rounded-md hover:bg-emerald-700 transition"
-//           >
-//             Register
-//           </button>
-//         </form>
-//         <div className="text-center text-sm text-gray-600">
-//           <p>
-//             Already have an account?{" "}
-//             <Link
-//               to="/login"
-//               className="font-medium text-emerald-600 hover:underline"
-//             >
-//               Log in
-//             </Link>
-//           </p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default RegisterPage;
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+
+// Define your API base URL here.
+// IMPORTANT: Replace 5001 with the actual port your backend server is running on.
+const API_BASE_URL = "http://localhost:5001/api"; // <-- Added this line
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -109,7 +18,8 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post("/api/users/register", {
+      // Use the full API_BASE_URL for the request
+      const { data } = await axios.post(`${API_BASE_URL}/users/register`, { // <-- Changed this line
         name,
         email,
         password,
