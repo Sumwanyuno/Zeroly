@@ -220,29 +220,51 @@ const HomePage = () => {
     fetchItems();
   }, [keyword]); // 3. Re-run the fetch whenever the keyword changes
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
-      try {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-        };
-        await axios.delete(`/api/items/${id}`, config);
-        setItems(items.filter((item) => item._id !== id));
-        alert("Item deleted successfully!");
-      } catch (error) {
-        console.error("Error deleting item:", error);
-        alert("Failed to delete item. You may not be the owner.");
-      }
-    }
-  };
+  // const handleDelete = async (id) => {
+  //   if (window.confirm("Are you sure you want to delete this item?")) {
+  //     try {
+  //       const config = {
+  //         headers: {
+  //           Authorization: `Bearer ${userInfo.token}`,
+  //         },
+  //       };
+  //       await axios.delete(`/api/items/${id}`, config);
+  //       setItems(items.filter((item) => item._id !== id));
+  //       alert("Item deleted successfully!");
+  //     } catch (error) {
+  //       console.error("Error deleting item:", error);
+  //       alert("Failed to delete item. You may not be the owner.");
+  //     }
+  //   }
+  // };
 
   // 4. This function handles the form submission (though useEffect handles the logic)
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     // The useEffect hook is already watching the 'keyword' state,
     // so we don't need to do anything else here.
+  };
+
+  const handleDelete = async (id) => {
+    if (!userInfo) {
+      alert("You must be logged in to delete an item.");
+      return;
+    }
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
+
+    try {
+      const config = {
+        headers: { Authorization: `Bearer ${userInfo.token}` },
+      };
+      await axios.delete(`/api/items/${id}`, config);
+      setItems((prev) => prev.filter((item) => item._id !== id));
+      alert("Item deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      alert(
+        error.response?.data?.message || "You are not authorized to delete this item."
+      );
+    }
   };
 
   return (
@@ -302,8 +324,14 @@ const HomePage = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {items.map((item) => (
-              <ItemCard key={item._id} item={item} onDelete={handleDelete} />
+              <ItemCard
+                key={item._id}
+                item={item}
+                userId={userInfo?._id}
+                onDelete={handleDelete}
+              />
             ))}
+
           </div>
         )}
       </div>

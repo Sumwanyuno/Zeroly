@@ -48,11 +48,11 @@ export const getItems = async (req, res) => {
   try {
     const keyword = req.query.keyword
       ? {
-          $or: [
-            { name: { $regex: req.query.keyword, $options: "i" } },
-            { category: { $regex: req.query.keyword, $options: "i" } },
-          ],
-        }
+        $or: [
+          { name: { $regex: req.query.keyword, $options: "i" } },
+          { category: { $regex: req.query.keyword, $options: "i" } },
+        ],
+      }
       : {};
 
     const items = await Item.find({ ...keyword }).sort({ createdAt: -1 });
@@ -67,22 +67,32 @@ export const getItems = async (req, res) => {
 // @desc    Delete an item
 // @route   DELETE /api/items/:id
 // @access  Private
+
 export const deleteItem = async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
 
-    if (item) {
-      await item.deleteOne();
-      res.json({ message: "Item removed" });
-    } else {
-      res.status(404).json({ message: "Item not found" });
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
     }
+
+    // Debug logs to check ownership
+    console.log("Item Owner ID:", item.user.toString());
+    console.log("Logged User ID:", req.user._id.toString());
+
+    // Check if the logged-in user is the owner
+    if (item.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized to delete this item" });
+    }
+
+    await item.deleteOne();
+    res.json({ message: "Item removed successfully" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error deleting item", error: error.message });
+    res.status(500).json({ message: "Error deleting item", error: error.message });
   }
 };
+
+
 
 // -------------------------------
 // NEW: Review Controllers
@@ -120,6 +130,11 @@ export const addItemReview = async (req, res) => {
 
     if (!item) return res.status(404).json({ message: "Item not found" });
 
+    // Prevent the owner from reviewing their own item
+    if (item.user.toString() === req.user._id.toString()) {
+      return res.status(400).json({ message: "You cannot review your own item" });
+    }
+
     const alreadyReviewed = item.reviews.find(
       (r) => r.user.toString() === req.user._id.toString()
     );
@@ -136,7 +151,7 @@ export const addItemReview = async (req, res) => {
     };
 
     item.reviews.push(review);
-    item.calcRating(); // method in model to update numReviews & averageRating
+    item.calcRating(); // Update numReviews & averageRating
     await item.save();
 
     res.status(201).json({ message: "Review added", reviews: item.reviews });
@@ -145,3 +160,7 @@ export const addItemReview = async (req, res) => {
     res.status(500).json({ message: "Failed to add review" });
   }
 };
+
+
+
+

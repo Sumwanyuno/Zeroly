@@ -3,8 +3,8 @@ import express from "express";
 import {
   createItem,
   getItems,
-  deleteItem,
   getItemById,
+  deleteItem,
 } from "../controllers/itemController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
