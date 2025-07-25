@@ -59,6 +59,9 @@ const ItemDetailsPage = () => {
 
   const isOwner = userInfo && userInfo._id === item.user;
 
+  console.log("Item details:", item);
+  console.log("Logged-in user:", userInfo);
+
   return (
     <div className="bg-gray-50 py-12">
       <div className="container mx-auto px-6">
@@ -123,7 +126,7 @@ const ItemDetailsPage = () => {
           </div>
           {/* --- REVIEWS SECTION --- */}
           <div className="mt-10">
-            <Reviews itemId={item._id} />
+            <Reviews itemId={item._id} ownerId={item.user} />
           </div>
         </div>
       </div>
