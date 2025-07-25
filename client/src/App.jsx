@@ -37,10 +37,14 @@
 
 // client/src/App.jsx
 
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+
 import React from 'react';
 import { Routes, Route } from "react-router-dom"; // CORRECTED: Removed BrowserRouter from import
 
 // --- Import your components ---
+
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -54,11 +58,15 @@ import ProfilePage from "./pages/ProfilePage";
 import ItemDetailsPage from "./pages/ItemDetailsPage";
 import RequestsDashboard from "./pages/RequestsDashboard";
 import ChatPage from "./pages/ChatPage";
+
+import Leaderboard from './pages/Leaderboard';
+
 import FAQPage from "./pages/FAQPage";
 
 // --- Import your Context Providers (AuthProvider is used in main.jsx now) ---
 // You no longer need to import AuthProvider here if it's only used in main.jsx
 // import { AuthProvider } from './context/AuthContext'; // <--- REMOVE THIS IMPORT if AuthProvider is only in main.jsx
+
 
 
 function App() {
@@ -75,6 +83,11 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/item/:id" element={<ItemDetailsPage />} />
+
+          <Route path="/requests" element={<RequestsDashboard />} />
+          <Route path="/chat/:chatId" element={<ChatPage />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+
           <Route path="/faq" element={<FAQPage />} />
 
           {/* Protected Routes - Wrap routes that require authentication */}
@@ -87,6 +100,7 @@ function App() {
 
           {/* Catch-all for 404 Not Found pages (optional but good practice) */}
           <Route path="*" element={<h1 className="text-center text-3xl mt-20">404 - Page Not Found</h1>} />
+
         </Routes>
       </main>
 
