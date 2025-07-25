@@ -1,4 +1,3 @@
-// client/src/pages/RequestsDashboard.jsx
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
@@ -72,30 +71,50 @@ const RequestsDashboard = () => {
                   key={req._id}
                   className="py-4 flex justify-between items-center"
                 >
-                  <div>
-                    <p className="text-md">
-                      <span className="font-bold">{req.requester.name}</span>{" "}
-                      requested your{" "}
-                      <Link
-                        to={`/item/${req.item._id}`}
-                        className="font-semibold text-blue-600 hover:underline"
+                  {/* 👇 **Start Change 1** 👇 */}
+                  {req.item ? (
+                    <div>
+                      <p className="text-md">
+                        <span className="font-bold">{req.requester.name}</span>{" "}
+                        requested your{" "}
+                        <Link
+                          to={`/item/${req.item._id}`}
+                          className="font-semibold text-blue-600 hover:underline"
+                        >
+                          {req.item.name}
+                        </Link>
+                      </p>
+                      <p
+                        className={`text-sm font-bold ${
+                          req.status === "Accepted"
+                            ? "text-green-600"
+                            : req.status === "Declined"
+                            ? "text-red-600"
+                            : "text-gray-500"
+                        }`}
                       >
-                        {req.item.name}
-                      </Link>
-                    </p>
-                    <p
-                      className={`text-sm font-bold ${
-                        req.status === "Accepted"
-                          ? "text-green-600"
-                          : req.status === "Declined"
-                          ? "text-red-600"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      Status: {req.status}
-                    </p>
-                  </div>
-                  {req.status === "Pending" && (
+                        Status: {req.status}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="text-gray-500">
+                      <p>A request was made for an item that is now deleted.</p>
+                      <p
+                        className={`text-sm font-bold ${
+                          req.status === "Accepted"
+                            ? "text-green-600"
+                            : req.status === "Declined"
+                            ? "text-red-600"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        Status: {req.status}
+                      </p>
+                    </div>
+                  )}
+                  {/* 👆 **End Change 1** 👆 */}
+
+                  {req.status === "Pending" && req.item && (
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleUpdateStatus(req._id, "Accepted")}
@@ -126,16 +145,24 @@ const RequestsDashboard = () => {
             <ul className="divide-y divide-gray-200">
               {sentRequests.map((req) => (
                 <li key={req._id} className="py-4">
-                  <p className="text-md">
-                    You requested{" "}
-                    <Link
-                      to={`/item/${req.item._id}`}
-                      className="font-semibold text-blue-600 hover:underline"
-                    >
-                      {req.item.name}
-                    </Link>{" "}
-                    from <span className="font-bold">{req.owner.name}</span>
-                  </p>
+                  {/* 👇 **Start Change 2** 👇 */}
+                  {req.item ? (
+                    <p className="text-md">
+                      You requested{" "}
+                      <Link
+                        to={`/item/${req.item._id}`}
+                        className="font-semibold text-blue-600 hover:underline"
+                      >
+                        {req.item.name}
+                      </Link>{" "}
+                      from <span className="font-bold">{req.owner.name}</span>
+                    </p>
+                  ) : (
+                    <p className="text-md text-gray-500">
+                      You requested an item that is no longer available.
+                    </p>
+                  )}
+                  {/* 👆 **End Change 2** 👆 */}
                   <p
                     className={`text-sm font-bold ${
                       req.status === "Accepted"
