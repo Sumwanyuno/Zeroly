@@ -1,5 +1,6 @@
 
-// client/src/components/Header.jsx
+
+// // client/src/components/Header.jsx
 
 // import React, { useContext } from "react";
 // import { Link, NavLink, useNavigate } from "react-router-dom";
@@ -40,9 +41,8 @@
 //         </Link>
 
 //         <nav className="hidden md:flex items-center space-x-8">
-//           {/* --- UPDATED: Home Link now points to the Hero section ID --- */}
 //           <NavLink
-//             to="/#hero-section" // <--- CHANGED `to` PROP HERE
+//             to="/#hero-section"
 //             className={({ isActive }) =>
 //               `${baseLinkClasses} ${navLinkColors} ${
 //                 isActive ? navLinkActiveUnderline : ""
@@ -53,7 +53,6 @@
 //             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
 //           </NavLink>
 
-//           {/* About Link */}
 //           <NavLink
 //             to="/#about-us-section"
 //             className={({ isActive }) =>
@@ -64,6 +63,20 @@
 //           >
 //             About
 //             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+//           </NavLink>
+
+//           {/* --- UPDATED: FAQ Link with ALWAYS VISIBLE, SAME THICKNESS underline --- */}
+//           <NavLink
+//             to="/faq"
+//             className={({ isActive }) =>
+//               `${baseLinkClasses} ${navLinkColors} ${
+//                 isActive ? navLinkActiveUnderline : ""
+//               }`
+//             }
+//           >
+//             FAQ
+//             {/* --- CHANGED h-1 to h-0.5 for same thickness --- */}
+//             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700"></span> {/* Changed h-1 to h-0.5 */}
 //           </NavLink>
 //           {/* --- END NEW LINK --- */}
 
@@ -125,6 +138,8 @@
 // };
 
 // export default Header;
+
+// client/src/components/Header.jsx
 
 // client/src/components/Header.jsx
 
@@ -191,7 +206,7 @@ const Header = () => {
             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
           </NavLink>
 
-          {/* --- UPDATED: FAQ Link with ALWAYS VISIBLE, SAME THICKNESS underline --- */}
+          {/* --- UPDATED: FAQ Link - Underline now appears on hover/active --- */}
           <NavLink
             to="/faq"
             className={({ isActive }) =>
@@ -201,10 +216,21 @@ const Header = () => {
             }
           >
             FAQ
-            {/* --- CHANGED h-1 to h-0.5 for same thickness --- */}
-            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700"></span> {/* Changed h-1 to h-0.5 */}
+            {/* Reverted to hover/active underline behavior */}
+            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
           </NavLink>
-          {/* --- END NEW LINK --- */}
+
+          <NavLink
+            to="/contact"
+            className={({ isActive }) =>
+              `${baseLinkClasses} ${navLinkColors} ${
+                isActive ? navLinkActiveUnderline : ""
+              }`
+            }
+          >
+            Contact
+            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+          </NavLink>
 
         </nav>
 

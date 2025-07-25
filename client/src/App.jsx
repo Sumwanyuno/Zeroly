@@ -1,51 +1,80 @@
+
+
 // // client/src/App.jsx
+
+// import React from 'react';
 // import { Routes, Route } from "react-router-dom";
+
+// // --- Import components ---
 // import Header from "./components/Header";
 // import Footer from "./components/Footer";
+// import ProtectedRoute from "./components/ProtectedRoute";
+
+// // --- Import pages ---
 // import HomePage from "./pages/HomePage";
 // import UploadPage from "./pages/UploadPage";
 // import LoginPage from "./pages/LoginPage";
 // import RegisterPage from "./pages/RegisterPage";
 // import ProfilePage from "./pages/ProfilePage";
-// import ProtectedRoute from "./components/ProtectedRoute";
 // import ItemDetailsPage from "./pages/ItemDetailsPage";
 // import RequestsDashboard from "./pages/RequestsDashboard";
 // import ChatPage from "./pages/ChatPage";
+// import FAQPage from "./pages/FAQPage";
+// import ContactPage from "./pages/ContactPage"; // <--- NEW: Import ContactPage
+
+// // --- Import Context Providers ---
+// import { AuthProvider } from './context/AuthContext'; // AuthProvider is used in main.jsx now
+
 
 // function App() {
 //   return (
-//     <div className="font-sans">
-//       <Header />
-//       <main>
-//         <Routes>
-//           <Route path="/" element={<HomePage />} />
-//           <Route path="/upload" element={<UploadPage />} />
-//           <Route path="/login" element={<LoginPage />} />
-//           <Route path="/register" element={<RegisterPage />} />
-//           <Route path="/profile" element={<ProfilePage />} />
-//           <Route path="/item/:id" element={<ItemDetailsPage />} />
-//           <Route path="/requests" element={<RequestsDashboard />} />
-//           <Route path="/chat/:chatId" element={<ChatPage />} />
-//         </Routes>
-//       </main>
-//       <Footer />
-//     </div>
+//     // The BrowserRouter is in main.jsx, wrapping this App component
+//     <AuthProvider>
+//       <div className="font-sans flex flex-col min-h-screen">
+//         <Header />
+
+//         <main className="flex-grow">
+//           <Routes>
+//             {/* Public Routes */}
+//             <Route path="/" element={<HomePage />} />
+//             <Route path="/login" element={<LoginPage />} />
+//             <Route path="/register" element={<RegisterPage />} />
+//             <Route path="/item/:id" element={<ItemDetailsPage />} />
+//             <Route path="/faq" element={<FAQPage />} />
+//             <Route path="/contact" element={<ContactPage />} /> {/* <--- NEW: Route for Contact Page */}
+
+//             {/* Protected Routes */}
+//             <Route element={<ProtectedRoute />}>
+//               <Route path="/upload" element={<UploadPage />} />
+//               <Route path="/profile" element={<ProfilePage />} />
+//               <Route path="/requests" element={<RequestsDashboard />} />
+//               <Route path="/chat/:chatId" element={<ChatPage />} />
+//             </Route>
+
+//             {/* Catch-all for 404 Not Found pages */}
+//             <Route path="*" element={<h1 className="text-center text-3xl mt-20">404 - Page Not Found</h1>} />
+//           </Routes>
+//         </main>
+
+//         <Footer />
+//       </div>
+//     </AuthProvider>
 //   );
 // }
 
 // export default App;
-
 // client/src/App.jsx
 
 import React from 'react';
-import { Routes, Route } from "react-router-dom"; // CORRECTED: Removed BrowserRouter from import
+import { Routes, Route } from "react-router-dom";
 
-// --- Import your components ---
+// --- Import components ---
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ScrollToTop from "./components/ScrollToTop"; // <--- Ensure this is imported
 
-// --- Import your pages ---
+// --- Import pages ---
 import HomePage from "./pages/HomePage";
 import UploadPage from "./pages/UploadPage";
 import LoginPage from "./pages/LoginPage";
@@ -55,44 +84,48 @@ import ItemDetailsPage from "./pages/ItemDetailsPage";
 import RequestsDashboard from "./pages/RequestsDashboard";
 import ChatPage from "./pages/ChatPage";
 import FAQPage from "./pages/FAQPage";
+import ContactPage from "./pages/ContactPage"; // <--- Ensure ContactPage is imported
 
-// --- Import your Context Providers (AuthProvider is used in main.jsx now) ---
-// You no longer need to import AuthProvider here if it's only used in main.jsx
-// import { AuthProvider } from './context/AuthContext'; // <--- REMOVE THIS IMPORT if AuthProvider is only in main.jsx
+// --- Import Context Providers ---
+import { AuthProvider } from './context/AuthContext'; // AuthProvider is used in main.jsx now
 
 
 function App() {
   return (
-    // --- CORRECTED: REMOVED <Router> AND <AuthProvider> WRAPPER FROM HERE ---
-    // The AuthProvider and BrowserRouter are now exclusively in main.jsx
-    <div className="font-sans flex flex-col min-h-screen">
-      <Header />
+    // The BrowserRouter is in main.jsx, wrapping this App component
+    <AuthProvider>
+      <div className="font-sans flex flex-col min-h-screen">
+        <Header />
 
-      <main className="flex-grow">
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/item/:id" element={<ItemDetailsPage />} />
-          <Route path="/faq" element={<FAQPage />} />
+        {/* --- ScrollToTop component is placed here --- */}
+        <ScrollToTop /> {/* This will ensure page scrolls to top on route change */}
 
-          {/* Protected Routes - Wrap routes that require authentication */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/upload" element={<UploadPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/requests" element={<RequestsDashboard />} />
-            <Route path="/chat/:chatId" element={<ChatPage />} />
-          </Route>
+        <main className="flex-grow">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/item/:id" element={<ItemDetailsPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/contact" element={<ContactPage />} /> {/* <--- Ensure ContactPage route is here */}
 
-          {/* Catch-all for 404 Not Found pages (optional but good practice) */}
-          <Route path="*" element={<h1 className="text-center text-3xl mt-20">404 - Page Not Found</h1>} />
-        </Routes>
-      </main>
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/upload" element={<UploadPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/requests" element={<RequestsDashboard />} />
+              <Route path="/chat/:chatId" element={<ChatPage />} />
+            </Route>
 
-      <Footer />
-    </div>
-    // --- END CORRECTED ---
+            {/* Catch-all for 404 Not Found pages */}
+            <Route path="*" element={<h1 className="text-center text-3xl mt-20">404 - Page Not Found</h1>} />
+          </Routes>
+        </main>
+
+        <Footer />
+      </div>
+    </AuthProvider>
   );
 }
 
