@@ -11,6 +11,7 @@ import userRoutes from "./routes/users.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import requestRoutes from "./routes/requestRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import leaderboardRoutes from './routes/leaderboardRoutes.js';
 
 
 
@@ -27,6 +28,9 @@ app.use("/api/items", itemRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/requests", requestRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
+
+
 
 // ---- Socket.IO Setup ----
 const server = http.createServer(app);

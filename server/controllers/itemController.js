@@ -19,26 +19,33 @@ export const getItemById = async(req, res) => {
 // @desc    Create a new item
 // @route   POST /api/items
 // @access  Private
-export const createItem = async(req, res) => {
-    try {
-        const { name, description, category, imageUrl, address } = req.body;
+export const createItem = async (req, res) => {
+  try {
+    const { name, description, category, imageUrl, address } = req.body;
 
-        const item = new Item({
-            name,
-            description,
-            category,
-            imageUrl,
-            address,
-            user: req.user._id,
-        });
+    const item = new Item({
+      name,
+      description,
+      category,
+      imageUrl,
+      address,
+      user: req.user._id,
+    });
 
-        const createdItem = await item.save();
-        res.status(201).json(createdItem);
-    } catch (error) {
-        res
-            .status(500)
-            .json({ message: "Error creating item", error: error.message });
+    const createdItem = await item.save();
+
+    // 🔥 UPDATE USER POINTS & ITEM COUNT
+    const user = await User.findById(req.user._id);
+    if (user) {
+      user.itemCount += 1;
+      user.points += 1;
+      await user.save();
     }
+
+    res.status(201).json(createdItem);
+  } catch (error) {
+    res.status(500).json({ message: "Error creating item", error: error.message });
+  }
 };
 
 // @desc    Fetch all items (with search by keyword)

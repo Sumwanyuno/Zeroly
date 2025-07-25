@@ -43,6 +43,7 @@ const Header = () => {
         <nav className="hidden md:flex items-center space-x-8">
           <NavLink
             to="/#hero-section"
+
             className={({ isActive }) =>
               `${baseLinkClasses} ${navLinkColors} ${
                 isActive ? navLinkActiveUnderline : ""
@@ -52,6 +53,21 @@ const Header = () => {
             Home
             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
           </NavLink>
+
+
+          {userInfo && (
+            <NavLink
+              to="/leaderboard"
+              className={({ isActive }) =>
+                `${baseLinkClasses} ${navLinkColors} ${
+                  isActive ? navLinkActiveUnderline : ""
+                }`
+              }
+            >
+              Leaderboard
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+            </NavLink>
+          )}
 
           <NavLink
             to="/#about-us-section"
@@ -91,6 +107,7 @@ const Header = () => {
             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
           </NavLink>
 
+
         </nav>
 
         <div className="flex items-center space-x-3 md:space-x-4">
@@ -103,12 +120,14 @@ const Header = () => {
               >
                 My Requests
               </Link>
+
               <Link
                 to="/profile"
                 className="font-semibold text-green-700 hover:text-green-900 transition duration-200 text-lg hidden sm:inline"
               >
                 Hello, {userInfo.name || "User"}!
               </Link>
+
               <button onClick={handleLogout} className={redButtonClasses}>
                 Logout
               </button>
