@@ -4,7 +4,7 @@ import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import Reviews from "../components/Reviews";
 import StarRating from "../components/StarRating"; // ADDED
-
+import api from "../api.js";
 
 
 // Define your API base URL here.
@@ -23,7 +23,7 @@ const ItemDetailsPage = () => {
     const fetchItem = async () => {
       try {
         // Update the API call to use the full API_BASE_URL
-        const { data } = await axios.get(`${API_BASE_URL}/items/${id}`); // <-- Changed this line
+        const { data } = await api.get(`${API_BASE_URL}/items/${id}`); // <-- Changed this line
         setItem(data);
       } catch (error) {
         console.error("Failed to fetch item details:", error);

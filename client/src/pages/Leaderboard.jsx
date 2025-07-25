@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import api from "../api.js";
 
 const Leaderboard = () => {
   const [leaders, setLeaders] = useState([]);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
-      const res = await axios.get('/api/leaderboard');
+      const { data } = await api.get('/api/leaderboard');
       setLeaders(res.data);
     };
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import api from "../api.js";
 
 const MessagesPage = () => {
   const [chats, setChats] = useState([]);
@@ -9,7 +10,7 @@ const MessagesPage = () => {
 
   useEffect(() => {
     const fetchChats = async () => {
-      const { data } = await axios.get("/api/chat/my", {
+      const { data } = await api.get("/api/chat/my", {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       });
       setChats(data);

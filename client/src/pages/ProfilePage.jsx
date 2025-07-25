@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import ItemCard from "../components/ItemCard";
+import api from "../api.js";
 
 // Define your API base URL here.
 // IMPORTANT: Replace 5001 with the actual port your backend server is running on.
@@ -25,7 +26,7 @@ const ProfilePage = () => {
           },
         };
         // Update the API call to use the full API_BASE_URL
-        const { data } = await axios.get(`${API_BASE_URL}/users/profile`, config); // <-- Changed this line
+        const { data } = await api.get(`${API_BASE_URL}/users/profile`, config); // <-- Changed this line
         setUserProfile(data);
       } catch (error) {
         console.error("Failed to fetch user profile:", error);

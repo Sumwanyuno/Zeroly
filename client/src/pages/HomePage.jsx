@@ -9,6 +9,7 @@ import { AuthContext } from "../context/AuthContext";
 import ItemCard from "../components/ItemCard";
 import Hero from "../components/Hero";
 import StarRating from "../components/StarRating";
+import api from "../api.js";
 
 const API_BASE_URL = "http://localhost:5001/api";
 
@@ -31,7 +32,7 @@ const HomePage = () => {
     const fetchItems = async () => {
       setLoading(true);
       try {
-        const { data } = await axios.get(`${API_BASE_URL}/items?keyword=${keyword}`);
+        const { data } = await api.get(`${API_BASE_URL}/items?keyword=${keyword}`);
         setItems(data);
       } catch (error) {
         console.error("Error fetching items:", error);

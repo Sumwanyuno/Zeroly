@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import api from "../api.js";
 
 // Define your API base URL here.
 // IMPORTANT: Replace 5001 with the actual port your backend server is running on.
@@ -24,8 +25,8 @@ const RequestsDashboard = () => {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
       // Update API calls to use the full API_BASE_URL
-      const { data: sentData } = await axios.get(`${API_BASE_URL}/requests/sent`, config); // <-- Changed this line
-      const { data: receivedData } = await axios.get(
+      const { data } = await api.get(`${API_BASE_URL}/requests/sent`, config); // <-- Changed this line
+      const { data: receivedData } = await api.get(
         `${API_BASE_URL}/requests/received`, // <-- Changed this line
         config
       );

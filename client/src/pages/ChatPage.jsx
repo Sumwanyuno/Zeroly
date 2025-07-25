@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
+import api from "../api.js";
 
 const ChatPage = () => {
   const { chatId } = useParams();
@@ -18,7 +19,7 @@ const ChatPage = () => {
   useEffect(() => {
     const fetchMsgs = async () => {
       try {
-        const { data } = await axios.get(`/api/chat/${chatId}/messages`, {
+        const { data } = await api.get(`/api/chat/${chatId}/messages`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         setMessages(data);
