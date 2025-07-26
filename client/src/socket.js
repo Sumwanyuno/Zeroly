@@ -1,13 +1,16 @@
+// client/src/socket.js
 import { io } from "socket.io-client";
 
-// Use Railway backend URL or fallback to localhost for dev
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5001";
+// Use Railway backend in production, localhost in dev
+const SOCKET_URL =
+  import.meta.env.PROD
+    ? "https://zeroly-production.up.railway.app"  // <-- Railway backend
+    : "http://localhost:5001";
 
 export const initSocket = (token) =>
   io(SOCKET_URL, {
+    path: "/socket.io",
     auth: { token },
     withCredentials: true,
-    transports: ["websocket"], // Prefer websocket over polling
+    transports: ["websocket", "polling"], // fallback to polling if needed
   });
-
-  

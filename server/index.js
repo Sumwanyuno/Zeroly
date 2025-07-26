@@ -1,3 +1,4 @@
+// server/index.js
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
@@ -14,6 +15,12 @@ import leaderboardRoutes from './routes/leaderboardRoutes.js';
 
 const PORT = process.env.PORT || 5001;
 
+// ---- Connect DB ----
+await connectDB();
+
+// ---- Initialize Express ----
+const app = express();
+
 // ---- CORS ----
 const allowedOrigins = [
   process.env.CLIENT_URL || 'https://zeroly.netlify.app',
@@ -21,19 +28,16 @@ const allowedOrigins = [
 ];
 
 const corsOptions = {
-  origin: function (origin, callback) {
+  origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
+    console.log(`Blocked by CORS: ${origin}`);
     return callback(new Error(`Not allowed by CORS: ${origin}`));
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 };
 
-// ---- Connect DB ----
-await connectDB();
-const app = express();
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -49,21 +53,22 @@ app.use('/api/leaderboard', leaderboardRoutes);
 // ---- Socket.IO ----
 const server = http.createServer(app);
 const io = new Server(server, {
+  path: "/socket.io",
   cors: {
-    origin: allowedOrigins,
-    methods: ['GET', 'POST'],
+    origin: [
+      "http://localhost:5173",
+      "https://zeroly.netlify.app",
+      "https://zeroly-production.up.railway.app",
+    ],
+    methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
-  socket.on('send-message', (data) => {
-    io.emit('new-message', data);
-  });
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-  });
+  socket.on('send-message', (data) => io.emit('new-message', data));
+  socket.on('disconnect', () => console.log('User disconnected:', socket.id));
 });
 
 server.listen(PORT, () => {

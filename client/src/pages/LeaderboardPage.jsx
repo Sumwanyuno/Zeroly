@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import api from "../api.js";
 
-const Leaderboard = () => {
+const LeaderboardPage = () => {
   const [leaders, setLeaders] = useState([]);
 
   useEffect(() => {
@@ -57,4 +57,4 @@ const Leaderboard = () => {
   );
 };
 
-export default Leaderboard;
+export default LeaderboardPage;

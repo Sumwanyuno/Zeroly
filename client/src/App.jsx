@@ -20,7 +20,7 @@ import RequestsDashboard from "./pages/RequestsDashboard";
 import ChatPage from "./pages/ChatPage";
 import FAQPage from "./pages/FAQPage"; // Ensure this file exists
 import ContactPage from "./pages/ContactPage"; // Ensure this file exists
-import LeaderboardPage from "./pages/Leaderboard"; // Ensure this file exists
+import LeaderboardPage from "./pages/LeaderboardPage"; // Ensure this file exists
 
 // --- Import Context Providers ---
 import { AuthProvider } from './context/AuthContext'; // AuthProvider is used in main.jsx, so it wraps the App component
