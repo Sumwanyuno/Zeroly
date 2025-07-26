@@ -1,7 +1,13 @@
 import { io } from "socket.io-client";
 
+// Use Railway backend URL or fallback to localhost for dev
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5001";
+
 export const initSocket = (token) =>
-  io(import.meta.env.VITE_API_BASE || "http://localhost:5000", {
+  io(SOCKET_URL, {
     auth: { token },
-    transports: ["websocket"],
+    withCredentials: true,
+    transports: ["websocket"], // Prefer websocket over polling
   });
+
+  

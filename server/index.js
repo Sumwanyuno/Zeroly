@@ -12,25 +12,33 @@ import requestRoutes from './routes/requestRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import leaderboardRoutes from './routes/leaderboardRoutes.js';
 
-// Connect MongoDB
-connectDB();
-
-const app = express();
 const PORT = process.env.PORT || 5001;
 
-// CORS setup
+// ---- CORS ----
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  process.env.CLIENT_URL || 'https://zeroly.netlify.app',
   'http://localhost:5173',
 ];
 
-app.use(cors({
-  origin: allowedOrigins,
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Not allowed by CORS: ${origin}`));
+  },
   credentials: true,
-}));
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+};
+
+// ---- Connect DB ----
+await connectDB();
+const app = express();
+app.use(cors(corsOptions));
 app.use(express.json());
 
-// Routes
+// ---- Routes ----
+app.get('/', (req, res) => res.send('API is running'));
 app.use('/api/items', itemRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/upload', uploadRoutes);
@@ -38,11 +46,7 @@ app.use('/api/requests', requestRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 
-app.get('/api/health', (req, res) => {
-  res.json({ ok: true, time: new Date() });
-});
-
-// Socket.io setup
+// ---- Socket.IO ----
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -54,17 +58,14 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
-
   socket.on('send-message', (data) => {
     io.emit('new-message', data);
   });
-
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
 });
 
-// Start server
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
