@@ -1,4 +1,3 @@
-// server/index.js
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
@@ -15,16 +14,11 @@ import leaderboardRoutes from './routes/leaderboardRoutes.js';
 
 const PORT = process.env.PORT || 5001;
 
-// ---- Connect DB ----
-await connectDB();
-
-// ---- Initialize Express ----
-const app = express();
-
-// ---- CORS ----
+// --- CORS Setup ---
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'https://zeroly.netlify.app',
   'http://localhost:5173',
+  'https://zeroly.netlify.app',
+  'https://zeroly-production.up.railway.app',
 ];
 
 const corsOptions = {
@@ -38,6 +32,9 @@ const corsOptions = {
   credentials: true,
 };
 
+// ---- Connect DB ----
+await connectDB();
+const app = express();
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -53,14 +50,9 @@ app.use('/api/leaderboard', leaderboardRoutes);
 // ---- Socket.IO ----
 const server = http.createServer(app);
 const io = new Server(server, {
-  path: "/socket.io",
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "https://zeroly.netlify.app",
-      "https://zeroly-production.up.railway.app",
-    ],
-    methods: ["GET", "POST"],
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
     credentials: true,
   },
 });
@@ -71,6 +63,4 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => console.log('User disconnected:', socket.id));
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
