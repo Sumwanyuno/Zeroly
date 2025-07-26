@@ -2,6 +2,9 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import api from "../api.js";
+
+const API_BASE_URL = "http://localhost:5001/api";
 
 const RequestsDashboard = () => {
   const [sentRequests, setSentRequests] = useState([]);
@@ -10,15 +13,18 @@ const RequestsDashboard = () => {
   const { userInfo } = useContext(AuthContext);
 
   const fetchRequests = async () => {
-    if (!userInfo) return;
+    if (!userInfo) {
+      setLoading(false); 
+      return;
+    }
     setLoading(true);
     try {
       const config = {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
-      const { data: sentData } = await axios.get("/api/requests/sent", config);
-      const { data: receivedData } = await axios.get(
-        "/api/requests/received",
+      const { data } = await api.get(`${API_BASE_URL}/requests/sent`, config); 
+      const { data: receivedData } = await api.get(
+        `${API_BASE_URL}/requests/received`,
         config
       );
       setSentRequests(sentData);
@@ -32,23 +38,40 @@ const RequestsDashboard = () => {
 
   useEffect(() => {
     fetchRequests();
-  }, [userInfo]);
-
+  }, [userInfo]); 
   const handleUpdateStatus = async (requestId, status) => {
+    if (!userInfo) {
+      alert("You must be logged in to update request status.");
+      return;
+    }
     try {
       const config = {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
+
       await axios.put(`/api/requests/${requestId}`, { status }, config);
+
+      await axios.put(`${API_BASE_URL}/requests/${requestId}`, { status }, config); 
+
       fetchRequests();
+      alert("Request status updated successfully!"); 
     } catch (error) {
       console.error("Failed to update request status:", error);
-      alert("Failed to update status. Please try again.");
+      alert(error.response?.data?.message || "Failed to update status. Please try again.");
     }
   };
 
   if (loading) {
     return <p className="text-center mt-8">Loading requests...</p>;
+  }
+
+
+  if (!userInfo) {
+    return (
+      <p className="text-center mt-8 p-4 bg-yellow-100 text-yellow-800 rounded-md max-w-md mx-auto">
+        Please <Link to="/login" className="font-semibold hover:underline">log in</Link> to view your requests.
+      </p>
+    );
   }
 
   return (

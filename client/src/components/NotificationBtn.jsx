@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import api from "../api.js";
 
 const NotificationBtn = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,8 +18,8 @@ const NotificationBtn = () => {
       const config = {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
-      const { data: sentData } = await axios.get("/api/requests/sent", config);
-      const { data: receivedData } = await axios.get(
+      const { data: sentData } = await api.get("/api/requests/sent", config);
+      const { data: receivedData } = await api.get(
         "/api/requests/received",
         config
       );

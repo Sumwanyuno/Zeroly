@@ -3,9 +3,14 @@ import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+
 import MapPicker from "../components/MapPicker";
 import 'leaflet/dist/leaflet.css';
 
+import MapPicker from "../components/MapPicker"; 
+import 'leaflet/dist/leaflet.css';
+
+const API_BASE_URL = "http://localhost:5001/api";
 
 const UploadPage = () => {
   const [name, setName] = useState("");
@@ -24,6 +29,17 @@ const UploadPage = () => {
       alert("Please select an image.");
       return;
     }
+    if (!name || !description || !category || !address) {
+      alert("Please fill in all required fields (Name, Description, Category, Address).");
+      return;
+    }
+
+
+    if (!userInfo || !userInfo.token) {
+        alert("You must be logged in to list an item.");
+        navigate("/login"); 
+        return;
+    }
 
     setUploading(true);
     const formData = new FormData();
@@ -37,8 +53,9 @@ const UploadPage = () => {
         },
       };
 
+   
       const { data: uploadData } = await axios.post(
-        "/api/upload",
+        `${API_BASE_URL}/upload`,
         formData,
         uploadConfig
       );
@@ -58,7 +75,8 @@ const UploadPage = () => {
         },
       };
 
-      await axios.post("/api/items", newItem, itemConfig);
+ 
+      await axios.post(`${API_BASE_URL}/items`, newItem, itemConfig);
 
       setUploading(false);
       alert("Item created successfully!");
@@ -66,60 +84,111 @@ const UploadPage = () => {
     } catch (error) {
       console.error("Error creating item:", error);
       setUploading(false);
-      alert("Failed to create item.");
+
+      let errorMessage = "Failed to create item. Please try again.";
+      if (error.response) {
+        if (error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response.status === 401 || error.response.status === 403) {
+          errorMessage = "Authentication required. Please log in again.";
+          navigate("/login"); 
+        } else {
+          errorMessage = `Server responded with status: ${error.response.status} - ${error.response.statusText || "Unknown Error"}`;
+        }
+      } else if (error.request) {
+        errorMessage = "Network error: Could not connect to the server.";
+      } else {
+        errorMessage = `An unexpected error occurred: ${error.message}`;
+      }
+      alert(`Submission Error: ${errorMessage}`);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-emerald-50 to-white p-4">
-      <div className="w-full max-w-xl p-8 space-y-6 bg-white rounded-xl shadow-xl border border-emerald-200">
-        <h1 className="text-3xl font-bold text-center text-emerald-700">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-4 font-sans">
+      <div className="w-full max-w-2xl p-10 space-y-8 bg-white rounded-2xl shadow-2xl border border-emerald-300
+                    transform transition-all duration-300 ease-in-out hover:scale-101 hover:shadow-3xl"> {/* Changed hover:scale-100 to hover:scale-101 */}
+        <h1 className="text-4xl md:text-5xl font-extrabold text-center text-emerald-700 mb-6 drop-shadow-md">
+          <span role="img" aria-label="upload" className="mr-3 text-4xl md:text-5xl">📤</span>
           List a New Item
         </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Item Name"
-            required
-            className="w-full p-3 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-          />
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Description"
-            required
-            rows="4"
-            className="w-full p-3 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-          />
-          <input
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            placeholder="Category"
-            required
-            className="w-full p-3 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-          />
-          <input
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="Address / Pickup Location"
-            className="w-full p-3 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-          />
-          <p className="text-sm text-gray-600 mb-2">Or select on map:</p>
-          <MapPicker onPick={(selectedAddress) => setAddress(selectedAddress)} />
+        <p className="text-center text-gray-600 mb-8 text-lg">
+          Give your unused items a new purpose and contribute to a greener community!
+        </p>
+        <form onSubmit={handleSubmit} className="space-y-6">
+      
+          <div>
+            <label htmlFor="itemName" className="block text-sm font-semibold text-gray-700 mb-1">Item Name</label>
+            <input
+              id="itemName"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g., Vintage Lamp, Gently Used Backpack"
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 text-gray-800 placeholder-gray-400"
+            />
+          </div>
 
+          
+          <div>
+            <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Provide details about the item: its condition, dimensions, what it can be used for, etc."
+              required
+              rows="5"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 text-gray-800 placeholder-gray-400 resize-y"
+            />
+          </div>
 
-          <input
-            type="file"
-            onChange={(e) => setImage(e.target.files[0])}
-            required
-            className="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-white file:bg-emerald-600 file:hover:bg-emerald-700"
-          />
+        
+          <div>
+            <label htmlFor="category" className="block text-sm font-semibold text-gray-700 mb-1">Category</label>
+            <input
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="e.g., Furniture, Electronics, Books, Clothing"
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 text-gray-800 placeholder-gray-400"
+            />
+          </div>
+
+    
+          <div>
+            <label htmlFor="address" className="block text-sm font-semibold text-gray-700 mb-1">Address / Pickup Location</label>
+            <input
+              id="address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Enter full address or select on map"
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 text-gray-800 placeholder-gray-400"
+            />
+            <p className="text-sm text-gray-600 mt-2">Or click on the map to select a location:</p>
+            {/* MapPicker component */}
+            <MapPicker onPick={(selectedAddress) => setAddress(selectedAddress)} />
+          </div>
+
+   
+          <div>
+            <label htmlFor="imageUpload" className="block text-sm font-semibold text-gray-700 mb-1">Upload Image</label>
+            <input
+              id="imageUpload"
+              type="file"
+              onChange={(e) => setImage(e.target.files[0])}
+              required
+              className="w-full text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-5 file:rounded-full file:border-0 file:text-white file:bg-emerald-600 file:hover:bg-emerald-700 file:font-semibold file:shadow-md file:cursor-pointer transition duration-200 ease-in-out"
+            />
+          </div>
+
+        
           <button
             type="submit"
             disabled={uploading}
-            className="w-full py-3 px-4 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 disabled:bg-gray-400 transition"
+            className="w-full py-3.5 px-4 bg-emerald-600 text-white font-bold rounded-full hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition duration-200 ease-in-out transform hover:scale-100 shadow-lg"
           >
             {uploading ? "Uploading..." : "List Item"}
           </button>

@@ -1,5 +1,9 @@
 
+
 import React from "react";
+
+import React, { forwardRef } from "react"; // Import forwardRef
+
 import { Link } from "react-router-dom";
 
 
@@ -12,6 +16,10 @@ import 'swiper/css/navigation';
 
 
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+-
+import myNewBackground from "../assets/img/my-new-background.png";
+
+
 
 import recycleImgMain from "../assets/img/recycle.png";
 import recycleImg1 from "../assets/img/recycle1.png";
@@ -28,15 +36,27 @@ const recycleImages = [
   recycleImg4,
 ];
 
-const Hero = () => {
+// --- UPDATED: Wrap Hero with forwardRef ---
+const Hero = forwardRef((props, ref) => { // Receive ref as the second argument
   return (
-    <section className="w-full flex items-center bg-green-100">
-      <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-6 py-12 md:py-24">
+    <section
+      ref={ref} // <--- ATTACH THE REF HERE
+      id="hero-section" // Keep the ID as a fallback/for consistency, but ref is primary
+      className="w-full flex items-center bg-no-repeat bg-center"
+      style={{
+        backgroundImage: `url(${myNewBackground})`,
+        backgroundSize: '100% auto'
+      }}
+    >
+      <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-6 py-12 md:py-24 relative z-10">
         <div className="md:w-1/2 text-center md:text-left mb-10 md:mb-0">
           <h1 className="text-4xl md:text-5xl font-semibold text-gray-800 leading-tight">
+
+          <h1 className="text-4xl md:text-5xl font-semibold text-white leading-tight drop-shadow-lg">
+
             Because Giving Things a Second Life is the First Step to a Greener Planet.
           </h1>
-          <h2 className="text-xl text-gray-600 mt-4">
+          <h2 className="text-xl text-white mt-4 drop-shadow">
             A smart, interactive platform for local reuse and sharing.<br/>
             Join the Movement with Zeroly!
           </h2>
@@ -78,6 +98,6 @@ const Hero = () => {
       </div>
     </section>
   );
-};
+}); // <--- Close forwardRef here
 
-  export default Hero;
+export default Hero;

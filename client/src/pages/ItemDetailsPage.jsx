@@ -1,20 +1,33 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import Reviews from "../components/Reviews";
+
 import StarRating from "../components/StarRating"; 
+
+import StarRating from "../components/StarRating"; // ADDED
+import api from "../api.js";
+
+
+// Define your API base URL here.
+// IMPORTANT: Replace 5001 with the actual port your backend server is running on.
+const API_BASE_URL = "http://localhost:5001/api"; // <-- Added this line for the base URL
+
+
 
 const ItemDetailsPage = () => {
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const { userInfo } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const { data } = await axios.get(`/api/items/${id}`);
+        // Update the API call to use the full API_BASE_URL
+        const { data } = await api.get(`${API_BASE_URL}/items/${id}`); // <-- Changed this line
         setItem(data);
       } catch (error) {
         console.error("Failed to fetch item details:", error);
@@ -25,6 +38,21 @@ const ItemDetailsPage = () => {
 
     fetchItem();
   }, [id]);
+
+  const handleMessageOwner = async () => {
+    if (!userInfo) return navigate("/login");
+    try {
+      const { data } = await axios.post(
+        "/api/chat/start",
+        { itemId: item._id },
+        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+      );
+      navigate(`/chat/${data._id}`);
+    } catch (e) {
+      alert(e.response?.data?.message || "Failed to start chat");
+    }
+  };
+
 
   const handleRequest = async () => {
     if (!userInfo) {
@@ -38,7 +66,8 @@ const ItemDetailsPage = () => {
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
-      await axios.post("/api/requests", { itemId: item._id }, config);
+      // Update the API call to use the full API_BASE_URL
+      await axios.post(`${API_BASE_URL}/requests`, { itemId: item._id }, config); // <-- Changed this line
       alert("Request sent successfully!");
     } catch (error) {
       console.error("Failed to send request:", error);
@@ -97,13 +126,24 @@ const ItemDetailsPage = () => {
               </div>
               <div className="mt-8">
                 {userInfo && !isOwner && (
-                  <button
-                    onClick={handleRequest}
-                    className="w-full py-3 px-6 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition"
-                  >
-                    Request This Item
-                  </button>
+                  <>
+                    <button
+                      onClick={handleRequest}
+                      className="w-full py-3 px-6 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition"
+                    >
+                      Request This Item
+                    </button>
+
+                    {/* Message Owner Button */}
+                    <button
+                      onClick={handleMessageOwner}
+                      className="w-full py-3 px-6 mt-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                    >
+                      Message Owner
+                    </button>
+                  </>
                 )}
+
                 {isOwner && (
                   <p className="mt-4 p-3 bg-blue-100 text-blue-800 text-center rounded-md">
                     You are the owner of this item.
