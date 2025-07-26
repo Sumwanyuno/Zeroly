@@ -1,22 +1,18 @@
 import mongoose from "mongoose";
 
-// Review sub-schema
-const reviewSchema = new mongoose.Schema(
-  {
+
+const reviewSchema = new mongoose.Schema({
     user: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "User",
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "User",
     },
     name: { type: String, required: true },
     rating: { type: Number, required: true, min: 1, max: 5 },
     comment: { type: String, required: true },
-  },
-  { timestamps: true }
-);
+}, { timestamps: true });
 
-const itemSchema = new mongoose.Schema(
-  {
+const itemSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
     name: { type: String, required: true, trim: true },
     description: { type: String, required: true },
@@ -24,21 +20,19 @@ const itemSchema = new mongoose.Schema(
     imageUrl: { type: String, required: true },
     address: { type: String, required: true },
 
-    // Add review data
+
     reviews: [reviewSchema],
     numReviews: { type: Number, default: 0 },
     averageRating: { type: Number, default: 0 },
-  },
-  { timestamps: true }
-);
+}, { timestamps: true });
 
-// Helper method to calculate ratings
-itemSchema.methods.calcRating = function () {
-  this.numReviews = this.reviews.length;
-  this.averageRating =
-    this.numReviews === 0
-      ? 0
-      : this.reviews.reduce((acc, r) => acc + r.rating, 0) / this.numReviews;
+
+itemSchema.methods.calcRating = function() {
+    this.numReviews = this.reviews.length;
+    this.averageRating =
+        this.numReviews === 0 ?
+        0 :
+        this.reviews.reduce((acc, r) => acc + r.rating, 0) / this.numReviews;
 };
 
 const Item = mongoose.model("Item", itemSchema);

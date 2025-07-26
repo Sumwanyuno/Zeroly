@@ -6,10 +6,10 @@ import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import MapPicker from "../components/MapPicker"; // Ensure this path is correct and MapPicker.jsx has no syntax errors
-import 'leaflet/dist/leaflet.css'; // Ensure Leaflet CSS is imported if MapPicker uses it
+import MapPicker from "../components/MapPicker"; 
+import 'leaflet/dist/leaflet.css'; 
 
-// Define your API base URL here.
+
 const API_BASE_URL = "http://localhost:5001/api";
 
 const UploadPage = () => {
@@ -34,10 +34,10 @@ const UploadPage = () => {
       return;
     }
 
-    // Ensure user is logged in before attempting upload
+    
     if (!userInfo || !userInfo.token) {
         alert("You must be logged in to list an item.");
-        navigate("/login"); // Redirect to login if not authenticated
+        navigate("/login"); 
         return;
     }
 
@@ -53,7 +53,7 @@ const UploadPage = () => {
         },
       };
 
-      // Use the full API_BASE_URL for the upload request
+      
       const { data: uploadData } = await axios.post(
         `${API_BASE_URL}/upload`,
         formData,
@@ -75,12 +75,12 @@ const UploadPage = () => {
         },
       };
 
-      // Use the full API_BASE_URL for the item creation request
+    
       await axios.post(`${API_BASE_URL}/items`, newItem, itemConfig);
 
       setUploading(false);
       alert("Item created successfully!");
-      navigate("/"); // Redirect to homepage after successful upload
+      navigate("/"); 
     } catch (error) {
       console.error("Error creating item:", error);
       setUploading(false);
@@ -91,7 +91,7 @@ const UploadPage = () => {
           errorMessage = error.response.data.message;
         } else if (error.response.status === 401 || error.response.status === 403) {
           errorMessage = "Authentication required. Please log in again.";
-          navigate("/login"); // Redirect to login on 401/403
+          navigate("/login"); 
         } else {
           errorMessage = `Server responded with status: ${error.response.status} - ${error.response.statusText || "Unknown Error"}`;
         }
@@ -107,7 +107,7 @@ const UploadPage = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-4 font-sans">
       <div className="w-full max-w-2xl p-10 space-y-8 bg-white rounded-2xl shadow-2xl border border-emerald-300
-                    transform transition-all duration-300 ease-in-out hover:scale-101 hover:shadow-3xl"> {/* Changed hover:scale-100 to hover:scale-101 */}
+                    transform transition-all duration-300 ease-in-out hover:scale-101 hover:shadow-3xl"> {/* Changed hover */}
         <h1 className="text-4xl md:text-5xl font-extrabold text-center text-emerald-700 mb-6 drop-shadow-md">
           <span role="img" aria-label="upload" className="mr-3 text-4xl md:text-5xl">📤</span>
           List a New Item

@@ -13,9 +13,7 @@ const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
 
-  // --------------------------
-  // 1. Fetch existing messages
-  // --------------------------
+  
   useEffect(() => {
     const fetchMsgs = async () => {
       try {
@@ -31,9 +29,7 @@ const ChatPage = () => {
     fetchMsgs();
   }, [chatId, userInfo.token]);
 
-  // --------------------------
-  // 2. Listen to socket events
-  // --------------------------
+  
   useEffect(() => {
     if (!socket) return;
 
@@ -51,15 +47,13 @@ const ChatPage = () => {
     return () => socket.off("new-message", handler);
   }, [socket, chatId]);
 
-  // --------------------------
-  // 3. Send message
-  // --------------------------
+  
   const send = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
 
     try {
-      // Save to DB
+      
       const { data } = await axios.post(
         `/api/chat/${chatId}/messages`,
         { text },
@@ -68,16 +62,16 @@ const ChatPage = () => {
 
       console.log("Message saved to DB:", data);
 
-      // Emit socket event
+    
       socket?.emit("send-message", {
-        roomId: chatId, // Must match the room ID
+        roomId: chatId, 
         chatId,
         text: data.text,
         sender: userInfo._id,
         createdAt: data.createdAt,
       });
 
-      setMessages((prev) => [...prev, data]); // Optimistic UI
+      setMessages((prev) => [...prev, data]); 
       setText("");
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -85,9 +79,7 @@ const ChatPage = () => {
     }
   };
 
-  // --------------------------
-  // 4. UI
-  // --------------------------
+
   return (
     <div className="max-w-2xl mx-auto p-4">
       <div className="border p-4 h-96 overflow-y-auto mb-4 bg-white">

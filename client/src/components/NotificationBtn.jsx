@@ -40,7 +40,7 @@ const NotificationBtn = () => {
     setIsOpen(!isOpen);
   };
 
-  // Calculate unread count based on pending requests
+  
   const unreadCount = receivedRequests.filter(
     (req) => req.status === "Pending"
   ).length;
@@ -65,7 +65,7 @@ const NotificationBtn = () => {
             d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
           ></path>
         </svg>
-        {/* Show dot if there are any pending received requests */}
+       
         {unreadCount > 0 && (
           <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
         )}
@@ -78,7 +78,7 @@ const NotificationBtn = () => {
             <div className="p-4 text-center">Loading...</div>
           ) : (
             <div className="max-h-96 overflow-y-auto">
-              {/* Received Requests Section */}
+           
               <div className="p-4">
                 <h3 className="font-semibold text-sm mb-2">
                   Requests for Your Items
@@ -86,7 +86,7 @@ const NotificationBtn = () => {
                 {receivedRequests.length > 0 ? (
                   receivedRequests.map((req) => (
                     <div key={req._id} className="p-2 border-b text-sm">
-                      {/* 👇 **Start Change 1** 👇 */}
+                    
                       {req.item ? (
                         <p>
                           <span className="font-bold">
@@ -109,7 +109,7 @@ const NotificationBtn = () => {
                           requested an item that has been deleted.
                         </p>
                       )}
-                      {/* 👆 **End Change 1** 👆 */}
+                    
                       <p className="text-xs text-gray-500">{req.status}</p>
                     </div>
                   ))
@@ -120,7 +120,7 @@ const NotificationBtn = () => {
                 )}
               </div>
 
-              {/* Sent Requests Section */}
+           
               <div className="p-4 bg-gray-50">
                 <h3 className="font-semibold text-sm mb-2">
                   Your Sent Requests
@@ -128,7 +128,7 @@ const NotificationBtn = () => {
                 {sentRequests.length > 0 ? (
                   sentRequests.map((req) => (
                     <div key={req._id} className="p-2 border-b text-sm">
-                      {/* 👇 **Start Change 2** 👇 */}
+                     
                       {req.item ? (
                         <p>
                           You requested{" "}
@@ -145,7 +145,7 @@ const NotificationBtn = () => {
                       ) : (
                         <p>You requested an item that has been deleted.</p>
                       )}
-                      {/* 👆 **End Change 2** 👆 */}
+                     
                       <p className="text-xs text-gray-500">{req.status}</p>
                     </div>
                   ))

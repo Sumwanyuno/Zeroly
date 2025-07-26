@@ -1,24 +1,24 @@
 
 // client/src/components/Hero.jsx
 
-import React, { forwardRef } from "react"; // Import forwardRef
+import React, { forwardRef } from "react"; 
 import { Link } from "react-router-dom";
 
-// Import Swiper React components
+
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-// Import Swiper styles
+
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
-// import required Swiper modules
+
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 
-// --- IMAGE IMPORTS ---
+
 import myNewBackground from "../assets/img/my-new-background.png";
 
-// Existing images for Swiper
+
 import recycleImgMain from "../assets/img/recycle.png";
 import recycleImg1 from "../assets/img/recycle1.png";
 import recycleImg2 from "../assets/img/recycle2.png";
@@ -26,7 +26,7 @@ import recycleImg3 from "../assets/img/recycle3.png";
 import recycleImg4 from "../assets/img/recycle4.png";
 
 
-// --- ARRAY OF IMAGE PATHS (for Swiper) ---
+
 const recycleImages = [
   recycleImg1,
   recycleImgMain,
@@ -35,12 +35,12 @@ const recycleImages = [
   recycleImg4,
 ];
 
-// --- UPDATED: Wrap Hero with forwardRef ---
-const Hero = forwardRef((props, ref) => { // Receive ref as the second argument
+
+const Hero = forwardRef((props, ref) => { 
   return (
     <section
-      ref={ref} // <--- ATTACH THE REF HERE
-      id="hero-section" // Keep the ID as a fallback/for consistency, but ref is primary
+      ref={ref} 
+      id="hero-section" 
       className="w-full flex items-center bg-no-repeat bg-center"
       style={{
         backgroundImage: `url(${myNewBackground})`,
@@ -94,6 +94,6 @@ const Hero = forwardRef((props, ref) => { // Receive ref as the second argument
       </div>
     </section>
   );
-}); // <--- Close forwardRef here
+}); 
 
 export default Hero;

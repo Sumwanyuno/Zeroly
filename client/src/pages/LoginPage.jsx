@@ -3,9 +3,9 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
-// Define your API base URL here.
-// IMPORTANT: Replace 5001 with the actual port your backend server is running on.
-const API_BASE_URL = "http://localhost:5001/api"; // <-- Added this line for the base URL
+
+
+const API_BASE_URL = "http://localhost:5001/api"; 
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -17,8 +17,8 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Use the full API_BASE_URL for the login request
-      const { data } = await axios.post(`${API_BASE_URL}/users/login`, { // <-- Changed this line
+      
+      const { data } = await axios.post(`${API_BASE_URL}/users/login`, { 
         email,
         password,
       });

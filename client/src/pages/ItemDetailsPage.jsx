@@ -3,13 +3,13 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import Reviews from "../components/Reviews";
-import StarRating from "../components/StarRating"; // ADDED
+import StarRating from "../components/StarRating"; 
 import api from "../api.js";
 
 
-// Define your API base URL here.
-// IMPORTANT: Replace 5001 with the actual port your backend server is running on.
-const API_BASE_URL = "http://localhost:5001/api"; // <-- Added this line for the base URL
+
+
+const API_BASE_URL = "http://localhost:5001/api"; 
 
 
 const ItemDetailsPage = () => {
@@ -22,8 +22,8 @@ const ItemDetailsPage = () => {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        // Update the API call to use the full API_BASE_URL
-        const { data } = await api.get(`${API_BASE_URL}/items/${id}`); // <-- Changed this line
+       
+        const { data } = await api.get(`${API_BASE_URL}/items/${id}`); 
         setItem(data);
       } catch (error) {
         console.error("Failed to fetch item details:", error);
@@ -62,8 +62,8 @@ const ItemDetailsPage = () => {
           Authorization: `Bearer ${userInfo.token}`,
         },
       };
-      // Update the API call to use the full API_BASE_URL
-      await axios.post(`${API_BASE_URL}/requests`, { itemId: item._id }, config); // <-- Changed this line
+  
+      await axios.post(`${API_BASE_URL}/requests`, { itemId: item._id }, config);
       alert("Request sent successfully!");
     } catch (error) {
       console.error("Failed to send request:", error);
@@ -91,7 +91,7 @@ const ItemDetailsPage = () => {
       <div className="container mx-auto px-6">
         <div className="bg-white p-8 rounded-lg shadow-md">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Image Section */}
+           
             <div>
               <img
                 src={item.imageUrl}
@@ -100,7 +100,7 @@ const ItemDetailsPage = () => {
               />
             </div>
 
-            {/* Details Section */}
+           
             <div>
               <span className="inline-block bg-blue-100 text-blue-800 text-sm font-semibold mb-3 px-3 py-1 rounded-full">
                 {item.category}
@@ -108,7 +108,7 @@ const ItemDetailsPage = () => {
               <h1 className="text-4xl font-bold text-gray-800 mb-4">
                 {item.name}
               </h1>
-              {/* Average rating display */}
+          
               <div className="mb-4 flex items-center gap-2">
                 <StarRating value={item.averageRating || 0} readOnly />
                 <span className="text-sm text-gray-600">
@@ -133,7 +133,7 @@ const ItemDetailsPage = () => {
                       Request This Item
                     </button>
 
-                    {/* Message Owner Button */}
+            
                     <button
                       onClick={handleMessageOwner}
                       className="w-full py-3 px-6 mt-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
@@ -159,7 +159,7 @@ const ItemDetailsPage = () => {
               </div>
             </div>
           </div>
-          {/* --- REVIEWS SECTION --- */}
+         
           <div className="mt-10">
             <Reviews itemId={item._id} ownerId={item.user} />
           </div>

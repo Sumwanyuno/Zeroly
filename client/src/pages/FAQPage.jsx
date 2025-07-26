@@ -1,10 +1,10 @@
 // client/src/pages/FAQPage.jsx
 
-import React, { useState } from 'react'; // Import useState for accordion functionality
+import React, { useState } from 'react'; 
 import { Link } from 'react-router-dom';
 
 const FAQPage = () => {
-  // State to manage which FAQ item is open (for accordion effect)
+ 
   const [openIndex, setOpenIndex] = useState(null);
 
   const faqs = [
@@ -41,18 +41,18 @@ const FAQPage = () => {
   ];
 
   const toggleFAQ = (index) => {
-    setOpenIndex(openIndex === index ? null : index); // Toggle open/close
+    setOpenIndex(openIndex === index ? null : index); 
   };
 
   return (
     <div className="bg-green-50 min-h-screen font-sans py-12">
       <div className="container mx-auto px-4 md:px-8">
-        <div className="bg-white rounded-xl shadow-2xl p-6 md:p-12"> {/* Increased shadow */}
+        <div className="bg-white rounded-xl shadow-2xl p-6 md:p-12"> 
           <h1 className="text-4xl md:text-5xl font-extrabold text-green-800 text-center mb-10">
             Frequently Asked Questions
           </h1>
 
-          <div className="space-y-6"> {/* Adjusted spacing */}
+          <div className="space-y-6"> 
             {faqs.map((faq, index) => (
               <div
                 key={index}
@@ -94,7 +94,7 @@ const FAQPage = () => {
             ))}
           </div>
 
-          <div className="text-center mt-12 pt-8 border-t border-gray-200"> {/* Added pt-8 and border-t */}
+          <div className="text-center mt-12 pt-8 border-t border-gray-200"> 
             <p className="text-gray-600 text-lg">
               Still have questions? Feel free to{" "}
               <Link to="/contact" className="text-green-600 hover:underline font-medium">

@@ -3,17 +3,17 @@
 // client/src/pages/HomePage.jsx
 
 import React, { useState, useEffect, useContext, useRef, useLayoutEffect } from "react";
-import axios from "axios"; // Keep axios for other potential uses, though 'api' is preferred for app calls
+import axios from "axios"; 
 import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import ItemCard from "../components/ItemCard";
 import Hero from "../components/Hero";
 import StarRating from "../components/StarRating";
-import api from "../api.js"; // Your custom axios instance
+import api from "../api.js";
 
 const API_BASE_URL = "http://localhost:5001/api";
 
-// --- IMAGE IMPORTS (MUST BE AT THE TOP LEVEL) ---
+
 import ctaBg from "../assets/img/cta-bg.jpg";
 
 
@@ -32,12 +32,12 @@ const HomePage = () => {
     const fetchItems = async () => {
       setLoading(true);
       try {
-        // RESOLVED CONFLICT: Keeping the line that uses your custom 'api' instance
+        
         const { data } = await api.get(`${API_BASE_URL}/items?keyword=${keyword}`);
         setItems(data);
       } catch (error) {
         console.error("Error fetching items:", error);
-        // Replaced alert with a more user-friendly message or toast notification
+        
         alert("Failed to load items. Please try refreshing the page.");
       } finally {
         setLoading(false);
@@ -81,11 +81,11 @@ const HomePage = () => {
 
   const handleDelete = async (id) => {
     if (!userInfo) {
-      // Replaced alert with a message box or toast notification for better UX
+      
       alert("You must be logged in to delete an item.");
       return;
     }
-    // Replaced window.confirm with a custom modal UI for better UX
+   
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
@@ -171,7 +171,7 @@ const HomePage = () => {
           </div>
         )}
 
-        {/* About Us Section with Background Image */}
+        {/* About Us Section  */}
         <div
           ref={aboutUsSectionRef}
           id="about-us-section"
@@ -180,11 +180,11 @@ const HomePage = () => {
                        bg-cover bg-center relative overflow-hidden"
           style={{ backgroundImage: `url(${ctaBg})` }}
         >
-          {/* Optional: Overlay for text readability */}
+        
           <div className="absolute inset-0 bg-black opacity-50 z-0 rounded-xl"></div>
 
-          {/* --- UPDATED: About Zeroly heading color to brighter green --- */}
-          <h2 className="text-3xl md:text-4xl font-extrabold text-green-400 text-center mb-6 relative z-10 drop-shadow-lg"> {/* Changed text-green-800 to text-green-400 */}
+          
+          <h2 className="text-3xl md:text-4xl font-extrabold text-green-400 text-center mb-6 relative z-10 drop-shadow-lg"> 
             About Zeroly
           </h2>
           <div className="text-white leading-relaxed text-lg text-justify relative z-10">
@@ -216,7 +216,7 @@ const HomePage = () => {
             </Link>
           </div>
         </div>
-        {/* --- END: About Us Section --- */}
+      
       </div>
     </div>
   );

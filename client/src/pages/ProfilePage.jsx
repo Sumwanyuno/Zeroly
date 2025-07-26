@@ -4,9 +4,9 @@ import { AuthContext } from "../context/AuthContext";
 import ItemCard from "../components/ItemCard";
 import api from "../api.js";
 
-// Define your API base URL here.
-// IMPORTANT: Replace 5001 with the actual port your backend server is running on.
-const API_BASE_URL = "http://localhost:5001/api"; // <-- Added this line for the base URL
+
+
+const API_BASE_URL = "http://localhost:5001/api"; 
 
 const ProfilePage = () => {
   const { userInfo } = useContext(AuthContext);
@@ -25,8 +25,8 @@ const ProfilePage = () => {
             Authorization: `Bearer ${userInfo.token}`,
           },
         };
-        // Update the API call to use the full API_BASE_URL
-        const { data } = await api.get(`${API_BASE_URL}/users/profile`, config); // <-- Changed this line
+       
+        const { data } = await api.get(`${API_BASE_URL}/users/profile`, config); 
         setUserProfile(data);
       } catch (error) {
         console.error("Failed to fetch user profile:", error);
@@ -49,8 +49,8 @@ const ProfilePage = () => {
       const config = {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
-      // Update the API call to use the full API_BASE_URL
-      await axios.delete(`${API_BASE_URL}/items/${deletedItemId}`, config); // <-- Changed this line
+     
+      await axios.delete(`${API_BASE_URL}/items/${deletedItemId}`, config);
       setUserProfile((prevProfile) => ({
         ...prevProfile,
         items: prevProfile.items.filter((item) => item._id !== deletedItemId),

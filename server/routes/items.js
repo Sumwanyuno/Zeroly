@@ -1,25 +1,3 @@
-// // server/routes/items.js
-// import express from "express";
-// import {
-//     createItem,
-//     getItems,
-//     getItemById,
-//     deleteItem,
-// } from "../controllers/itemController.js";
-
-// import { protect } from "../middleware/authMiddleware.js";
-// import { getItemReviews, addItemReview } from "../controllers/itemController.js";
-
-// const router = express.Router();
-
-// router.route("/").post(protect, createItem).get(getItems);
-// router.route("/:id").get(getItemById).delete(protect, deleteItem);
-// router
-//     .route("/:id/reviews")
-//     .get(getItemReviews)
-//     .post(protect, addItemReview);
-
-// export default router;
 // server/routes/items.js
 
 import express from "express";
@@ -30,28 +8,25 @@ import {
     deleteItem,
     getItemReviews,
     addItemReview,
-    deleteItemReview, // <--- CRUCIAL: Import the deleteItemReview function
+    deleteItemReview,
 } from "../controllers/itemController.js";
 
-import { protect } from "../middleware/authMiddleware.js"; // Ensure this path is correct
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Routes for /api/items (GET all, POST new)
 router.route("/").post(protect, createItem).get(getItems);
 
-// Routes for /api/items/:id (GET single, DELETE)
+
 router.route("/:id").get(getItemById).delete(protect, deleteItem);
 
-// Routes for /api/items/:id/reviews (GET reviews, POST new review)
+
 router
     .route("/:id/reviews")
     .get(getItemReviews)
     .post(protect, addItemReview);
 
-// --- CRUCIAL ROUTE FOR DELETING A SPECIFIC REVIEW ---
-// DELETE /api/items/:itemId/reviews/:reviewId
-// This route is what handles the DELETE request from your frontend.
+
 router.route("/:itemId/reviews/:reviewId").delete(protect, deleteItemReview);
 
 

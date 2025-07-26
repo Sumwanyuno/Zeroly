@@ -8,7 +8,7 @@
 /client/dist
 /dist-ssr
 
-# Environment variables (very important)
+# Environment variables 
 .env
 .env*.local
 /client/.env

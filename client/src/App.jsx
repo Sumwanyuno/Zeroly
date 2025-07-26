@@ -3,13 +3,13 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-// --- Import components ---
+
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
-import ScrollToTop from "./components/ScrollToTop"; // Ensure this file exists
+import ScrollToTop from "./components/ScrollToTop"; 
 
-// --- Import pages ---
+
 import HomePage from "./pages/HomePage";
 import UploadPage from "./pages/UploadPage";
 import LoginPage from "./pages/LoginPage";
@@ -18,27 +18,26 @@ import ProfilePage from "./pages/ProfilePage";
 import ItemDetailsPage from "./pages/ItemDetailsPage";
 import RequestsDashboard from "./pages/RequestsDashboard";
 import ChatPage from "./pages/ChatPage";
-import FAQPage from "./pages/FAQPage"; // Ensure this file exists
-import ContactPage from "./pages/ContactPage"; // Ensure this file exists
-import LeaderboardPage from "./pages/LeaderboardPage"; // Ensure this file exists
+import FAQPage from "./pages/FAQPage"; 
+import ContactPage from "./pages/ContactPage"; 
+import LeaderboardPage from "./pages/LeaderboardPage"; 
 
-// --- Import Context Providers ---
-import { AuthProvider } from "./context/AuthContext"; // AuthProvider is used in main.jsx, so it wraps the App component
+
+import { AuthProvider } from "./context/AuthContext"; 
 
 function App() {
   console.log("API Base URL:", import.meta.env.VITE_API_URL);
   return (
-    // AuthProvider and BrowserRouter are in main.jsx, wrapping this App component
-    // The div helps with sticky footer layout
+    
     <div className="font-sans flex flex-col min-h-screen">
       <Header />
 
-      {/* ScrollToTop component is placed here to handle scrolling on route changes */}
+     
       <ScrollToTop />
 
       <main className="flex-grow">
         <Routes>
-          {/* Public Routes */}
+        
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -46,15 +45,14 @@ function App() {
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />{" "}
-          {/* Added Leaderboard route */}
-          {/* Protected Routes - Wrap routes that require authentication */}
+         
           <Route element={<ProtectedRoute />}>
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/requests" element={<RequestsDashboard />} />
             <Route path="/chat/:chatId" element={<ChatPage />} />
           </Route>
-          {/* Catch-all for 404 Not Found pages */}
+       
           <Route
             path="*"
             element={

@@ -8,10 +8,10 @@ const FloatingChatButton = ({ onClick }) => {
       onClick={onClick}
       className="fixed bottom-6 right-6 bg-emerald-600 text-white p-4 rounded-full shadow-lg
                  hover:bg-emerald-700 transition-all duration-300 ease-in-out transform hover:scale-110
-                 focus:outline-none focus:ring-4 focus:ring-emerald-300 z-50" // Increased z-index
+                 focus:outline-none focus:ring-4 focus:ring-emerald-300 z-50"
       title="Open Chat Assistant"
     >
-      {/* Chat icon (SVG or Font Awesome) */}
+  
       <svg
         className="w-8 h-8"
         fill="none"

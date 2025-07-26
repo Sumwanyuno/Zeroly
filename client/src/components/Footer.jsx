@@ -2,27 +2,26 @@
 // client/src/components/Footer.jsx
 
 import React from "react";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link, useNavigate } from "react-router-dom"; 
 
-// --- IMPORTANT: Ensure these imports match your actual PNG filenames and paths ---
+
 import facebookLogo from '../assets/img/facebook-logo.png';
 import instagramLogo from '../assets/img/instagram-logo.png';
 import linkedinLogo from '../assets/img/linkedin-logo.png';
 import youtubeLogo from '../assets/img/youtube-logo.png';
-// --------------------------------------------------------------------------------
+
 
 
 const Footer = () => {
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const navigate = useNavigate(); 
 
-  // --- UPDATED: Function to handle the click and navigate ---
+
   const scrollToHero = (e) => {
-    e.preventDefault(); // Prevent default anchor behavior
+    e.preventDefault(); 
     console.log("Footer pointer clicked. Attempting to navigate to /#hero-section");
 
-    // Check if already on the homepage
     if (window.location.pathname === '/') {
-        // If on homepage, just scroll
+       
         const element = document.getElementById('hero-section');
         if (element) {
             element.scrollIntoView({ behavior: 'smooth' });
@@ -31,7 +30,7 @@ const Footer = () => {
             console.log("Already on homepage, but hero-section not found.");
         }
     } else {
-        // If on a different page, navigate to homepage with hash
+        
         navigate('/#hero-section');
         console.log("Navigating to homepage with hash.");
     }
@@ -41,7 +40,7 @@ const Footer = () => {
     <footer className="bg-emerald-800 text-white py-12">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Products & Services */}
+     
           <div>
             <h3 className="text-xl font-bold mb-4">Products & Services</h3>
             <p>
@@ -54,7 +53,6 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Useful Links */}
           <div>
             <h4 className="font-bold text-lg mb-4">Useful Links</h4>
             <ul>
@@ -63,7 +61,7 @@ const Footer = () => {
                   Home
                 </Link>
               </li>
-              {/* Item Listing Link */}
+             
               <li className="mb-2">
                 <Link to="/#hero-section" className="hover:text-gray-300">
                   Item Listing
@@ -82,7 +80,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact Us */}
+       
           <div>
             <h4 className="font-bold text-lg mb-4">Contact Us</h4>
             <p>
@@ -99,7 +97,7 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Social Media Section */}
+      
           <div>
             <h4 className="font-bold text-lg mb-4">Join Our Community</h4>
             <p className="mb-4">Follow us on social media to stay updated.</p>
@@ -136,10 +134,10 @@ const Footer = () => {
           <p className="text-sm sm:mr-4">
             Designed by Team Zeroly
           </p>
-          {/* --- UPDATED: Back to Top Pointer with onClick handler and useNavigate --- */}
+         
           <a
-            href="/#hero-section" // Keep href for accessibility/fallback
-            onClick={scrollToHero} // Use onClick to trigger our custom function
+            href="/#hero-section" 
+            onClick={scrollToHero} 
             className="text-white hover:text-gray-300 transition-colors duration-300 mt-2 sm:mt-0"
             title="Back to Top"
           >
