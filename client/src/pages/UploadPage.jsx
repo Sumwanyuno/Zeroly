@@ -1,15 +1,15 @@
 
+
+// client/src/pages/UploadPage.jsx
+
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import MapPicker from "../components/MapPicker"; // Ensure this path is correct and MapPicker.jsx has no syntax errors
+import 'leaflet/dist/leaflet.css'; // Ensure Leaflet CSS is imported if MapPicker uses it
 
-import MapPicker from "../components/MapPicker";
-import 'leaflet/dist/leaflet.css';
-
-import MapPicker from "../components/MapPicker"; 
-import 'leaflet/dist/leaflet.css';
-
+// Define your API base URL here.
 const API_BASE_URL = "http://localhost:5001/api";
 
 const UploadPage = () => {
@@ -34,10 +34,10 @@ const UploadPage = () => {
       return;
     }
 
-
+    // Ensure user is logged in before attempting upload
     if (!userInfo || !userInfo.token) {
         alert("You must be logged in to list an item.");
-        navigate("/login"); 
+        navigate("/login"); // Redirect to login if not authenticated
         return;
     }
 
@@ -53,7 +53,7 @@ const UploadPage = () => {
         },
       };
 
-   
+      // Use the full API_BASE_URL for the upload request
       const { data: uploadData } = await axios.post(
         `${API_BASE_URL}/upload`,
         formData,
@@ -75,12 +75,12 @@ const UploadPage = () => {
         },
       };
 
- 
+      // Use the full API_BASE_URL for the item creation request
       await axios.post(`${API_BASE_URL}/items`, newItem, itemConfig);
 
       setUploading(false);
       alert("Item created successfully!");
-      navigate("/");
+      navigate("/"); // Redirect to homepage after successful upload
     } catch (error) {
       console.error("Error creating item:", error);
       setUploading(false);
@@ -91,7 +91,7 @@ const UploadPage = () => {
           errorMessage = error.response.data.message;
         } else if (error.response.status === 401 || error.response.status === 403) {
           errorMessage = "Authentication required. Please log in again.";
-          navigate("/login"); 
+          navigate("/login"); // Redirect to login on 401/403
         } else {
           errorMessage = `Server responded with status: ${error.response.status} - ${error.response.statusText || "Unknown Error"}`;
         }
@@ -116,7 +116,7 @@ const UploadPage = () => {
           Give your unused items a new purpose and contribute to a greener community!
         </p>
         <form onSubmit={handleSubmit} className="space-y-6">
-      
+          {/* Item Name */}
           <div>
             <label htmlFor="itemName" className="block text-sm font-semibold text-gray-700 mb-1">Item Name</label>
             <input
@@ -129,7 +129,7 @@ const UploadPage = () => {
             />
           </div>
 
-          
+          {/* Description */}
           <div>
             <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
             <textarea
@@ -143,7 +143,7 @@ const UploadPage = () => {
             />
           </div>
 
-        
+          {/* Category */}
           <div>
             <label htmlFor="category" className="block text-sm font-semibold text-gray-700 mb-1">Category</label>
             <input
@@ -156,7 +156,7 @@ const UploadPage = () => {
             />
           </div>
 
-    
+          {/* Address / Map Picker */}
           <div>
             <label htmlFor="address" className="block text-sm font-semibold text-gray-700 mb-1">Address / Pickup Location</label>
             <input
@@ -172,7 +172,7 @@ const UploadPage = () => {
             <MapPicker onPick={(selectedAddress) => setAddress(selectedAddress)} />
           </div>
 
-   
+          {/* Image Upload */}
           <div>
             <label htmlFor="imageUpload" className="block text-sm font-semibold text-gray-700 mb-1">Upload Image</label>
             <input
@@ -184,7 +184,7 @@ const UploadPage = () => {
             />
           </div>
 
-        
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={uploading}

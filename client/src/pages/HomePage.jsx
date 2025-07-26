@@ -1,12 +1,8 @@
 
 
-import React, { useState, useEffect, useContext } from "react";
-
-
 // client/src/pages/HomePage.jsx
 
 import React, { useState, useEffect, useContext, useRef, useLayoutEffect } from "react";
-
 import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
@@ -25,8 +21,6 @@ const HomePage = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const { userInfo } = useContext(AuthContext);
-
-
   const [keyword, setKeyword] = useState("");
   const location = useLocation();
 
@@ -38,11 +32,7 @@ const HomePage = () => {
     const fetchItems = async () => {
       setLoading(true);
       try {
-
-        const { data } = await axios.get(`/api/items?keyword=${keyword}`);
-=======
         const { data } = await api.get(`${API_BASE_URL}/items?keyword=${keyword}`);
-
         setItems(data);
       } catch (error) {
         console.error("Error fetching items:", error);
@@ -53,7 +43,6 @@ const HomePage = () => {
     };
     fetchItems();
   }, [keyword]);
-
 
   useLayoutEffect(() => {
     console.log("HomePage useLayoutEffect triggered. Location hash:", location.hash);
@@ -124,9 +113,7 @@ const HomePage = () => {
           </p>
         </div>
 
-
         {/* Search Bar */}
-
         <form
           onSubmit={handleSearchSubmit}
           className="mb-12 max-w-2xl mx-auto flex shadow-lg"

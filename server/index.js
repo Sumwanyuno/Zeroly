@@ -1,19 +1,9 @@
-
-import express from "express";
-import cors from "cors";
-import connectDB from "./config/db.js";
-import itemRoutes from "./routes/items.js";
-import userRoutes from "./routes/users.js";
-import uploadRoutes from "./routes/uploadRoutes.js";
-import requestRoutes from "./routes/requestRoutes.js";
-=======
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import http from 'http';
 import { Server } from 'socket.io';
 import connectDB from './config/db.js';
-
 
 import itemRoutes from './routes/items.js';
 import userRoutes from './routes/users.js';
