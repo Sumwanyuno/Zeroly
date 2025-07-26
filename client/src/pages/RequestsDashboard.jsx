@@ -4,7 +4,9 @@ import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import api from "../api.js";
 
-const API_BASE_URL = "http://localhost:5001/api";
+// Define your API base URL here.
+// IMPORTANT: Replace 5001 with the actual port your backend server is running on.
+const API_BASE_URL = "http://localhost:5001/api"; // <-- Added this line for the base URL
 
 const RequestsDashboard = () => {
   const [sentRequests, setSentRequests] = useState([]);
@@ -14,7 +16,7 @@ const RequestsDashboard = () => {
 
   const fetchRequests = async () => {
     if (!userInfo) {
-      setLoading(false); 
+      setLoading(false); // Ensure loading state is false if no user info
       return;
     }
     setLoading(true);
@@ -22,15 +24,17 @@ const RequestsDashboard = () => {
       const config = {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
-      const { data } = await api.get(`${API_BASE_URL}/requests/sent`, config); 
+      // Update API calls to use the full API_BASE_URL
+      const { data } = await api.get(`${API_BASE_URL}/requests/sent`, config); // <-- Changed this line
       const { data: receivedData } = await api.get(
-        `${API_BASE_URL}/requests/received`,
+        `${API_BASE_URL}/requests/received`, // <-- Changed this line
         config
       );
       setSentRequests(sentData);
       setReceivedRequests(receivedData);
     } catch (error) {
       console.error("Failed to fetch requests:", error);
+      // Optionally provide user feedback here, e.g., alert("Failed to load requests.");
     } finally {
       setLoading(false);
     }
@@ -38,7 +42,8 @@ const RequestsDashboard = () => {
 
   useEffect(() => {
     fetchRequests();
-  }, [userInfo]); 
+  }, [userInfo]); // Re-fetch requests when userInfo changes (e.g., after login/logout)
+
   const handleUpdateStatus = async (requestId, status) => {
     if (!userInfo) {
       alert("You must be logged in to update request status.");
@@ -48,13 +53,11 @@ const RequestsDashboard = () => {
       const config = {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
-
-      await axios.put(`/api/requests/${requestId}`, { status }, config);
-
-      await axios.put(`${API_BASE_URL}/requests/${requestId}`, { status }, config); 
-
+      // Update API call to use the full API_BASE_URL
+      await axios.put(`${API_BASE_URL}/requests/${requestId}`, { status }, config); // <-- Changed this line
+      // Refresh the list to show the updated status
       fetchRequests();
-      alert("Request status updated successfully!"); 
+      alert("Request status updated successfully!"); // User feedback for success
     } catch (error) {
       console.error("Failed to update request status:", error);
       alert(error.response?.data?.message || "Failed to update status. Please try again.");
@@ -65,7 +68,7 @@ const RequestsDashboard = () => {
     return <p className="text-center mt-8">Loading requests...</p>;
   }
 
-
+  // Display message if no user info is available (not logged in)
   if (!userInfo) {
     return (
       <p className="text-center mt-8 p-4 bg-yellow-100 text-yellow-800 rounded-md max-w-md mx-auto">
@@ -81,6 +84,7 @@ const RequestsDashboard = () => {
           My Requests Dashboard
         </h1>
 
+        {/* Received Requests Section */}
         <div className="bg-white p-6 rounded-lg shadow-md mb-8">
           <h2 className="text-2xl font-semibold mb-4">
             Requests for Your Items
@@ -157,6 +161,7 @@ const RequestsDashboard = () => {
           )}
         </div>
 
+        {/* Sent Requests Section */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold mb-4">Your Sent Requests</h2>
           {sentRequests.length > 0 ? (

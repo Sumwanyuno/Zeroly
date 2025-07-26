@@ -1,11 +1,11 @@
-
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
-
-const API_BASE_URL = "http://localhost:5001/api";
+// Define your API base URL here.
+// IMPORTANT: Replace 5001 with the actual port your backend server is running on.
+const API_BASE_URL = "http://localhost:5001/api"; // <-- Added this line for the base URL
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");

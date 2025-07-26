@@ -9,6 +9,7 @@ const LocationMarker = ({ onPick }) => {
       const { lat, lng } = e.latlng;
       setPosition([lat, lng]);
 
+      // Reverse geocode to get address
       fetch(
         `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
         {
@@ -20,7 +21,7 @@ const LocationMarker = ({ onPick }) => {
         .then((res) => res.json())
         .then((data) => {
           const address = data?.display_name || `Lat: ${lat}, Lng: ${lng}`;
-          onPick(address);
+          onPick(address); // Send the address to parent
         })
         .catch((err) => {
           console.error("Reverse geocoding error:", err);
@@ -34,7 +35,7 @@ const LocationMarker = ({ onPick }) => {
 
 const MapPicker = ({ onPick }) => (
   <MapContainer
-    center={[23.1815, 79.9864]}
+    center={[23.1815, 79.9864]} // Default center (Jabalpur)
     zoom={13}
     style={{ height: "300px", width: "100%" }}
   >

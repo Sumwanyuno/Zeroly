@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Review sub-schema
 const reviewSchema = new mongoose.Schema(
   {
     user: {
@@ -23,6 +24,7 @@ const itemSchema = new mongoose.Schema(
     imageUrl: { type: String, required: true },
     address: { type: String, required: true },
 
+    // Add review data
     reviews: [reviewSchema],
     numReviews: { type: Number, default: 0 },
     averageRating: { type: Number, default: 0 },
@@ -30,6 +32,7 @@ const itemSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Helper method to calculate ratings
 itemSchema.methods.calcRating = function () {
   this.numReviews = this.reviews.length;
   this.averageRating =
