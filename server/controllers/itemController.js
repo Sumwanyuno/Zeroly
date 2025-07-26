@@ -137,7 +137,7 @@ export const deleteItem = async(req, res) => {
     if (item.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized to delete this item" });
     }
-=======
+
         console.log("Item Owner ID:", item.user.toString());
         console.log("Logged User ID:", req.user._id.toString());
 
@@ -183,7 +183,7 @@ export const addItemReview = async (req, res) => {
   try {
     const { rating, comment } = req.body;
     const item = await Item.findById(req.params.id);
-=======
+
 
 
 
@@ -258,7 +258,7 @@ export const addItemReview = async(req, res) => {
     console.error("Error adding review:", error);
     res.status(500).json({ message: "Failed to add review" });
   }
-=======
+
         item.reviews.push(review); 
         item.calcRating(); 
         await item.save(); 

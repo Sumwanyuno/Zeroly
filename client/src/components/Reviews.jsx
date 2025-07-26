@@ -13,7 +13,7 @@ const Reviews = ({ itemId, ownerId }) => {
   const [avg, setAvg] = useState(0);
 
   const isOwner = userInfo?._id === ownerId; 
-=======
+
   // Set up an Axios instance with the base URL for your API
   const api = axios.create({
     baseURL: "http://localhost:5001/api",

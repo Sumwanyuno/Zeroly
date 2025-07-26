@@ -40,7 +40,7 @@ const HomePage = () => {
       try {
 
         const { data } = await axios.get(`/api/items?keyword=${keyword}`);
-=======
+
         const { data } = await api.get(`${API_BASE_URL}/items?keyword=${keyword}`);
 
         setItems(data);
