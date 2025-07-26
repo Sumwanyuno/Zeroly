@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import StarRating from "./StarRating";
 
 const ItemCard = ({ item, userId, onDelete }) => {
-  const isOwner = userId === item.user; // check if logged-in user is the owner
+  const isOwner = userId === item.user;
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
@@ -31,7 +31,6 @@ const ItemCard = ({ item, userId, onDelete }) => {
           {item.description}
         </p>
 
-        {/* Delete button visible only to the owner */}
         {isOwner && (
           <button
             onClick={() => onDelete(item._id)}

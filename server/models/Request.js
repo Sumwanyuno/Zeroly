@@ -1,4 +1,3 @@
-// server/models/Request.js
 import mongoose from "mongoose";
 
 const requestSchema = new mongoose.Schema(

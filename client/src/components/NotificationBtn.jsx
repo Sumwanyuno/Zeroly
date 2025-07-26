@@ -1,4 +1,3 @@
-// client/src/components/NotificationBtn.jsx
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
@@ -86,7 +85,6 @@ const NotificationBtn = () => {
                 {receivedRequests.length > 0 ? (
                   receivedRequests.map((req) => (
                     <div key={req._id} className="p-2 border-b text-sm">
-                      {/* 👇 **Start Change 1** 👇 */}
                       {req.item ? (
                         <p>
                           <span className="font-bold">
@@ -109,7 +107,6 @@ const NotificationBtn = () => {
                           requested an item that has been deleted.
                         </p>
                       )}
-                      {/* 👆 **End Change 1** 👆 */}
                       <p className="text-xs text-gray-500">{req.status}</p>
                     </div>
                   ))
@@ -128,7 +125,6 @@ const NotificationBtn = () => {
                 {sentRequests.length > 0 ? (
                   sentRequests.map((req) => (
                     <div key={req._id} className="p-2 border-b text-sm">
-                      {/* 👇 **Start Change 2** 👇 */}
                       {req.item ? (
                         <p>
                           You requested{" "}
@@ -145,7 +141,6 @@ const NotificationBtn = () => {
                       ) : (
                         <p>You requested an item that has been deleted.</p>
                       )}
-                      {/* 👆 **End Change 2** 👆 */}
                       <p className="text-xs text-gray-500">{req.status}</p>
                     </div>
                   ))
