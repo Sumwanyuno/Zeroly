@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-/* --- ADD YOUR CUSTOM CSS BELOW THIS LINE --- */
-
 @layer components {
     .glowing-border {
         @apply rounded-lg;

@@ -40,7 +40,6 @@ const RequestsDashboard = () => {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
       await axios.put(`/api/requests/${requestId}`, { status }, config);
-      // Refresh the list to show the updated status
       fetchRequests();
     } catch (error) {
       console.error("Failed to update request status:", error);
@@ -59,7 +58,6 @@ const RequestsDashboard = () => {
           My Requests Dashboard
         </h1>
 
-        {/* Received Requests Section */}
         <div className="bg-white p-6 rounded-lg shadow-md mb-8">
           <h2 className="text-2xl font-semibold mb-4">
             Requests for Your Items
@@ -71,7 +69,6 @@ const RequestsDashboard = () => {
                   key={req._id}
                   className="py-4 flex justify-between items-center"
                 >
-                  {/* 👇 **Start Change 1** 👇 */}
                   {req.item ? (
                     <div>
                       <p className="text-md">
@@ -112,7 +109,6 @@ const RequestsDashboard = () => {
                       </p>
                     </div>
                   )}
-                  {/* 👆 **End Change 1** 👆 */}
 
                   {req.status === "Pending" && req.item && (
                     <div className="flex space-x-2">
@@ -138,14 +134,12 @@ const RequestsDashboard = () => {
           )}
         </div>
 
-        {/* Sent Requests Section */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold mb-4">Your Sent Requests</h2>
           {sentRequests.length > 0 ? (
             <ul className="divide-y divide-gray-200">
               {sentRequests.map((req) => (
                 <li key={req._id} className="py-4">
-                  {/* 👇 **Start Change 2** 👇 */}
                   {req.item ? (
                     <p className="text-md">
                       You requested{" "}
@@ -162,7 +156,6 @@ const RequestsDashboard = () => {
                       You requested an item that is no longer available.
                     </p>
                   )}
-                  {/* 👆 **End Change 2** 👆 */}
                   <p
                     className={`text-sm font-bold ${
                       req.status === "Accepted"

@@ -1,10 +1,9 @@
-// client/src/pages/ItemDetailsPage.jsx
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import Reviews from "../components/Reviews";
-import StarRating from "../components/StarRating"; // ADDED
+import StarRating from "../components/StarRating"; 
 
 const ItemDetailsPage = () => {
   const [item, setItem] = useState(null);
@@ -67,7 +66,6 @@ const ItemDetailsPage = () => {
       <div className="container mx-auto px-6">
         <div className="bg-white p-8 rounded-lg shadow-md">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Image Section */}
             <div>
               <img
                 src={item.imageUrl}
@@ -76,7 +74,6 @@ const ItemDetailsPage = () => {
               />
             </div>
 
-            {/* Details Section */}
             <div>
               <span className="inline-block bg-blue-100 text-blue-800 text-sm font-semibold mb-3 px-3 py-1 rounded-full">
                 {item.category}
@@ -84,7 +81,6 @@ const ItemDetailsPage = () => {
               <h1 className="text-4xl font-bold text-gray-800 mb-4">
                 {item.name}
               </h1>
-              {/* Average rating display */}
               <div className="mb-4 flex items-center gap-2">
                 <StarRating value={item.averageRating || 0} readOnly />
                 <span className="text-sm text-gray-600">
@@ -124,7 +120,6 @@ const ItemDetailsPage = () => {
               </div>
             </div>
           </div>
-          {/* --- REVIEWS SECTION --- */}
           <div className="mt-10">
             <Reviews itemId={item._id} ownerId={item.user} />
           </div>

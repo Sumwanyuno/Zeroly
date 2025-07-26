@@ -1,4 +1,3 @@
-// server/routes/items.js
 import express from "express";
 import {
   createItem,

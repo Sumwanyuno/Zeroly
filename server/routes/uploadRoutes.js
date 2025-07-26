@@ -1,4 +1,3 @@
-// server/routes/uploadRoutes.js
 import express from "express";
 import multer from "multer";
 import cloudinary from "../config/cloudinary.js";
@@ -11,14 +10,13 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "zeroly",
-    format: async (req, file) => "jpg", // supports promises as well
+    format: async (req, file) => "jpg", 
     public_id: (req, file) => file.originalname,
   },
 });
 
 const parser = multer({ storage: storage });
 
-// This route will handle the upload and return the image URL
 router.post("/", protect, parser.single("image"), (req, res) => {
   res.status(201).json({
     message: "Image uploaded successfully",

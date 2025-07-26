@@ -1,7 +1,6 @@
 import Item from "../models/Item.js";
 
-// @desc    Get a single item by ID
-// @route   GET /api/items/:id
+
 export const getItemById = async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
@@ -16,9 +15,7 @@ export const getItemById = async (req, res) => {
   }
 };
 
-// @desc    Create a new item
-// @route   POST /api/items
-// @access  Private
+
 export const createItem = async (req, res) => {
   try {
     const { name, description, category, imageUrl, address } = req.body;
@@ -41,9 +38,7 @@ export const createItem = async (req, res) => {
   }
 };
 
-// @desc    Fetch all items (with search by keyword)
-// @route   GET /api/items
-// @access  Public
+
 export const getItems = async (req, res) => {
   try {
     const keyword = req.query.keyword
@@ -64,9 +59,7 @@ export const getItems = async (req, res) => {
   }
 };
 
-// @desc    Delete an item
-// @route   DELETE /api/items/:id
-// @access  Private
+
 
 export const deleteItem = async (req, res) => {
   try {
@@ -76,11 +69,9 @@ export const deleteItem = async (req, res) => {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    // Debug logs to check ownership
     console.log("Item Owner ID:", item.user.toString());
     console.log("Logged User ID:", req.user._id.toString());
 
-    // Check if the logged-in user is the owner
     if (item.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized to delete this item" });
     }
@@ -92,15 +83,6 @@ export const deleteItem = async (req, res) => {
   }
 };
 
-
-
-// -------------------------------
-// NEW: Review Controllers
-// -------------------------------
-
-// @desc    Get all reviews for a specific item
-// @route   GET /api/items/:id/reviews
-// @access  Public
 export const getItemReviews = async (req, res) => {
   try {
     const item = await Item.findById(req.params.id).select(
@@ -120,9 +102,6 @@ export const getItemReviews = async (req, res) => {
   }
 };
 
-// @desc    Add a review to a specific item
-// @route   POST /api/items/:id/reviews
-// @access  Private
 export const addItemReview = async (req, res) => {
   try {
     const { rating, comment } = req.body;
@@ -130,7 +109,6 @@ export const addItemReview = async (req, res) => {
 
     if (!item) return res.status(404).json({ message: "Item not found" });
 
-    // Prevent the owner from reviewing their own item
     if (item.user.toString() === req.user._id.toString()) {
       return res.status(400).json({ message: "You cannot review your own item" });
     }
@@ -151,7 +129,7 @@ export const addItemReview = async (req, res) => {
     };
 
     item.reviews.push(review);
-    item.calcRating(); // Update numReviews & averageRating
+    item.calcRating();
     await item.save();
 
     res.status(201).json({ message: "Review added", reviews: item.reviews });
