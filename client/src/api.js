@@ -1,13 +1,19 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // now points to Railway API
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true, // important for cookies / secure auth
 });
 
+// Intercept requests to attach token
 api.interceptors.request.use((config) => {
-  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "null");
-  if (userInfo?.token) {
-    config.headers.Authorization = `Bearer ${userInfo.token}`;
+  try {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    if (userInfo?.token) {
+      config.headers.Authorization = `Bearer ${userInfo.token}`;
+    }
+  } catch (err) {
+    console.error("Error parsing userInfo from localStorage", err);
   }
   return config;
 });
