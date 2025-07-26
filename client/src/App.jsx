@@ -1,6 +1,6 @@
 // client/src/App.jsx
 
-import React from 'react';
+import React from "react";
 import { Routes, Route } from "react-router-dom";
 
 // --- Import components ---
@@ -23,10 +23,10 @@ import ContactPage from "./pages/ContactPage"; // Ensure this file exists
 import LeaderboardPage from "./pages/LeaderboardPage"; // Ensure this file exists
 
 // --- Import Context Providers ---
-import { AuthProvider } from './context/AuthContext'; // AuthProvider is used in main.jsx, so it wraps the App component
-
+import { AuthProvider } from "./context/AuthContext"; // AuthProvider is used in main.jsx, so it wraps the App component
 
 function App() {
+  console.log("API Base URL:", import.meta.env.VITE_API_URL);
   return (
     // AuthProvider and BrowserRouter are in main.jsx, wrapping this App component
     // The div helps with sticky footer layout
@@ -45,8 +45,8 @@ function App() {
           <Route path="/item/:id" element={<ItemDetailsPage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/leaderboard" element={<LeaderboardPage />} /> {/* Added Leaderboard route */}
-
+          <Route path="/leaderboard" element={<LeaderboardPage />} />{" "}
+          {/* Added Leaderboard route */}
           {/* Protected Routes - Wrap routes that require authentication */}
           <Route element={<ProtectedRoute />}>
             <Route path="/upload" element={<UploadPage />} />
@@ -54,9 +54,15 @@ function App() {
             <Route path="/requests" element={<RequestsDashboard />} />
             <Route path="/chat/:chatId" element={<ChatPage />} />
           </Route>
-
           {/* Catch-all for 404 Not Found pages */}
-          <Route path="*" element={<h1 className="text-center text-3xl mt-20">404 - Page Not Found</h1>} />
+          <Route
+            path="*"
+            element={
+              <h1 className="text-center text-3xl mt-20">
+                404 - Page Not Found
+              </h1>
+            }
+          />
         </Routes>
       </main>
 
