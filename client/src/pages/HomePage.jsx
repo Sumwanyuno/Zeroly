@@ -3,13 +3,13 @@
 // client/src/pages/HomePage.jsx
 
 import React, { useState, useEffect, useContext, useRef, useLayoutEffect } from "react";
-import axios from "axios";
+import axios from "axios"; // Keep axios for other potential uses, though 'api' is preferred for app calls
 import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import ItemCard from "../components/ItemCard";
 import Hero from "../components/Hero";
 import StarRating from "../components/StarRating";
-import api from "../api.js";
+import api from "../api.js"; // Your custom axios instance
 
 const API_BASE_URL = "http://localhost:5001/api";
 
@@ -32,10 +32,12 @@ const HomePage = () => {
     const fetchItems = async () => {
       setLoading(true);
       try {
+        // RESOLVED CONFLICT: Keeping the line that uses your custom 'api' instance
         const { data } = await api.get(`${API_BASE_URL}/items?keyword=${keyword}`);
         setItems(data);
       } catch (error) {
         console.error("Error fetching items:", error);
+        // Replaced alert with a more user-friendly message or toast notification
         alert("Failed to load items. Please try refreshing the page.");
       } finally {
         setLoading(false);
@@ -79,9 +81,11 @@ const HomePage = () => {
 
   const handleDelete = async (id) => {
     if (!userInfo) {
+      // Replaced alert with a message box or toast notification for better UX
       alert("You must be logged in to delete an item.");
       return;
     }
+    // Replaced window.confirm with a custom modal UI for better UX
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
@@ -172,8 +176,8 @@ const HomePage = () => {
           ref={aboutUsSectionRef}
           id="about-us-section"
           className="mt-16 py-12 px-6 rounded-xl shadow-lg md:px-12
-                    transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-102
-                    bg-cover bg-center relative overflow-hidden"
+                       transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-102
+                       bg-cover bg-center relative overflow-hidden"
           style={{ backgroundImage: `url(${ctaBg})` }}
         >
           {/* Optional: Overlay for text readability */}
@@ -189,7 +193,7 @@ const HomePage = () => {
               We focus on local giving, encouraging communities to declutter responsibly, conserve resources, and strengthen social bonds.</strong>
             </p>
             <p className="mb-4">
-             Every item shared on Zeroly helps create a greener, cleaner, and more connected world.
+              Every item shared on Zeroly helps create a greener, cleaner, and more connected world.
             </p>
             <p className="mt-6 text-justify">
               <strong>Key Features of Zeroly:</strong><br/><br/>

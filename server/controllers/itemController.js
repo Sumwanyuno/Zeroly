@@ -254,7 +254,7 @@ export const deleteItem = async(req, res) => {
             return res.status(404).json({ message: "Item not found" });
         }
 
-        // Debug logs to check ownership
+        // Debug logs to check ownership (from enchance branch)
         console.log("Item Owner ID:", item.user.toString());
         console.log("Logged User ID:", req.user._id.toString());
 
@@ -278,7 +278,6 @@ export const deleteItem = async(req, res) => {
         res.status(500).json({ message: "Error deleting item", error: error.message });
     }
 };
-
 
 
 // -------------------------------
