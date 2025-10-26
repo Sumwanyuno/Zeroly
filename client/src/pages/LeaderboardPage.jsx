@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
 import api from "../api.js";
 
 const LeaderboardPage = () => {
@@ -7,8 +6,12 @@ const LeaderboardPage = () => {
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
-      const { data } = await api.get('/api/leaderboard');
-      setLeaders(res.data);
+      try {
+        const { data } = await api.get("/leaderboard");
+        setLeaders(data);
+      } catch (error) {
+        console.error("Error fetching leaderboard:", error);
+      }
     };
 
     fetchLeaderboard();
@@ -34,9 +37,9 @@ const LeaderboardPage = () => {
             <tbody>
               {leaders.map((user, index) => (
                 <tr
-                  key={user.username}
+                  key={user._id || `${user.username}-${index}`}
                   className={`hover:bg-green-100 transition-all duration-200 ${
-                    index % 2 === 0 ? 'bg-white' : 'bg-green-50'
+                    index % 2 === 0 ? "bg-white" : "bg-green-50"
                   }`}
                 >
                   <td className="py-4 px-6 font-semibold">{user.serial}</td>

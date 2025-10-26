@@ -1,16 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import Reviews from "../components/Reviews";
-import StarRating from "../components/StarRating"; 
-import api from "../api.js";
-
-
-
-
-const API_BASE_URL = "http://localhost:5001/api"; 
-
+import StarRating from "../components/StarRating";
+import api from "../api"; // using the configured Axios instance
 
 const ItemDetailsPage = () => {
   const [item, setItem] = useState(null);
@@ -22,8 +15,7 @@ const ItemDetailsPage = () => {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-       
-        const { data } = await api.get(`${API_BASE_URL}/items/${id}`); 
+        const { data } = await api.get(`/items/${id}`); // ✅ No need for base URL
         setItem(data);
       } catch (error) {
         console.error("Failed to fetch item details:", error);
@@ -37,33 +29,25 @@ const ItemDetailsPage = () => {
 
   const handleMessageOwner = async () => {
     if (!userInfo) return navigate("/login");
+
     try {
-      const { data } = await axios.post(
-        "/api/chat/start",
-        { itemId: item._id },
-        { headers: { Authorization: `Bearer ${userInfo.token}` } }
-      );
+      const { data } = await api.post("/chat/start", {
+        itemId: item._id,
+      }); // ✅ Uses api instance with token pre-attached
       navigate(`/chat/${data._id}`);
     } catch (e) {
       alert(e.response?.data?.message || "Failed to start chat");
     }
   };
 
-
   const handleRequest = async () => {
     if (!userInfo) {
       alert("Please log in to request an item.");
       return;
     }
+
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      };
-  
-      await axios.post(`${API_BASE_URL}/requests`, { itemId: item._id }, config);
+      await api.post("/requests", { itemId: item._id }); // ✅ Token is attached by interceptor
       alert("Request sent successfully!");
     } catch (error) {
       console.error("Failed to send request:", error);
@@ -83,15 +67,11 @@ const ItemDetailsPage = () => {
 
   const isOwner = userInfo && userInfo._id === item.user;
 
-  console.log("Item details:", item);
-  console.log("Logged-in user:", userInfo);
-
   return (
     <div className="bg-gray-50 py-12">
       <div className="container mx-auto px-6">
         <div className="bg-white p-8 rounded-lg shadow-md">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-           
             <div>
               <img
                 src={item.imageUrl}
@@ -100,7 +80,6 @@ const ItemDetailsPage = () => {
               />
             </div>
 
-           
             <div>
               <span className="inline-block bg-blue-100 text-blue-800 text-sm font-semibold mb-3 px-3 py-1 rounded-full">
                 {item.category}
@@ -108,7 +87,7 @@ const ItemDetailsPage = () => {
               <h1 className="text-4xl font-bold text-gray-800 mb-4">
                 {item.name}
               </h1>
-          
+
               <div className="mb-4 flex items-center gap-2">
                 <StarRating value={item.averageRating || 0} readOnly />
                 <span className="text-sm text-gray-600">
@@ -123,6 +102,7 @@ const ItemDetailsPage = () => {
                 </h3>
                 <p className="text-gray-600">{item.address}</p>
               </div>
+
               <div className="mt-8">
                 {userInfo && !isOwner && (
                   <>
@@ -133,7 +113,6 @@ const ItemDetailsPage = () => {
                       Request This Item
                     </button>
 
-            
                     <button
                       onClick={handleMessageOwner}
                       className="w-full py-3 px-6 mt-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
@@ -148,6 +127,7 @@ const ItemDetailsPage = () => {
                     You are the owner of this item.
                   </p>
                 )}
+
                 {!userInfo && (
                   <p className="mt-4 p-3 bg-yellow-100 text-yellow-800 text-center rounded-md">
                     <Link to="/login" className="font-semibold hover:underline">
@@ -159,7 +139,7 @@ const ItemDetailsPage = () => {
               </div>
             </div>
           </div>
-         
+
           <div className="mt-10">
             <Reviews itemId={item._id} ownerId={item.user} />
           </div>

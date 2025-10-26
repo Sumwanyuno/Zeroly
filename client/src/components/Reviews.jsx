@@ -1,11 +1,9 @@
-
-
 // client/src/components/Reviews.js
 
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { AuthContext } from "../context/AuthContext"; 
-import StarRating from "./StarRating"; 
+import { AuthContext } from "../context/AuthContext";
+import StarRating from "./StarRating";
 
 const Reviews = ({ itemId, ownerId }) => {
   const { userInfo } = useContext(AuthContext) ?? {};
@@ -14,12 +12,11 @@ const Reviews = ({ itemId, ownerId }) => {
   const [comment, setComment] = useState("");
   const [avg, setAvg] = useState(0);
 
-  
   const api = axios.create({
-    baseURL: "http://localhost:5001/api",
+    baseURL: import.meta.env.VITE_API_URL || "http://localhost:5001/api",
   });
 
-  const isOwner = userInfo?._id === ownerId; 
+  const isOwner = userInfo?._id === ownerId;
 
   const fetchReviews = async () => {
     try {
@@ -27,7 +24,10 @@ const Reviews = ({ itemId, ownerId }) => {
       setReviews(data.reviews || []);
       setAvg(data.averageRating || 0);
     } catch (err) {
-      console.error("Failed to fetch reviews:", err.response?.data?.message || err.message);
+      console.error(
+        "Failed to fetch reviews:",
+        err.response?.data?.message || err.message
+      );
       setReviews([]);
       setAvg(0);
     }
@@ -42,13 +42,12 @@ const Reviews = ({ itemId, ownerId }) => {
   const submitReview = async (e) => {
     e.preventDefault();
     if (!rating || !comment) {
-     
       alert("Please add both a rating and a comment to submit your review.");
       return;
     }
     if (!userInfo || !userInfo.token) {
-        alert("You must be logged in to submit a review.");
-        return;
+      alert("You must be logged in to submit a review.");
+      return;
     }
 
     try {
@@ -61,30 +60,44 @@ const Reviews = ({ itemId, ownerId }) => {
       setComment("");
       fetchReviews();
     } catch (err) {
-      console.error("Review submission failed:", err.response?.data || err.message);
-      alert(err.response?.data?.message || "Failed to submit review. Please try again.");
+      console.error(
+        "Review submission failed:",
+        err.response?.data || err.message
+      );
+      alert(
+        err.response?.data?.message ||
+          "Failed to submit review. Please try again."
+      );
     }
   };
 
   const handleReviewDelete = async (reviewId) => {
-    
-    if (!window.confirm("Are you sure you want to delete this review? This action cannot be undone.")) {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this review? This action cannot be undone."
+      )
+    ) {
       return;
     }
     if (!userInfo || !userInfo.token) {
-        alert("You must be logged in to delete a review.");
-        return;
+      alert("You must be logged in to delete a review.");
+      return;
     }
 
     try {
-      await api.delete(
-        `/items/${itemId}/reviews/${reviewId}`,
-        { headers: { Authorization: `Bearer ${userInfo.token}` } }
-      );
-      fetchReviews(); 
+      await api.delete(`/items/${itemId}/reviews/${reviewId}`, {
+        headers: { Authorization: `Bearer ${userInfo.token}` },
+      });
+      fetchReviews();
     } catch (err) {
-      console.error("Review deletion failed:", err.response?.data || err.message);
-      alert(err.response?.data?.message || "Failed to delete review. Please try again.");
+      console.error(
+        "Review deletion failed:",
+        err.response?.data || err.message
+      );
+      alert(
+        err.response?.data?.message ||
+          "Failed to delete review. Please try again."
+      );
     }
   };
 
@@ -104,15 +117,16 @@ const Reviews = ({ itemId, ownerId }) => {
             <div className="flex items-center gap-2">
               <StarRating value={r.rating} readOnly />
               {/* ---  Conditional Delete Button Logic --- */}
-              {userInfo && (isOwner || (r.user && userInfo._id === r.user.toString())) && (
-                <button
-                  onClick={() => handleReviewDelete(r._id)}
-                  className="text-red-600 hover:text-red-800 text-sm font-medium ml-2"
-                  title="Delete Review"
-                >
-                  Delete
-                </button>
-              )}
+              {userInfo &&
+                (isOwner || (r.user && userInfo._id === r.user.toString())) && (
+                  <button
+                    onClick={() => handleReviewDelete(r._id)}
+                    className="text-red-600 hover:text-red-800 text-sm font-medium ml-2"
+                    title="Delete Review"
+                  >
+                    Delete
+                  </button>
+                )}
             </div>
           </div>
           <p className="text-gray-700 mt-1">{r.comment}</p>
@@ -125,10 +139,13 @@ const Reviews = ({ itemId, ownerId }) => {
             You cannot review your own item.
           </p>
         ) : (
-          <form onSubmit={submitReview} className="mt-4 p-4 border rounded bg-white shadow-sm">
+          <form
+            onSubmit={submitReview}
+            className="mt-4 p-4 border rounded bg-white shadow-sm"
+          >
             <h4 className="font-semibold mb-3">Submit Your Review</h4>
             <div className="mb-3">
-                <StarRating value={rating} onChange={setRating} />
+              <StarRating value={rating} onChange={setRating} />
             </div>
             <textarea
               value={comment}

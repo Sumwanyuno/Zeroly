@@ -1,23 +1,25 @@
-
-
 // client/src/components/Header.jsx
 
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import logo from "../assets/Zerolylogo.png";
 import NotificationBtn from "./NotificationBtn";
+import ChatModal from "./ChatModal";
 
 const Header = () => {
   const { userInfo, logout } = useContext(AuthContext) ?? {};
   const navigate = useNavigate();
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const handleLogout = () => {
     if (typeof logout === "function") {
       logout();
       navigate("/login");
     } else {
-      console.warn("Logout function not found in AuthContext or not a function.");
+      console.warn(
+        "Logout function not found in AuthContext or not a function."
+      );
       navigate("/login");
     }
   };
@@ -34,142 +36,147 @@ const Header = () => {
   const navLinkActiveUnderline = "border-b-2 border-green-700 pb-1";
 
   return (
-    <header className="bg-white shadow-md py-4 px-4 md:px-8 sticky top-0 z-50 font-sans">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link to="/">
-          <img src={logo} alt="Zeroly Logo" className="h-10" />
-        </Link>
+    <>
+      <header className="bg-white shadow-md py-4 px-4 md:px-8 sticky top-0 z-50 font-sans">
+        <div className="container mx-auto flex justify-between items-center">
+          <Link to="/">
+            <img src={logo} alt="Zeroly Logo" className="h-10" />
+          </Link>
 
-        <nav className="hidden md:flex items-center space-x-8">
-       
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              `${baseLinkClasses} ${navLinkColors} ${
-                isActive ? navLinkActiveUnderline : ""
-              }`
-            }
-          >
-            Home
-            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
-          </NavLink>
-
-          
-          {userInfo && (
+          <nav className="hidden md:flex items-center space-x-8">
             <NavLink
-              to="/leaderboard"
+              to="/"
               className={({ isActive }) =>
                 `${baseLinkClasses} ${navLinkColors} ${
                   isActive ? navLinkActiveUnderline : ""
                 }`
               }
             >
-              Leaderboard
+              Home
               <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
             </NavLink>
-          )}
 
-          
-          <Link
-            to="/#about-us-section"
-            className={`${baseLinkClasses} ${navLinkColors}`}
-            onClick={(e) => {
-              e.preventDefault(); 
-              const section = document.querySelector("#about-us-section");
-              if (section) {
-                section.scrollIntoView({ behavior: "smooth" });
-              } else {
-                navigate("/#about-us-section");
-              }
-            }}
-          >
-            About
-            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
-          </Link>
-
-         
-          <NavLink
-            to="/faq"
-            className={({ isActive }) =>
-              `${baseLinkClasses} ${navLinkColors} ${
-                isActive ? navLinkActiveUnderline : ""
-              }`
-            }
-          >
-            FAQ
-            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
-          </NavLink>
-
-         
-          <NavLink
-            to="/contact"
-            className={({ isActive }) =>
-              `${baseLinkClasses} ${navLinkColors} ${
-                isActive ? navLinkActiveUnderline : ""
-              }`
-            }
-          >
-            Contact
-            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
-          </NavLink>
-        </nav>
-
-      
-        <div className="flex items-center space-x-3 md:space-x-4">
-          {userInfo ? (
-            <>
-              <NotificationBtn />
-              <Link
-                to="/requests"
-                className="font-semibold text-gray-700 hover:text-blue-500"
+            {userInfo && (
+              <NavLink
+                to="/leaderboard"
+                className={({ isActive }) =>
+                  `${baseLinkClasses} ${navLinkColors} ${
+                    isActive ? navLinkActiveUnderline : ""
+                  }`
+                }
               >
-                My Requests
-              </Link>
+                Leaderboard
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+              </NavLink>
+            )}
 
-              <Link
-                to="/profile"
-                className="font-semibold text-green-700 hover:text-green-900 transition duration-200 text-lg hidden sm:inline"
-              >
-                Hello, {userInfo.name || "User"}!
-              </Link>
-
-              <button onClick={handleLogout} className={redButtonClasses}>
-                Logout
-              </button>
-            </>
-          ) : (
-            <div className="flex items-center space-x-3 md:space-x-4">
-              <Link to="/login" className={primaryButtonClasses}>
-                Login
-              </Link>
-              <Link to="/register" className={secondaryButtonClasses}>
-                Register
-              </Link>
-            </div>
-          )}
-        </div>
-
-        
-        <div className="md:hidden">
-          <button className="text-green-700 hover:text-green-900 focus:outline-none p-2">
-            <svg
-              className="w-8 h-8"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+            <Link
+              to="/#about-us-section"
+              className={`${baseLinkClasses} ${navLinkColors}`}
+              onClick={(e) => {
+                e.preventDefault();
+                const section = document.querySelector("#about-us-section");
+                if (section) {
+                  section.scrollIntoView({ behavior: "smooth" });
+                } else {
+                  navigate("/#about-us-section");
+                }
+              }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              ></path>
-            </svg>
-          </button>
+              About
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+            </Link>
+
+            <NavLink
+              to="/faq"
+              className={({ isActive }) =>
+                `${baseLinkClasses} ${navLinkColors} ${
+                  isActive ? navLinkActiveUnderline : ""
+                }`
+              }
+            >
+              FAQ
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+            </NavLink>
+
+            <NavLink
+              to="/contact"
+              className={({ isActive }) =>
+                `${baseLinkClasses} ${navLinkColors} ${
+                  isActive ? navLinkActiveUnderline : ""
+                }`
+              }
+            >
+              Contact
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+            </NavLink>
+          </nav>
+
+          <div className="flex items-center space-x-3 md:space-x-4">
+            {userInfo ? (
+              <>
+                <NotificationBtn />
+                <Link
+                  to="/requests"
+                  className="font-semibold text-gray-700 hover:text-blue-500"
+                >
+                  My Requests
+                </Link>
+
+                <Link
+                  to="/profile"
+                  className="font-semibold text-green-700 hover:text-green-900 transition duration-200 text-lg hidden sm:inline"
+                >
+                  Hello, {userInfo.name || "User"}!
+                </Link>
+
+                <button onClick={handleLogout} className={redButtonClasses}>
+                  Logout
+                </button>
+
+                <button
+                  onClick={() => setIsChatOpen(true)}
+                  className="ml-2 text-sm bg-emerald-600 text-white px-4 py-2 rounded-full shadow hover:bg-emerald-700 transition"
+                >
+                  Chat
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center space-x-3 md:space-x-4">
+                <Link to="/login" className={primaryButtonClasses}>
+                  Login
+                </Link>
+                <Link to="/register" className={secondaryButtonClasses}>
+                  Register
+                </Link>
+              </div>
+            )}
+          </div>
+
+          <div className="md:hidden">
+            <button className="text-green-700 hover:text-green-900 focus:outline-none p-2">
+              <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                ></path>
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Chat Modal */}
+      <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+    </>
   );
 };
 

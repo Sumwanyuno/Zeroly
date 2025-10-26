@@ -1,115 +1,119 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
+import api from "../api";
 import { useParams } from "react-router-dom";
-import axios from "axios";
-import { AuthContext } from "../context/AuthContext";
-import { useSocket } from "../context/SocketContext";
-import api from "../api.js";
+import { AuthContext } from "../context/AuthContext"; // Make sure path is correct
+import { useContext } from "react";
 
 const ChatPage = () => {
   const { chatId } = useParams();
   const { userInfo } = useContext(AuthContext);
-  const socket = useSocket();
 
   const [messages, setMessages] = useState([]);
-  const [text, setText] = useState("");
+  const [error, setError] = useState(null);
+  const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  
   useEffect(() => {
-    const fetchMsgs = async () => {
+    const fetchMessages = async () => {
       try {
-        const { data } = await api.get(`/api/chat/${chatId}/messages`, {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        });
+        if (!chatId || !userInfo?.token) {
+          console.warn("Missing chatId or user token");
+          return;
+        }
+
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/api/chat/${chatId}/messages`,
+          {
+            headers: {
+              Authorization: `Bearer ${userInfo.token}`,
+            },
+          }
+        );
+
         setMessages(data);
-        console.log("Fetched messages:", data);
-      } catch (error) {
-        console.error("Failed to fetch chat messages:", error);
-      }
-    };
-    fetchMsgs();
-  }, [chatId, userInfo.token]);
-
-  
-  useEffect(() => {
-    if (!socket) return;
-
-    console.log("Joining room:", chatId);
-    socket.emit("joinRoom", chatId);
-
-    const handler = (msg) => {
-      console.log("Received new message:", msg);
-      if (msg.chatId === chatId) {
-        setMessages((prev) => [...prev, msg]);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError("Failed to fetch messages");
       }
     };
 
-    socket.on("new-message", handler);
-    return () => socket.off("new-message", handler);
-  }, [socket, chatId]);
+    fetchMessages();
+  }, [chatId, userInfo]);
 
-  
-  const send = async (e) => {
-    e.preventDefault();
-    if (!text.trim()) return;
+  const sendMessage = async () => {
+    if (!newMessage.trim()) return;
 
     try {
-      
+      setLoading(true);
       const { data } = await axios.post(
-        `/api/chat/${chatId}/messages`,
-        { text },
-        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+        `${import.meta.env.VITE_API_BASE_URL}/api/chat/${chatId}/messages`,
+        {
+          content: newMessage,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
       );
 
-      console.log("Message saved to DB:", data);
-
-    
-      socket?.emit("send-message", {
-        roomId: chatId, 
-        chatId,
-        text: data.text,
-        sender: userInfo._id,
-        createdAt: data.createdAt,
-      });
-
-      setMessages((prev) => [...prev, data]); 
-      setText("");
-    } catch (error) {
-      console.error("Failed to send message:", error);
-      alert("Message failed to send. Check server logs.");
+      setMessages((prev) => [...prev, data]);
+      setNewMessage("");
+    } catch (err) {
+      console.error("Failed to send message:", err);
+      setError("Failed to send message");
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (!userInfo) {
+    return (
+      <div className="p-6 text-red-600 font-semibold">
+        Please log in to view this chat.
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <div className="border p-4 h-96 overflow-y-auto mb-4 bg-white">
-        {messages.length === 0 && (
-          <p className="text-gray-500 text-center">No messages yet.</p>
+    <div className="p-6 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Chat</h1>
+
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+
+      <div className="mb-4 space-y-3">
+        {messages.length === 0 ? (
+          <p className="text-gray-500">No messages yet.</p>
+        ) : (
+          messages.map((msg) => (
+            <div
+              key={msg._id}
+              className="bg-gray-100 rounded p-3 shadow-sm text-sm"
+            >
+              <p className="font-semibold">{msg.sender?.name || "Unknown"}:</p>
+              <p>{msg.content}</p>
+            </div>
+          ))
         )}
-        {messages.map((m) => (
-          <div key={m._id || Math.random()} className="mb-2">
-            <strong>
-              {m.sender?.name || (m.sender === userInfo._id ? "You" : "Other")}:
-            </strong>{" "}
-            {m.text}
-          </div>
-        ))}
       </div>
 
-      <form onSubmit={send} className="flex gap-2">
+      <div className="flex gap-2 mt-6">
         <input
-          className="flex-1 border rounded p-2"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Type a message"
+          type="text"
+          className="flex-grow border rounded p-2"
+          placeholder="Type your message..."
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
         <button
-          type="submit"
-          className="bg-blue-600 text-white rounded px-4 hover:bg-blue-700"
+          className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+          onClick={sendMessage}
+          disabled={loading}
         >
-          Send
+          {loading ? "Sending..." : "Send"}
         </button>
-      </form>
+      </div>
     </div>
   );
 };

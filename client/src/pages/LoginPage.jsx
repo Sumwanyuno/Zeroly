@@ -1,11 +1,7 @@
 import React, { useState, useContext } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-
-
-
-const API_BASE_URL = "http://localhost:5001/api"; 
+import api from "../api"; // ✅ use centralized Axios instance
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -17,11 +13,7 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      
-      const { data } = await axios.post(`${API_BASE_URL}/users/login`, { 
-        email,
-        password,
-      });
+      const { data } = await api.post("/users/login", { email, password });
 
       if (typeof login === "function") {
         login(data);
@@ -34,11 +26,7 @@ const LoginPage = () => {
     } catch (error) {
       console.error("Login failed:", error);
       let errorMessage = "Login failed. Please check your credentials.";
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       }
       alert(errorMessage);

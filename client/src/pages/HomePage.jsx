@@ -1,21 +1,16 @@
-
-
-// client/src/pages/HomePage.jsx
-
-import React, { useState, useEffect, useContext, useRef, useLayoutEffect } from "react";
-import axios from "axios"; 
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useLayoutEffect,
+} from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import ItemCard from "../components/ItemCard";
 import Hero from "../components/Hero";
-import StarRating from "../components/StarRating";
 import api from "../api.js";
-
-const API_BASE_URL = "http://localhost:5001/api";
-
-
 import ctaBg from "../assets/img/cta-bg.jpg";
-
 
 const HomePage = () => {
   const [items, setItems] = useState([]);
@@ -27,17 +22,14 @@ const HomePage = () => {
   const heroSectionRef = useRef(null);
   const aboutUsSectionRef = useRef(null);
 
-
   useEffect(() => {
     const fetchItems = async () => {
       setLoading(true);
       try {
-        
-        const { data } = await api.get(`${API_BASE_URL}/items?keyword=${keyword}`);
+        const { data } = await api.get(`/items?keyword=${keyword}`);
         setItems(data);
       } catch (error) {
         console.error("Error fetching items:", error);
-        
         alert("Failed to load items. Please try refreshing the page.");
       } finally {
         setLoading(false);
@@ -47,58 +39,42 @@ const HomePage = () => {
   }, [keyword]);
 
   useLayoutEffect(() => {
-    console.log("HomePage useLayoutEffect triggered. Location hash:", location.hash);
     if (location.hash) {
       const id = location.hash.substring(1);
-
-      let elementToScroll = null;
-      if (id === 'hero-section' && heroSectionRef.current) {
-        elementToScroll = heroSectionRef.current;
-        console.log("Found heroSectionRef:", elementToScroll);
-      } else if (id === 'about-us-section' && aboutUsSectionRef.current) {
-        elementToScroll = aboutUsSectionRef.current;
-        console.log("Found aboutUsSectionRef:", elementToScroll);
-      } else {
-        elementToScroll = document.getElementById(id);
-        console.log(`Fallback: Found element by ID "${id}":`, elementToScroll);
-      }
+      const elementToScroll =
+        id === "hero-section"
+          ? heroSectionRef.current
+          : id === "about-us-section"
+          ? aboutUsSectionRef.current
+          : document.getElementById(id);
 
       if (elementToScroll) {
-        elementToScroll.scrollIntoView({ behavior: 'smooth' });
-        console.log(`Scrolled to element with ID/Ref: "${id}"`);
-      } else {
-        console.log(`Element with ID/Ref "${id}" NOT found.`);
+        elementToScroll.scrollIntoView({ behavior: "smooth" });
       }
-    } else {
-      console.log("No hash in URL.");
     }
   }, [location]);
-
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
   };
 
   const handleDelete = async (id) => {
-    if (!userInfo) {
-      
+    if (!userInfo?._id) {
       alert("You must be logged in to delete an item.");
       return;
     }
-   
+
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      const config = {
-        headers: { Authorization: `Bearer ${userInfo.token}` },
-      };
-      await axios.delete(`${API_BASE_URL}/items/${id}`, config);
+      await api.delete(`/items/${id}`);
       setItems((prev) => prev.filter((item) => item._id !== id));
       alert("Item deleted successfully!");
     } catch (error) {
       console.error("Error deleting item:", error);
       alert(
-        error.response?.data?.message || "You are not authorized to delete this item."
+        error.response?.data?.message ||
+          "You are not authorized to delete this item."
       );
     }
   };
@@ -164,48 +140,29 @@ const HomePage = () => {
               <ItemCard
                 key={item._id}
                 item={item}
-                userId={userInfo?._id}
+                userId={userInfo?._id || ""}
                 onDelete={handleDelete}
               />
             ))}
           </div>
         )}
 
-        {/* About Us Section  */}
+        {/* About Us Section */}
         <div
           ref={aboutUsSectionRef}
           id="about-us-section"
-          className="mt-16 py-12 px-6 rounded-xl shadow-lg md:px-12
-                       transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-102
-                       bg-cover bg-center relative overflow-hidden"
+          className="mt-16 py-12 px-6 rounded-xl shadow-lg md:px-12 bg-cover bg-center relative overflow-hidden"
           style={{ backgroundImage: `url(${ctaBg})` }}
         >
-        
           <div className="absolute inset-0 bg-black opacity-50 z-0 rounded-xl"></div>
-
-          
-          <h2 className="text-3xl md:text-4xl font-extrabold text-green-400 text-center mb-6 relative z-10 drop-shadow-lg"> 
+          <h2 className="text-3xl md:text-4xl font-extrabold text-green-400 text-center mb-6 relative z-10 drop-shadow-lg">
             About Zeroly
           </h2>
           <div className="text-white leading-relaxed text-lg text-justify relative z-10">
             <p className="mb-4">
-              <strong>Zeroly is a sustainable sharing platform that connects people who want to donate unused items with those who need them. Our goal is to reduce waste, promote reuse, and support a circular economy.
-              We focus on local giving, encouraging communities to declutter responsibly, conserve resources, and strengthen social bonds.</strong>
+              <strong>Zeroly is a sustainable sharing platform...</strong>
             </p>
-            <p className="mb-4">
-              Every item shared on Zeroly helps create a greener, cleaner, and more connected world.
-            </p>
-            <p className="mt-6 text-justify">
-              <strong>Key Features of Zeroly:</strong><br/><br/>
-              <strong>• Item Listing:</strong><br/>
-              - List items you want to donate or view available listings from others in your area.<br/>
-              <strong>• Buy or Request:</strong><br/>
-              - Express interest in items or request to receive them directly through the platform.<br/>
-              <strong>• Messaging & Reviews:</strong><br/>
-              - Contact item owners via in-app messaging or leave reviews after an exchange.<br/>
-              <strong>🏆 Leaderboard:</strong><br/>
-              - A dynamic leaderboard highlights top contributors—those who donate or receive the most, encouraging active participation.
-            </p>
+            {/* You can add more about text here */}
           </div>
           <div className="text-center mt-8 relative z-10">
             <Link
@@ -216,7 +173,6 @@ const HomePage = () => {
             </Link>
           </div>
         </div>
-      
       </div>
     </div>
   );

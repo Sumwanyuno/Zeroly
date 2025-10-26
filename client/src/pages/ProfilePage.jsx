@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import ItemCard from "../components/ItemCard";
-import api from "../api.js";
-
-
-
-const API_BASE_URL = "http://localhost:5001/api"; 
+import api from "../api";
 
 const ProfilePage = () => {
   const { userInfo } = useContext(AuthContext);
@@ -15,18 +10,13 @@ const ProfilePage = () => {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      if (!userInfo) {
+      if (!userInfo?.token) {
         setLoading(false);
         return;
       }
+
       try {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-        };
-       
-        const { data } = await api.get(`${API_BASE_URL}/users/profile`, config); 
+        const { data } = await api.get("/users/profile");
         setUserProfile(data);
       } catch (error) {
         console.error("Failed to fetch user profile:", error);
@@ -39,27 +29,28 @@ const ProfilePage = () => {
   }, [userInfo]);
 
   const handleDelete = async (deletedItemId) => {
-    if (!userInfo) {
+    if (!userInfo?.token) {
       alert("You must be logged in to delete an item.");
       return;
     }
-    if (!window.confirm("Are you sure you want to delete this item?")) return;
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this item?"
+    );
+    if (!confirmDelete) return;
 
     try {
-      const config = {
-        headers: { Authorization: `Bearer ${userInfo.token}` },
-      };
-     
-      await axios.delete(`${API_BASE_URL}/items/${deletedItemId}`, config);
-      setUserProfile((prevProfile) => ({
-        ...prevProfile,
-        items: prevProfile.items.filter((item) => item._id !== deletedItemId),
+      await api.delete(`/items/${deletedItemId}`);
+      setUserProfile((prev) => ({
+        ...prev,
+        items: prev.items.filter((item) => item._id !== deletedItemId),
       }));
       alert("Item deleted successfully!");
     } catch (error) {
       console.error("Error deleting item:", error);
       alert(
-        error.response?.data?.message || "You are not authorized to delete this item."
+        error.response?.data?.message ||
+          "Failed to delete item. Please try again."
       );
     }
   };
@@ -87,14 +78,19 @@ const ProfilePage = () => {
         <h2 className="text-2xl font-bold mb-6 text-gray-800">
           Your Listed Items
         </h2>
-        {userProfile.items.length === 0 ? (
+        {userProfile.items?.length === 0 ? (
           <p className="text-center text-gray-500">
             You have not listed any items yet.
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {userProfile.items.map((item) => (
-              <ItemCard key={item._id} item={item} onDelete={handleDelete} userId={userInfo?._id} />
+              <ItemCard
+                key={item._id}
+                item={item}
+                onDelete={handleDelete}
+                userId={userInfo._id}
+              />
             ))}
           </div>
         )}
