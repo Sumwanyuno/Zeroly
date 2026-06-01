@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop"; 
 import { Toaster } from "@/components/ui/sonner";
+import BackToTop from "./components/BackToTop";
 
 import HomePage from "./pages/HomePage";
 import ExplorePage from "./pages/ExplorePage";
@@ -72,6 +73,7 @@ function App() {
 
       <Footer />
       <Toaster />
+      <BackToTop />
     </div>
   );
 }
