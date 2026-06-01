@@ -7,6 +7,8 @@ import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import logger from './utils/logger.js';
+import jwt from 'jsonwebtoken';
+import Chat from './models/Chat.js';
 
 import itemRoutes from './routes/items.js';
 import userRoutes from './routes/users.js';
@@ -89,18 +91,43 @@ const getValidatedRoomId = (payload) => {
     return roomId;
 };
 
+io.use((socket, next) => {
+    try {
+        const token = socket.handshake.auth?.token;
+        if (!token) return next(new Error('Authentication error: No token provided'));
+        
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        socket.userId = decoded.id;
+        next();
+    } catch (err) {
+        next(new Error('Authentication error: Invalid token'));
+    }
+});
+
 io.on('connection', (socket) => {
     logger.debug('User connected: %s', socket.id);
 
-    socket.on('joinRoom', (roomId) => {
+    socket.on('joinRoom', async (roomId) => {
         const validatedRoomId = getValidatedRoomId(roomId);
         if (!validatedRoomId) {
             logger.warn({ socketId: socket.id }, 'Rejected socket room join with invalid room id');
             return;
         }
 
-        socket.join(validatedRoomId);
-        logger.debug({ socketId: socket.id, roomId: validatedRoomId }, 'Socket joined chat room');
+        try {
+            const chat = await Chat.findById(validatedRoomId);
+            if (!chat) return;
+
+            const isParticipant = chat.participants.some(p => p.toString() === socket.userId);
+            if (isParticipant) {
+                socket.join(validatedRoomId);
+                logger.debug({ socketId: socket.id, roomId: validatedRoomId }, 'Socket joined chat room');
+            } else {
+                logger.warn(`Unauthorized room join attempt by user ${socket.userId} for room ${validatedRoomId}`);
+            }
+        } catch (err) {
+            logger.error({ err }, 'Error joining room');
+        }
     });
 
     socket.on('send-message', (data = {}) => {
