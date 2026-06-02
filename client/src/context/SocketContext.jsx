@@ -8,14 +8,11 @@ export const useSocket = () => useContext(SocketContext);
 
 export const SocketProvider = ({ children }) => {
   const { userInfo } = useContext(AuthContext);
+  const socket = io((import.meta.env.VITE_SOCKET_URL, {
+  auth: { token: userInfo?.token },
+})
 
-  const socket = useMemo(() => {
-    if (!userInfo?.token) return null;
-    return io("http://localhost:5001", {
-      transports: ["websocket"],
-      auth: { token: userInfo.token }, // <-- IMPORTANT
-    });
-  }, [userInfo?.token]);
+   [userInfo?.token]);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>

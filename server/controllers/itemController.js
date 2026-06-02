@@ -1,7 +1,12 @@
-import Item from "../models/Item.js";
+// server/controllers/itemController.js
 
-// @desc    Get a single item by ID
-// @route   GET /api/items/:id
+import Item from "../models/Item.js";
+import User from "../models/User.js";
+import Wishlist from "../models/Wishlist.js";
+import logger from "../utils/logger.js";
+import { sendWishlistMatchEmail } from "../services/emailService.js";
+
+
 export const getItemById = async(req, res) => {
     try {
         const item = await Item.findById(req.params.id);
@@ -12,16 +17,15 @@ export const getItemById = async(req, res) => {
             res.status(404).json({ message: "Item not found" });
         }
     } catch (error) {
+        logger.error({ err: error }, 'Failed to fetch item by ID');
         res.status(500).json({ message: "Server Error" });
     }
 };
 
-// @desc    Create a new item
-// @route   POST /api/items
-// @access  Private
+
 export const createItem = async(req, res) => {
     try {
-        const { name, description, category, imageUrl, address } = req.body;
+        const { name, description, category, imageUrl, address, location, ecoSeeds } = req.body;
 
         const item = new Item({
             name,
@@ -29,42 +33,104 @@ export const createItem = async(req, res) => {
             category,
             imageUrl,
             address,
+            ecoSeeds: ecoSeeds || 10,
+            location: location ? { type: 'Point', coordinates: location } : undefined,
             user: req.user._id,
         });
 
         const createdItem = await item.save();
+
+
+        const user = await User.findById(req.user._id);
+        if (user) {
+            user.itemCount += 1;
+            await user.save();
+        }
+
         res.status(201).json(createdItem);
+
+        // Background task: Check wishlists for matches
+        process.nextTick(async () => {
+            try {
+                // Find all active wishlists except the creator's
+                const activeWishlists = await Wishlist.find({ 
+                    isActive: true, 
+                    user: { $ne: req.user._id } 
+                }).populate('user', 'email name');
+
+                const textToMatch = `${createdItem.name} ${createdItem.description} ${createdItem.category}`.toLowerCase();
+
+                activeWishlists.forEach(wishlist => {
+                    const hasMatch = wishlist.keywords.some(kw => textToMatch.includes(kw));
+                    if (hasMatch && wishlist.user && wishlist.user.email) {
+                        const itemUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/item/${createdItem._id}`;
+                        sendWishlistMatchEmail(wishlist.user.email, wishlist.user.name, createdItem.name, itemUrl);
+                    }
+                });
+            } catch (err) {
+                logger.error({ err }, 'Failed to process wishlist matches for item %s', createdItem._id);
+            }
+        });
+
     } catch (error) {
-        res
-            .status(500)
-            .json({ message: "Error creating item", error: error.message });
+        logger.error({ err: error }, 'Failed to create item');
+        res.status(500).json({ message: "Error creating item", error: error.message });
     }
 };
 
-// @desc    Fetch all items (with search by keyword)
-// @route   GET /api/items
-// @access  Public
+
 export const getItems = async(req, res) => {
     try {
-        const keyword = req.query.keyword ? {
-            $or: [
-                { name: { $regex: req.query.keyword, $options: "i" } },
-                { category: { $regex: req.query.keyword, $options: "i" } },
-            ],
-        } : {};
+        const { keyword, category, lat, lng, radius, page = 1 } = req.query;
+        let query = { status: { $in: ['available', null] } };
 
-        const items = await Item.find({...keyword }).sort({ createdAt: -1 });
-        res.json(items);
+        if (keyword) {
+            query.$or = [
+                { name: { $regex: keyword, $options: "i" } },
+                { category: { $regex: keyword, $options: "i" } },
+            ];
+        }
+
+        if (category) {
+            query.category = category;
+        }
+
+        if (lat && lng && radius) {
+            query.location = {
+                $near: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: [parseFloat(lng), parseFloat(lat)]
+                    },
+                    $maxDistance: parseFloat(radius) * 1000 // Convert km to meters
+                }
+            };
+        }
+
+        const pageSize = 12;
+        const pageNum = Number(page) || 1;
+
+        const total = await Item.countDocuments(query);
+        const items = await Item.find(query)
+            .sort({ createdAt: -1 })
+            .skip(pageSize * (pageNum - 1))
+            .limit(pageSize);
+
+        res.json({
+            items,
+            page: pageNum,
+            pages: Math.ceil(total / pageSize),
+            total
+        });
     } catch (error) {
+        logger.error({ err: error }, 'Failed to fetch items');
         res
             .status(500)
             .json({ message: "Error fetching items", error: error.message });
     }
 };
 
-// @desc    Delete an item
-// @route   DELETE /api/items/:id
-// @access  Private
+
 
 export const deleteItem = async(req, res) => {
     try {
@@ -74,31 +140,32 @@ export const deleteItem = async(req, res) => {
             return res.status(404).json({ message: "Item not found" });
         }
 
-        // Debug logs to check ownership
-        console.log("Item Owner ID:", item.user.toString());
-        console.log("Logged User ID:", req.user._id.toString());
 
         // Check if the logged-in user is the owner
         if (!item.user || item.user.toString() !== req.user._id.toString()) {
+        logger.debug('Delete authorization check — item owner: %s, requester: %s', item.user.toString(), req.user._id.toString());
+
+        if (item.user.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: "Not authorized to delete this item" });
+        }
+
+
+        const user = await User.findById(item.user);
+        if (user) {
+            user.itemCount = Math.max(0, user.itemCount - 1);
+            await user.save();
         }
 
         await item.deleteOne();
         res.json({ message: "Item removed successfully" });
     } catch (error) {
+        logger.error({ err: error }, 'Failed to delete item');
         res.status(500).json({ message: "Error deleting item", error: error.message });
     }
 };
 
 
 
-// -------------------------------
-// NEW: Review Controllers
-// -------------------------------
-
-// @desc    Get all reviews for a specific item
-// @route   GET /api/items/:id/reviews
-// @access  Public
 export const getItemReviews = async(req, res) => {
     try {
         const item = await Item.findById(req.params.id).select(
@@ -113,14 +180,12 @@ export const getItemReviews = async(req, res) => {
             averageRating: item.averageRating,
         });
     } catch (error) {
-        console.error("Error fetching reviews:", error);
+        logger.error({ err: error }, 'Failed to fetch reviews');
         res.status(500).json({ message: "Failed to fetch reviews" });
     }
 };
 
-// @desc    Add a review to a specific item
-// @route   POST /api/items/:id/reviews
-// @access  Private
+
 export const addItemReview = async(req, res) => {
     try {
         const { rating, comment } = req.body;
@@ -128,10 +193,11 @@ export const addItemReview = async(req, res) => {
 
         if (!item) return res.status(404).json({ message: "Item not found" });
 
-        // Prevent the owner from reviewing their own item
+
         if (item.user.toString() === req.user._id.toString()) {
             return res.status(400).json({ message: "You cannot review your own item" });
         }
+
 
         const alreadyReviewed = item.reviews.find(
             (r) => r.user.toString() === req.user._id.toString()
@@ -149,12 +215,58 @@ export const addItemReview = async(req, res) => {
         };
 
         item.reviews.push(review);
-        item.calcRating(); // Update numReviews & averageRating
+        item.calcRating();
+        await item.save();
+        res.status(201).json({
+            message: "Review added",
+            reviews: item.reviews,
+            averageRating: item.averageRating,
+            numReviews: item.numReviews
+        });
+    } catch (error) {
+        logger.error({ err: error }, 'Failed to add review');
+        res.status(500).json({ message: "Failed to add review", error: error.message });
+    }
+};
+
+
+export const deleteItemReview = async(req, res) => {
+    try {
+        const { itemId, reviewId } = req.params;
+
+        const item = await Item.findById(itemId);
+
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+
+        const review = item.reviews.id(reviewId);
+
+        if (!review) {
+            return res.status(404).json({ message: 'Review not found' });
+        }
+
+
+        const isItemOwner = item.user.toString() === req.user._id.toString();
+        const isReviewAuthor = review.user.toString() === req.user._id.toString();
+
+        if (!isItemOwner && !isReviewAuthor) {
+            return res.status(401).json({ message: 'Not authorized to delete this review.' });
+        }
+
+        review.deleteOne();
+
+        item.calcRating();
         await item.save();
 
-        res.status(201).json({ message: "Review added", reviews: item.reviews });
+        res.status(200).json({
+            message: 'Review deleted successfully',
+            averageRating: item.averageRating,
+            numReviews: item.numReviews
+        });
+
     } catch (error) {
-        console.error("Error adding review:", error);
-        res.status(500).json({ message: "Failed to add review" });
+        logger.error({ err: error }, 'Failed to delete review for item %s', req.params.itemId);
+        res.status(500).json({ message: 'Server error while deleting review.', error: error.message });
     }
 };
