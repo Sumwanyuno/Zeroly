@@ -79,7 +79,7 @@ export const deleteItem = async(req, res) => {
         console.log("Logged User ID:", req.user._id.toString());
 
         // Check if the logged-in user is the owner
-        if (item.user.toString() !== req.user._id.toString()) {
+        if (!item.user || item.user.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: "Not authorized to delete this item" });
         }
 
