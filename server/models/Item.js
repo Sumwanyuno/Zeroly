@@ -37,6 +37,10 @@ const itemSchema = new mongoose.Schema({
         enum: ['available', 'requested', 'given'],
         default: 'available'
     },
+    version: {
+        type: Number,
+        default: 0
+    },
 
     reviews: [reviewSchema],
     numReviews: { type: Number, default: 0 },

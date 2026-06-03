@@ -24,15 +24,47 @@ export const updateRequestStatus = async(req, res) => {
         await request.save();
 
         if (status === "Accepted") {
-            const item = await Item.findById(request.item);
+            const item = await Item.findByIdAndUpdate(
+                request.item,
+                { 
+                    status: "requested",
+                    $inc: { version: 1 }
+                },
+                { new: true }
+            );
             if (item) {
-                item.status = "requested";
-                await item.save();
+                // Emit socket event for real-time update
+                req.app.get('io')?.emit('item-status-changed', {
+                    itemId: item._id,
+                    status: 'requested',
+                    version: item.version,
+                    requestId: request._id
+                });
+            }
+        } else if (status === "Declined") {
+            // When request is declined, make item available again
+            const item = await Item.findByIdAndUpdate(
+                request.item,
+                { 
+                    status: "available",
+                    $inc: { version: 1 }
+                },
+                { new: true }
+            );
+            if (item) {
+                // Emit socket event for real-time update
+                req.app.get('io')?.emit('item-status-changed', {
+                    itemId: item._id,
+                    status: 'available',
+                    version: item.version,
+                    requestId: request._id
+                });
             }
         }
 
         res.json(request);
     } catch (error) {
+        logger.error({ err: error }, 'Failed to update request status');
         res.status(500).json({ message: "Server Error" });
     }
 };
@@ -64,34 +96,53 @@ export const createRequest = async(req, res) => {
         const { itemId } = req.body;
         const requesterId = req.user._id;
 
-        const item = await Item.findById(itemId);
+        // Use atomic operation to check and update item status in one step
+        const item = await Item.findOneAndUpdate(
+            { 
+                _id: itemId, 
+                status: 'available',
+                user: { $ne: requesterId }
+            },
+            { 
+                $set: { status: 'requested' },
+                $inc: { version: 1 }
+            },
+            { new: true }
+        );
 
         if (!item) {
-            return res.status(404).json({ message: "Item not found" });
-        }
-
-
-        if (item.user.toString() === requesterId.toString()) {
-            return res
-                .status(400)
-                .json({ message: "You cannot request your own item" });
+            // Check if item exists but is not available
+            const existingItem = await Item.findById(itemId);
+            if (!existingItem) {
+                return res.status(404).json({ message: "Item not found" });
+            }
+            if (existingItem.user.toString() === requesterId.toString()) {
+                return res.status(400).json({ message: "You cannot request your own item" });
+            }
+            if (existingItem.status !== 'available') {
+                return res.status(409).json({ message: `This item is currently ${existingItem.status}. Please try another item.` });
+            }
+            return res.status(409).json({ message: "Item is no longer available" });
         }
 
         const requesterUser = await User.findById(requesterId);
         const itemCost = item.ecoSeeds || 10;
         
         if (requesterUser.points < itemCost) {
+            // Revert item status if insufficient points
+            await Item.findByIdAndUpdate(itemId, { status: 'available', $inc: { version: 1 } });
             return res.status(400).json({ message: `Insufficient EcoSeeds. You need ${itemCost} EcoSeeds to request this item.` });
         }
 
+        // Check for existing request atomically
         const existingRequest = await Request.findOne({
             item: itemId,
             requester: requesterId,
         });
         if (existingRequest) {
-            return res
-                .status(400)
-                .json({ message: "You have already requested this item" });
+            // Revert item status
+            await Item.findByIdAndUpdate(itemId, { status: 'available', $inc: { version: 1 } });
+            return res.status(400).json({ message: "You have already requested this item" });
         }
 
         const request = new Request({
@@ -101,8 +152,18 @@ export const createRequest = async(req, res) => {
         });
 
         const createdRequest = await request.save();
+        
+        // Emit socket event for real-time update
+        req.app.get('io')?.emit('item-status-changed', {
+            itemId: item._id,
+            status: 'requested',
+            version: item.version,
+            requester: requesterId
+        });
+
         res.status(201).json(createdRequest);
     } catch (error) {
+        logger.error({ err: error }, 'Failed to create request');
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
@@ -126,11 +187,16 @@ export const verifyHandshake = async(req, res) => {
         request.status = "Completed";
         await request.save();
 
-        const item = await Item.findById(request.item);
+        const item = await Item.findByIdAndUpdate(
+            request.item,
+            { 
+                status: "given",
+                $inc: { version: 1 }
+            },
+            { new: true }
+        );
+        
         if (item) {
-            item.status = "given";
-            await item.save();
-
             const itemCost = item.ecoSeeds || 10;
             
             // Deduct points from requester
@@ -162,6 +228,14 @@ export const verifyHandshake = async(req, res) => {
                 amount: itemCost,
                 description: `Gave away item: ${item.name}`,
                 relatedItem: item._id,
+            });
+
+            // Emit socket event for real-time update
+            req.app.get('io')?.emit('item-status-changed', {
+                itemId: item._id,
+                status: 'given',
+                version: item.version,
+                requestId: request._id
             });
         }
 

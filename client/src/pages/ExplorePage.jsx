@@ -45,7 +45,7 @@ const CATEGORIES_WITH_ICONS = [
 const ExplorePage = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo, socket } = useContext(AuthContext);
   const [keyword, setKeyword] = useState("");
   const [category, setCategory] = useState("All");
   const [radius, setRadius] = useState("all");
@@ -176,7 +176,28 @@ const ExplorePage = () => {
 
   useEffect(() => {
     fetchItems(null, null, 1, false);
-  }, [category]); 
+  }, [category]);
+
+  // Listen for real-time item status changes
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleItemStatusChange = (data) => {
+      setItems(prevItems => 
+        prevItems.map(item => 
+          item._id === data.itemId 
+            ? { ...item, status: data.status, version: data.version }
+            : item
+        )
+      );
+    };
+
+    socket.on('item-status-changed', handleItemStatusChange);
+
+    return () => {
+      socket.off('item-status-changed', handleItemStatusChange);
+    };
+  }, [socket]); 
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
