@@ -18,6 +18,9 @@ const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
   
   const [showPassword, setShowPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
@@ -42,10 +45,15 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (emailError || passwordError) {
+   if (emailError || passwordError || confirmPasswordError) {
       toast.error("Please fix the errors in the form first.");
       return;
     }
+    if (password !== confirmPassword) {
+  setConfirmPasswordError("Passwords do not match");
+  toast.error("Passwords do not match.");
+  return;
+}
     setLoading(true);
     try {
       const { data } = await api.post("/api/users/register", {
@@ -209,6 +217,54 @@ const RegisterPage = () => {
                 )}
               </div>
 
+              <div className="space-y-2">
+  <Label htmlFor="confirmPassword">Confirm Password</Label>
+  <div className="relative">
+    <Input
+      type={showConfirmPassword ? "text" : "password"}
+      id="confirmPassword"
+      value={confirmPassword}
+      onChange={(e) => {
+        setConfirmPassword(e.target.value);
+        if (e.target.value !== password) {
+          setConfirmPasswordError("Passwords do not match");
+        } else {
+          setConfirmPasswordError("");
+        }
+      }}
+      required
+      placeholder="Re-enter your password"
+      className={`h-12 bg-background/50 focus:bg-background pr-10 ${
+        confirmPasswordError
+          ? "border-destructive focus-visible:ring-destructive"
+          : confirmPassword && confirmPassword === password
+          ? "border-green-500 focus-visible:ring-green-500"
+          : ""
+      }`}
+    />
+    <button
+      type="button"
+      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+    >
+      {showConfirmPassword ? (
+        <EyeOff className="w-5 h-5" />
+      ) : (
+        <Eye className="w-5 h-5" />
+      )}
+    </button>
+  </div>
+  {confirmPasswordError && (
+    <p className="text-xs text-destructive mt-1 font-medium">
+      {confirmPasswordError}
+    </p>
+  )}
+  {confirmPassword && confirmPassword === password && (
+    <p className="text-xs text-green-500 mt-1 font-medium">
+      ✓ Passwords match
+    </p>
+  )}
+</div>
               <Button 
                 type="submit" 
                 disabled={loading} 
