@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import api from "../api.js";
 import { Mail, Phone, MapPin, Send, MessageSquare } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,18 +25,28 @@ const ContactPage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      toast.success("Thank you for your message! The Zeroly team will get back to you soon.", {
+    try {
+      const { data } = await api.post("/contact", {
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+      });
+
+      toast.success(data.message, {
         icon: "✨"
       });
       setFormData({ name: "", email: "", message: "" });
-    }, 1200);
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Failed to send your message. Please try again.";
+      toast.error(errorMessage);
+      console.error("Contact form error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const containerVariants = {
