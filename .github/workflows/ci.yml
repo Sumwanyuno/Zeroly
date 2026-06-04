@@ -1,0 +1,63 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+        cache-dependency-path: '**/package-lock.json'
+
+    - name: Install Client Dependencies
+      run: npm ci
+      working-directory: ./client
+
+    - name: Build Client
+      run: npm run build
+      working-directory: ./client
+
+    - name: Install Server Dependencies
+      run: npm ci
+      working-directory: ./server
+
+    - name: Run Server Tests
+      run: npm test
+      working-directory: ./server
+
+  security-scans:
+    name: Security Scans
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Check for Hardcoded Secrets
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: ""
+        head: ${{ github.ref_name }}
+        extra_args: --debug --only-verified
+
+    - name: NPM Audit (Client)
+      run: npm audit --audit-level=high || true
+      working-directory: ./client
+
+    - name: NPM Audit (Server)
+      run: npm audit --audit-level=high || true
+      working-directory: ./server
