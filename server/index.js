@@ -84,6 +84,9 @@ const io = new Server(server, {
     },
 });
 
+// Make io instance accessible to controllers
+app.set('io', io);
+
 io.use((socket, next) => {
     try {
         const token = socket.handshake.auth?.token;
