@@ -79,11 +79,12 @@ const ProfilePage = () => {
   }, [socket, userProfile]);
 
   const handleDelete = async (deletedItemId) => {
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
+
     if (!userInfo) {
       toast.error("You must be logged in to delete an item.");
       return;
     }
-    if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
       const config = {
