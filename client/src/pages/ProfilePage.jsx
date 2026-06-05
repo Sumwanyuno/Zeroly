@@ -22,7 +22,7 @@ const getTierInfo = (points) => {
 };
 
 const ProfilePage = () => {
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo, socket } = useContext(AuthContext);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -52,12 +52,39 @@ const ProfilePage = () => {
     fetchUserProfile();
   }, [userInfo]);
 
+  // Listen for real-time item status changes
+  useEffect(() => {
+    if (!socket || !userProfile) return;
+
+    const handleItemStatusChange = (data) => {
+      setUserProfile(prevProfile => {
+        if (!prevProfile) return prevProfile;
+        
+        return {
+          ...prevProfile,
+          items: prevProfile.items.map(item => 
+            item._id === data.itemId 
+              ? { ...item, status: data.status, version: data.version }
+              : item
+          )
+        };
+      });
+    };
+
+    socket.on('item-status-changed', handleItemStatusChange);
+
+    return () => {
+      socket.off('item-status-changed', handleItemStatusChange);
+    };
+  }, [socket, userProfile]);
+
   const handleDelete = async (deletedItemId) => {
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
+
     if (!userInfo) {
       toast.error("You must be logged in to delete an item.");
       return;
     }
-    if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
       const config = {

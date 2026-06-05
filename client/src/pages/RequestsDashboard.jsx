@@ -18,7 +18,7 @@ const RequestsDashboard = () => {
   const [sentRequests, setSentRequests] = useState([]);
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo, socket } = useContext(AuthContext);
 
   const [activeTab, setActiveTab] = useState("received");
 
@@ -54,22 +54,52 @@ const RequestsDashboard = () => {
 
   useEffect(() => {
     fetchRequests();
-  }, [userInfo]); 
+  }, [userInfo]);
+
+  // Listen for real-time request status changes
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleItemStatusChange = (data) => {
+      // Refresh requests when item status changes
+      fetchRequests();
+    };
+
+    socket.on('item-status-changed', handleItemStatusChange);
+
+    return () => {
+      socket.off('item-status-changed', handleItemStatusChange);
+    };
+  }, [socket]); 
 
   const handleUpdateStatus = async (requestId, status) => {
     if (!userInfo) {
       toast.error("You must be logged in to update request status.");
       return;
     }
+
+    // Optimistic update - update UI immediately
+    const previousRequests = activeTab === 'received' ? [...receivedRequests] : [...sentRequests];
+    const setRequests = activeTab === 'received' ? setReceivedRequests : setSentRequests;
+    
+    setRequests(prev => 
+      prev.map(req => 
+        req._id === requestId ? { ...req, status } : req
+      )
+    );
+
     try {
       const config = {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
       await axios.put(`${API_BASE_URL}/requests/${requestId}`, { status }, config); 
-      fetchRequests();
       toast.success(`Request ${status.toLowerCase()}!`); 
+      // Refresh to get latest state from server
+      fetchRequests();
     } catch (error) {
       console.error("Failed to update request status:", error);
+      // Revert optimistic update on error
+      setRequests(previousRequests);
       toast.error(error.response?.data?.message || "Failed to update status. Please try again.");
     }
   };

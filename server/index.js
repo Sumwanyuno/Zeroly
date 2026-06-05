@@ -15,6 +15,7 @@ import userRoutes from './routes/users.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import requestRoutes from './routes/requestRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 import leaderboardRoutes from './routes/leaderboardRoutes.js';
 import walletRoutes from './routes/walletRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
@@ -67,6 +68,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/upload', strictUploadLimiter, uploadRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/contact', contactRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/ai', aiRoutes);
@@ -90,6 +92,9 @@ const getValidatedRoomId = (payload) => {
     }
     return roomId;
 };
+
+// Make io instance accessible to controllers
+app.set('io', io);
 
 io.use((socket, next) => {
     try {

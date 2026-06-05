@@ -17,7 +17,7 @@ const ItemDetailsPage = () => {
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo, socket } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,6 +35,36 @@ const ItemDetailsPage = () => {
 
     fetchItem();
   }, [id]);
+
+  // Listen for real-time item status changes
+  useEffect(() => {
+    if (!socket || !item) return;
+
+    const handleItemStatusChange = (data) => {
+      if (data.itemId === item._id) {
+        setItem(prevItem => ({
+          ...prevItem,
+          status: data.status,
+          version: data.version
+        }));
+        
+        // Show toast notification for status change
+        if (data.status === 'requested') {
+          toast.info("This item has been requested by someone else");
+        } else if (data.status === 'given') {
+          toast.info("This item has been given away");
+        } else if (data.status === 'available') {
+          toast.success("This item is now available again!");
+        }
+      }
+    };
+
+    socket.on('item-status-changed', handleItemStatusChange);
+
+    return () => {
+      socket.off('item-status-changed', handleItemStatusChange);
+    };
+  }, [socket, item]);
 
   const handleMessageOwner = async () => {
     if (!userInfo) return navigate("/login");
@@ -56,6 +86,16 @@ const ItemDetailsPage = () => {
       navigate("/login");
       return;
     }
+
+    // Optimistic update - set item to requested locally
+    const previousStatus = item.status;
+    const previousVersion = item.version;
+    
+    setItem(prev => ({
+      ...prev,
+      status: 'requested'
+    }));
+
     try {
       const config = {
         headers: {
@@ -64,11 +104,37 @@ const ItemDetailsPage = () => {
         },
       };
   
-      await axios.post(`${API_BASE_URL}/requests`, { itemId: item._id }, config);
+      const response = await axios.post(`${API_BASE_URL}/requests`, { itemId: item._id }, config);
+      
+      // Request successful - update with server data
       toast.success("Request sent successfully!");
+      
+      // Refresh item data to get latest state
+      const { data: updatedItem } = await api.get(`${API_BASE_URL}/items/${id}`);
+      setItem(updatedItem);
+      
     } catch (error) {
       console.error("Failed to send request:", error);
-      toast.error(error.response?.data?.message || "Failed to send request.");
+      
+      // Revert optimistic update on error
+      setItem(prev => ({
+        ...prev,
+        status: previousStatus,
+        version: previousVersion
+      }));
+      
+      if (error.response?.status === 409) {
+        toast.error(error.response.data.message || "This item is no longer available");
+        // Refresh item data to get latest state
+        try {
+          const { data: updatedItem } = await api.get(`${API_BASE_URL}/items/${id}`);
+          setItem(updatedItem);
+        } catch (refreshError) {
+          console.error("Failed to refresh item:", refreshError);
+        }
+      } else {
+        toast.error(error.response?.data?.message || "Failed to send request.");
+      }
     }
   };
 
