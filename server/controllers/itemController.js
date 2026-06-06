@@ -143,8 +143,6 @@ export const deleteItem = async(req, res) => {
         }
 
 
-        // Check if the logged-in user is the owner
-        if (!item.user || item.user.toString() !== req.user._id.toString()) {
         logger.debug('Delete authorization check — item owner: %s, requester: %s', item.user.toString(), req.user._id.toString());
 
         if (item.user.toString() !== req.user._id.toString()) {

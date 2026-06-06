@@ -3,22 +3,6 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
-@theme {
-  --font-serif: "Playfair Display", serif;
-  --font-sans: "Inter", sans-serif;
-  --color-brand-light: #f4f8f4;
-  --color-brand-dark: #12351c;
-  --color-brand-pill: #e1efe2;
-  --color-brand-green: #377d3f;
-  --color-brand-border: #d4e5d5;
-}
-
-body {
-  background-color: white;
-  color: var(--color-brand-dark);
-}
-
-/* --- ADD YOUR CUSTOM CSS BELOW THIS LINE --- */
 @custom-variant dark (&:is(.dark *));
 
 @theme {
