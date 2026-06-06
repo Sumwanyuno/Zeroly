@@ -133,7 +133,6 @@ This scans all server JS files for patterns that indicate credential/PII leakage
 
 ---
 
-## 🧑‍💻 The Team
 ## 📁 Repository Structure
 
 ```
