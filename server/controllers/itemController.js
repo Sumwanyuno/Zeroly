@@ -275,7 +275,37 @@ export const deleteItemReview = async(req, res) => {
         });
 
     } catch (error) {
-        logger.error({ err: error }, 'Failed to delete review for item %s', req.params.itemId);
         res.status(500).json({ message: 'Server error while deleting review.', error: error.message });
+    }
+};
+
+export const updateItem = async(req, res) => {
+    try {
+        const item = await Item.findById(req.params.id);
+
+        if (!item) {
+            return res.status(404).json({ message: "Item not found" });
+        }
+
+        // Strict IDOR protection
+        if (item.user.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Not authorized to update this item" });
+        }
+
+        const { name, description, category, address, ecoSeeds } = req.body;
+
+        // Apply updates
+        if (name) item.name = name;
+        if (description) item.description = description;
+        if (category) item.category = category;
+        if (address) item.address = address;
+        if (ecoSeeds) item.ecoSeeds = ecoSeeds;
+
+        const updatedItem = await item.save();
+        res.json(updatedItem);
+
+    } catch (error) {
+        logger.error({ err: error }, 'Failed to update item');
+        res.status(500).json({ message: "Error updating item", error: error.message });
     }
 };

@@ -2,9 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Trash2, MapPin, Coins } from "lucide-react";
+import { Trash2, MapPin, Coins, Pencil } from "lucide-react";
 
-const ItemCard = ({ item, userId, onDelete }) => {
+const ItemCard = ({ item, userId, onDelete, onEdit }) => {
   const isOwner = userId === item.user;
 
   return (
@@ -34,17 +34,30 @@ const ItemCard = ({ item, userId, onDelete }) => {
 
         {/* Floating Delete Button (For Owner) */}
         {isOwner && (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onDelete(item._id);
-            }}
-            className="absolute top-3 left-3 z-10 bg-destructive/10 hover:bg-destructive/20 text-destructive border border-destructive/20 hover:border-destructive/30 backdrop-blur-md w-9 h-9 rounded-full flex items-center justify-center shadow-sm cursor-pointer transition-all duration-200 hover:scale-105"
-            title="Delete Listing"
-          >
-            <Trash2 className="w-4.5 h-4.5" />
-          </button>
+          <div className="absolute top-3 left-3 z-10 flex gap-2">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if(onEdit) onEdit(item);
+              }}
+              className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 hover:border-primary/30 backdrop-blur-md w-9 h-9 rounded-full flex items-center justify-center shadow-sm cursor-pointer transition-all duration-200 hover:scale-105"
+              title="Edit Listing"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete(item._id);
+              }}
+              className="bg-destructive/10 hover:bg-destructive/20 text-destructive border border-destructive/20 hover:border-destructive/30 backdrop-blur-md w-9 h-9 rounded-full flex items-center justify-center shadow-sm cursor-pointer transition-all duration-200 hover:scale-105"
+              title="Delete Listing"
+            >
+              <Trash2 className="w-4.5 h-4.5" />
+            </button>
+          </div>
         )}
 
         {/* Image Section */}

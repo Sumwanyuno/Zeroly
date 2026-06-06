@@ -6,6 +6,7 @@ import {
     getItems,
     getItemById,
     deleteItem,
+    updateItem,
     getItemReviews,
     addItemReview,
     deleteItemReview,
@@ -18,7 +19,7 @@ const router = express.Router();
 router.route("/").post(protect, createItem).get(getItems);
 
 
-router.route("/:id").get(getItemById).delete(protect, deleteItem);
+router.route("/:id").get(getItemById).delete(protect, deleteItem).put(protect, updateItem);
 
 
 router

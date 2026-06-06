@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { User, Mail, Package, Sprout, Leaf, TreePine, Crown, Coins } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import EditItemModal from "../components/EditItemModal";
 
 const API_BASE_URL = "http://localhost:5001/api"; 
 
@@ -25,6 +26,8 @@ const ProfilePage = () => {
   const { userInfo, socket } = useContext(AuthContext);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -103,6 +106,22 @@ const ProfilePage = () => {
         error.response?.data?.message || "You are not authorized to delete this item."
       );
     }
+  };
+
+  const handleEdit = (item) => {
+    setEditingItem(item);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSuccess = (updatedItem) => {
+    setUserProfile((prevProfile) => ({
+      ...prevProfile,
+      items: prevProfile.items.map((item) => 
+        item._id === updatedItem._id ? { ...item, ...updatedItem } : item
+      ),
+    }));
+    setIsEditModalOpen(false);
+    setEditingItem(null);
   };
 
   if (loading) {
@@ -242,6 +261,7 @@ const ProfilePage = () => {
                     key={item._id} 
                     item={item} 
                     onDelete={handleDelete} 
+                    onEdit={handleEdit}
                     userId={userInfo?._id} 
                   />
                 ))}
@@ -250,6 +270,14 @@ const ProfilePage = () => {
           )}
         </motion.div>
       </div>
+
+      {/* Edit Item Modal */}
+      <EditItemModal 
+        isOpen={isEditModalOpen} 
+        onClose={setIsEditModalOpen} 
+        item={editingItem} 
+        onEditSuccess={handleEditSuccess} 
+      />
     </div>
   );
 };
