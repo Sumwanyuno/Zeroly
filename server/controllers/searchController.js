@@ -2,6 +2,10 @@ import Item from '../models/Item.js';
 import { extractSearchIntent } from '../services/aiService.js';
 import logger from '../utils/logger.js';
 
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
 /**
  * @desc    Semantic search items using Groq intent extraction
  * @route   GET /api/search/semantic
@@ -20,7 +24,7 @@ export const semanticSearch = async (req, res) => {
         logger.debug('Semantic search keywords: %o', keywords);
 
         // 2. Build MongoDB query
-        const regexes = keywords.map(kw => new RegExp(kw, 'i'));
+        const regexes = keywords.map(kw => new RegExp(escapeRegExp(kw), 'i'));
         
         const query = {
             status: { $in: ['available', null] },
