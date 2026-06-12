@@ -95,7 +95,7 @@ const FAQPage = () => {
           animate="visible"
         >
           <motion.div variants={itemVariants}>
-            <Card className="bg-card/40 backdrop-blur-xl border-border/50 shadow-xl rounded-2xl relative overflow-hidden">
+            <Card className="bg-card/80 dark:bg-card/75 backdrop-blur-xl border-border/50 shadow-xl rounded-2xl relative overflow-hidden">
               <CardContent className="p-6 md:p-10">
                 <Accordion type="single" collapsible className="w-full">
                   {faqs.map((faq) => (
