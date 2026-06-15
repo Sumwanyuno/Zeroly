@@ -219,8 +219,10 @@ cd zeroly
 3. **Configure Environment Variables:**  
    Create a `.env` file in the root of the `server/` directory and configure the variables as follows:
    ```env
-   # Server Connection Settings
+  # Server Connection Settings (Ensure this value remains an unquoted numeric integer)
    PORT=5001
+
+# Database Persistence Link
    
    # Database Persistence Link
    MONGO_URI=your_mongodb_atlas_connection_string
