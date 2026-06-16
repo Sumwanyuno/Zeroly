@@ -4,6 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import http from 'http';
 import { Server } from 'socket.io';
+import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import logger from './utils/logger.js';
 import jwt from 'jsonwebtoken';
@@ -84,6 +85,14 @@ const io = new Server(server, {
     },
 });
 
+const getValidatedRoomId = (payload) => {
+    const roomId = typeof payload === 'string' ? payload : payload?.roomId || payload?.chatId;
+    if (typeof roomId !== 'string' || !mongoose.Types.ObjectId.isValid(roomId)) {
+        return null;
+    }
+    return roomId;
+};
+
 // Make io instance accessible to controllers
 app.set('io', io);
 
@@ -104,27 +113,40 @@ io.on('connection', (socket) => {
     logger.debug('User connected: %s', socket.id);
 
     socket.on('joinRoom', async (roomId) => {
-        if (!roomId) return;
+        const validatedRoomId = getValidatedRoomId(roomId);
+        if (!validatedRoomId) {
+            logger.warn({ socketId: socket.id }, 'Rejected socket room join with invalid room id');
+            return;
+        }
+
         try {
-            const chat = await Chat.findById(roomId);
+            const chat = await Chat.findById(validatedRoomId);
             if (!chat) return;
 
             const isParticipant = chat.participants.some(p => p.toString() === socket.userId);
             if (isParticipant) {
-                socket.join(roomId);
-                logger.debug(`Socket ${socket.id} joined room ${roomId}`);
+                socket.join(validatedRoomId);
+                logger.debug({ socketId: socket.id, roomId: validatedRoomId }, 'Socket joined chat room');
             } else {
-                logger.warn(`Unauthorized room join attempt by user ${socket.userId} for room ${roomId}`);
+                logger.warn(`Unauthorized room join attempt by user ${socket.userId} for room ${validatedRoomId}`);
             }
         } catch (err) {
             logger.error({ err }, 'Error joining room');
         }
     });
 
-    socket.on('send-message', (data) => {
-        const roomId = data.roomId || data.chatId;
-        if (!roomId) return;
-        io.to(roomId).emit('new-message', data);
+    socket.on('send-message', (data = {}) => {
+        const roomId = getValidatedRoomId(data);
+        if (!roomId) {
+            logger.warn({ socketId: socket.id }, 'Rejected socket message without valid room id');
+            return;
+        }
+
+        socket.to(roomId).emit('new-message', {
+            ...data,
+            roomId,
+            chatId: data.chatId || roomId,
+        });
     });
 
     socket.on('disconnect', () => logger.debug('User disconnected: %s', socket.id));
