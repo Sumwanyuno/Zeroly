@@ -103,6 +103,12 @@ io.use((socket, next) => {
 io.on('connection', (socket) => {
     logger.debug('User connected: %s', socket.id);
 
+    // Join personal room for user-specific notifications
+    if (socket.userId) {
+        socket.join(socket.userId);
+        logger.debug(`Socket ${socket.id} joined personal room ${socket.userId}`);
+    }
+
     socket.on('joinRoom', async (roomId) => {
         if (!roomId) return;
         try {
