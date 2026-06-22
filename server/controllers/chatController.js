@@ -42,6 +42,19 @@ export const sendMessage = async(req, res) => {
             sender: req.user._id,
         });
         await message.save();
+
+        const chat = await Chat.findById(req.params.chatId);
+        if (chat) {
+            const receiverId = chat.participants.find(p => p.toString() !== req.user._id.toString());
+            if (receiverId) {
+                req.app.get('io')?.to(receiverId.toString()).emit('receive_message', {
+                    chatId: chat._id,
+                    senderName: req.user.name,
+                    text: text
+                });
+            }
+        }
+
         res.status(201).json(message);
     } catch (err) {
         res.status(500).json({ message: "Failed to send message" });

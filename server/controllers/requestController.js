@@ -161,6 +161,13 @@ export const createRequest = async(req, res) => {
             requester: requesterId
         });
 
+        // Emit notification to item owner
+        req.app.get('io')?.to(item.user.toString()).emit('new_request', {
+            itemId: item._id,
+            itemName: item.name,
+            requesterName: requesterUser.name
+        });
+
         res.status(201).json(createdRequest);
     } catch (error) {
         logger.error({ err: error }, 'Failed to create request');
