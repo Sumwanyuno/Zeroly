@@ -113,6 +113,9 @@ const ChatPage = () => {
       <div 
         ref={scrollRef}
         className="flex-1 bg-gray-50 dark:bg-gray-900 border-x border-gray-100 dark:border-gray-700 p-4 overflow-y-auto space-y-4"
+        aria-live="polite"
+        role="log"
+        aria-label="Chat messages list"
       >
         {messages.length === 0 && (
           <div className="h-full flex items-center justify-center">
