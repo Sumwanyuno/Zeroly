@@ -35,6 +35,7 @@ const LocationMarker = ({ onLocationSelect, mapRef }) => {
     if (mapRef) {
       mapRef.current = { updateLocation };
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef]);
 
   useMapEvents({
