@@ -20,6 +20,7 @@ import walletRoutes from './routes/walletRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import searchRoutes from './routes/searchRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 const PORT = process.env.PORT || 5001;
 
@@ -73,6 +74,7 @@ app.use('/api/wallet', walletRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/wishlists', wishlistRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 
 const server = http.createServer(app);
