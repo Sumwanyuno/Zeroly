@@ -3,6 +3,7 @@
 import Item from "../models/Item.js";
 import User from "../models/User.js";
 import Wishlist from "../models/Wishlist.js";
+import Notification from "../models/Notification.js";
 import logger from "../utils/logger.js";
 import { sendWishlistMatchEmail } from "../services/emailService.js";
 import cloudinary from "../config/cloudinary.js";
@@ -62,9 +63,25 @@ export const createItem = async(req, res) => {
 
                 const textToMatch = `${createdItem.name} ${createdItem.description} ${createdItem.category}`.toLowerCase();
 
-                activeWishlists.forEach(wishlist => {
+                activeWishlists.forEach(async (wishlist) => {
                     const hasMatch = wishlist.keywords.some(kw => textToMatch.includes(kw));
                     if (hasMatch && wishlist.user && wishlist.user.email) {
+                        // Create persistent notification
+                        const notification = await Notification.create({
+                            user: wishlist.user._id,
+                            type: 'wishlist_match',
+                            title: 'Smart AI Match!',
+                            message: `The item "${createdItem.name}" matches your wishlist.`,
+                            relatedItem: createdItem._id,
+                        });
+
+                        // Emit real-time socket event
+                        const io = req.app.get('io');
+                        if (io) {
+                            io.to(wishlist.user._id.toString()).emit('notification', notification);
+                        }
+
+                        // Send email
                         const itemUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/item/${createdItem._id}`;
                         sendWishlistMatchEmail(wishlist.user.email, wishlist.user.name, createdItem.name, itemUrl);
                     }
