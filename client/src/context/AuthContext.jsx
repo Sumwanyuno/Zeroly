@@ -2,6 +2,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import { initSocket } from "../socket.js";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -49,6 +50,7 @@ export const AuthProvider = ({ children }) => {
         setSocket(null);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo?.token]);
 
   const login = (data) => {

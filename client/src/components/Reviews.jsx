@@ -30,6 +30,7 @@ const Reviews = ({ itemId, ownerId }) => {
     if (itemId) {
       fetchReviews();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemId]);
 
   const submitReview = async (e) => {

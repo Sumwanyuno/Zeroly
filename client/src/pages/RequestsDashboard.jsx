@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
@@ -28,7 +28,7 @@ const RequestsDashboard = () => {
   const [showScannerDialog, setShowScannerDialog] = useState(false);
   const [selectedScannerRequest, setSelectedScannerRequest] = useState(null);
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     if (!userInfo) {
       setLoading(false); 
       return;
@@ -50,17 +50,17 @@ const RequestsDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userInfo]);
 
   useEffect(() => {
     fetchRequests();
-  }, [userInfo]);
+  }, [fetchRequests]);
 
   // Listen for real-time request status changes
   useEffect(() => {
     if (!socket) return;
 
-    const handleItemStatusChange = (data) => {
+    const handleItemStatusChange = () => {
       // Refresh requests when item status changes
       fetchRequests();
     };
@@ -70,7 +70,7 @@ const RequestsDashboard = () => {
     return () => {
       socket.off('item-status-changed', handleItemStatusChange);
     };
-  }, [socket]); 
+  }, [socket, fetchRequests]); 
 
   const handleUpdateStatus = async (requestId, status) => {
     if (!userInfo) {
@@ -104,7 +104,7 @@ const RequestsDashboard = () => {
     }
   };
 
-  const handleVerifyHandshake = async (scannedPayload) => {
+  const handleVerifyHandshake = useCallback(async (scannedPayload) => {
     if (!selectedScannerRequest || !userInfo) return;
     
     if (scannedPayload !== selectedScannerRequest._id) {
@@ -123,7 +123,7 @@ const RequestsDashboard = () => {
       console.error("Failed to verify handshake:", error);
       toast.error(error.response?.data?.message || "Failed to verify handshake. Try again.");
     }
-  };
+  }, [selectedScannerRequest, userInfo, fetchRequests]);
 
   useEffect(() => {
     let scanner = null;
@@ -136,7 +136,7 @@ const RequestsDashboard = () => {
           }
           handleVerifyHandshake(decodedText);
         },
-        (error) => {
+        () => {
           // Ignore frequent scan errors
         }
       );
@@ -146,7 +146,7 @@ const RequestsDashboard = () => {
         scanner.clear().catch(e => console.error("Failed to clear scanner", e));
       }
     };
-  }, [showScannerDialog, selectedScannerRequest]);
+  }, [showScannerDialog, selectedScannerRequest, handleVerifyHandshake]);
 
 
   const getStatusBadge = (status) => {

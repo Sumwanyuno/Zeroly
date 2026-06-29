@@ -74,18 +74,12 @@ const Hero = forwardRef((props, ref) => {
             variants={itemVariants}
             className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center"
           >
-            <Button asChild size="lg" className="h-14 px-8 text-base rounded-full w-full sm:w-auto shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all">
-              <Link to="/upload" className="flex items-center gap-2">
-                <Leaf className="w-5 h-5" />
-                Start Giving
-              </Link>
+            <Button render={<Link to="/explore" />} size="lg" className="h-14 px-8 text-base rounded-full w-full sm:w-auto shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all">
+                Browse Items <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             
-            <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base rounded-full w-full sm:w-auto bg-background/50 backdrop-blur-sm border-border hover:bg-accent transition-all">
-              <Link to="/explore" className="flex items-center gap-2">
-                Explore Items
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+            <Button render={<Link to="/register" />} variant="outline" size="lg" className="h-14 px-8 text-base rounded-full w-full sm:w-auto bg-background/50 backdrop-blur-sm border-border hover:bg-accent transition-all">
+              Join the Community
             </Button>
           </motion.div>
         </motion.div>
