@@ -5,6 +5,25 @@ import Transaction from "../models/Transaction.js";
 import Notification from "../models/Notification.js";
 import logger from "../utils/logger.js";
 
+// CO2 savings in kg per item category (based on lifecycle-analysis estimates)
+const CO2_MULTIPLIER = {
+    electronics:  25,
+    furniture:    45,
+    clothing:      5,
+    books:         2,
+    appliances:    8,
+    other:         8,
+};
+
+/**
+ * Returns the CO2 kg saved for a given item category string.
+ * Falls back to the 'other' value for unrecognised categories.
+ */
+const getCO2ForCategory = (category = "") => {
+    const key = category.toLowerCase().trim();
+    return CO2_MULTIPLIER[key] ?? CO2_MULTIPLIER.other;
+};
+
 export const updateRequestStatus = async(req, res) => {
     try {
         const { status } = req.body;
@@ -244,6 +263,11 @@ export const verifyHandshake = async(req, res) => {
             const ownerUser = await User.findById(request.owner);
             if (ownerUser) {
                 ownerUser.points += itemCost;
+
+                // Increment carbon offset for the donor based on the item's category
+                const co2Saved = getCO2ForCategory(item.category);
+                ownerUser.totalCarbonOffset = (ownerUser.totalCarbonOffset || 0) + co2Saved;
+
                 await ownerUser.save();
             }
 

@@ -26,6 +26,7 @@ import FAQPage from "./pages/FAQPage";
 import ContactPage from "./pages/ContactPage"; 
 import LeaderboardPage from "./pages/LeaderboardPage"; 
 import WalletPage from "./pages/WalletPage";
+import NotFound from "./pages/NotFound";
 
 
 import { AuthProvider, AuthContext } from "./context/AuthContext"; 
@@ -73,7 +74,6 @@ function App() {
     };
   }, [socket, location.pathname, navigate]);
 
-  console.log("API Base URL:", import.meta.env.VITE_API_URL);
   return (
     
     <div className="font-sans flex flex-col min-h-screen bg-background text-foreground">
@@ -103,14 +103,7 @@ function App() {
             <Route path="/wallet" element={<WalletPage />} />
           </Route>
        
-          <Route
-            path="*"
-            element={
-              <h1 className="text-center text-3xl mt-20">
-                404 - Page Not Found
-              </h1>
-            }
-          />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
 

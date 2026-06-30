@@ -91,6 +91,7 @@ export const getUserProfile = async(req, res) => {
                 email: user.email,
                 points: user.points,
                 itemCount: user.itemCount,
+                totalCarbonOffset: user.totalCarbonOffset || 0,
                 items: items,
             });
         } else {

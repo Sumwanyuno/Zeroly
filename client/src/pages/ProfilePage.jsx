@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import ItemCard from "../components/ItemCard";
 import WishlistManager from "../components/WishlistManager";
 import api from "../api.js";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { User, Mail, Package, Sprout, Leaf, TreePine, Crown, Coins } from "lucide-react";
+import { User, Mail, Package, Sprout, Leaf, TreePine, Crown, Coins, Wind, Car, Trees } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import EditItemModal from "../components/EditItemModal";
 
@@ -20,6 +20,76 @@ const getTierInfo = (points) => {
   if (points >= 51) return { name: "Bloom", icon: <TreePine className="w-5 h-5 text-emerald-500" aria-label="Bloom tier icon" role="img" />, color: "text-emerald-500", bg: "bg-emerald-500/10", next: 151 };
   if (points >= 21) return { name: "Sprout", icon: <Sprout className="w-5 h-5 text-green-500" aria-label="Sprout tier icon" role="img" />, color: "text-green-500", bg: "bg-green-500/10", next: 51 };
   return { name: "Seed", icon: <Leaf className="w-5 h-5 text-amber-600" aria-label="Seed tier icon" role="img" />, color: "text-amber-600", bg: "bg-amber-600/10", next: 21 };
+};
+
+// Animated counter that smoothly rolls up to a target value on mount
+const AnimatedCounter = ({ target, decimals = 1, className = "" }) => {
+  const nodeRef = useRef(null);
+  useEffect(() => {
+    const node = nodeRef.current;
+    if (!node) return;
+    const controls = animate(0, target, {
+      duration: 1.6,
+      ease: "easeOut",
+      onUpdate(value) {
+        node.textContent = value.toFixed(decimals);
+      },
+    });
+    return () => controls.stop();
+  }, [target, decimals]);
+  return <span ref={nodeRef} className={className}>0</span>;
+};
+
+// Static accent style maps — avoids dynamic class interpolation that Tailwind v4 cannot scan
+const ACCENT_STYLES = {
+  emerald: {
+    wrapper:   "hover:border-emerald-500/40",
+    blob:      "bg-emerald-500/10",
+    iconWrap:  "bg-emerald-500/10 border-emerald-500/20 text-emerald-500",
+    unitText:  "text-emerald-500",
+  },
+  green: {
+    wrapper:   "hover:border-green-500/40",
+    blob:      "bg-green-500/10",
+    iconWrap:  "bg-green-500/10 border-green-500/20 text-green-500",
+    unitText:  "text-green-500",
+  },
+  teal: {
+    wrapper:   "hover:border-teal-500/40",
+    blob:      "bg-teal-500/10",
+    iconWrap:  "bg-teal-500/10 border-teal-500/20 text-teal-500",
+    unitText:  "text-teal-500",
+  },
+};
+
+// Carbon Impact stat card
+const CarbonStatCard = ({ icon, label, value, unit, decimals, accent, description, delay }) => {
+  const s = ACCENT_STYLES[accent] ?? ACCENT_STYLES.emerald;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.5, ease: "easeOut" }}
+      className={`relative flex flex-col gap-3 rounded-2xl p-5 border backdrop-blur-md overflow-hidden
+        bg-card/60 border-border/40 ${s.wrapper} transition-colors duration-300 group`}
+      role="region"
+      aria-label={label}
+    >
+      {/* Subtle glow blob */}
+      <div className={`absolute -top-6 -right-6 w-24 h-24 rounded-full ${s.blob} blur-2xl pointer-events-none transition-all duration-500 group-hover:w-32 group-hover:h-32`} />
+      <div className={`w-11 h-11 rounded-xl flex items-center justify-center border shrink-0 ${s.iconWrap}`}>
+        {icon}
+      </div>
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">{label}</p>
+        <p className="text-3xl font-extrabold text-foreground tracking-tight leading-none">
+          <AnimatedCounter target={value} decimals={decimals} />
+          <span className={`text-base font-semibold ml-1.5 ${s.unitText}`}>{unit}</span>
+        </p>
+        <p className="text-xs text-muted-foreground mt-1.5">{description}</p>
+      </div>
+    </motion.div>
+  );
 };
 
 const ProfilePage = () => {
@@ -230,6 +300,74 @@ const ProfilePage = () => {
 
           {/* Add Wishlist Manager Here */}
           <WishlistManager />
+        </motion.div>
+
+        {/* ── Carbon Impact Dashboard ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08, duration: 0.55, ease: "easeOut" }}
+          className="mb-12"
+          aria-labelledby="carbon-dashboard-title"
+        >
+          {/* Header */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500">
+              <Wind className="w-5 h-5" aria-hidden="true" />
+            </div>
+            <div>
+              <h2 id="carbon-dashboard-title" className="text-2xl font-extrabold text-foreground tracking-tight">
+                Carbon Impact Dashboard
+              </h2>
+              <p className="text-sm text-muted-foreground">Your real-world environmental contributions</p>
+            </div>
+          </div>
+
+          {/* Glassmorphic container */}
+          <div className="relative rounded-3xl border border-border/40 bg-card/50 backdrop-blur-xl p-6 shadow-lg overflow-hidden">
+            {/* Decorative blobs */}
+            <div className="absolute -top-10 -left-10 w-56 h-56 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-10 -right-10 w-56 h-56 bg-green-400/10 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Stat grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-10">
+              <CarbonStatCard
+                icon={<Wind className="w-5 h-5" />}
+                label="CO₂ Offset"
+                value={userProfile.totalCarbonOffset || 0}
+                unit="kg"
+                decimals={1}
+                accent="emerald"
+                description="Total carbon dioxide saved through your donations"
+                delay={0.12}
+              />
+              <CarbonStatCard
+                icon={<Trees className="w-5 h-5" />}
+                label="Trees Saved"
+                value={((userProfile.totalCarbonOffset || 0) / 22).toFixed(1) * 1}
+                unit="trees"
+                decimals={1}
+                accent="green"
+                description="Equivalent annual CO₂ absorption of trees"
+                delay={0.22}
+              />
+              <CarbonStatCard
+                icon={<Car className="w-5 h-5" />}
+                label="Car Miles Avoided"
+                value={(userProfile.totalCarbonOffset || 0) * 2.5}
+                unit="mi"
+                decimals={1}
+                accent="teal"
+                description="Miles a standard car would have driven for this CO₂"
+                delay={0.32}
+              />
+            </div>
+
+            {/* Bottom note */}
+            <p className="text-xs text-muted-foreground text-center mt-5 relative z-10">
+              CO₂ values are category-based estimates. Equivalencies: 1 tree absorbs ~22 kg CO₂/yr · 1 kg CO₂ ≈ 2.5 car miles.
+            </p>
+          </div>
         </motion.div>
 
         {/* Listed Items Section */}
