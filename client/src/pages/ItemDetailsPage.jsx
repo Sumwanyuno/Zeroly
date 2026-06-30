@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, MessageCircle, HandHeart, Info, Navigation, Share2, Coins } from "lucide-react";
+import Map from "../components/Map";
 
 const API_BASE_URL = "http://localhost:5001/api"; 
 
@@ -236,7 +237,20 @@ const ItemDetailsPage = () => {
                     </div>
                   </div>
 
-                  {/* Actions */}
+                  {/* Inline location map */}
+                  {item.location?.coordinates &&
+                    item.location.coordinates[0] !== 0 &&
+                    item.location.coordinates[1] !== 0 && (
+                      <div className="mb-8">
+                        <Map
+                          lat={item.location.coordinates[1]}
+                          lng={item.location.coordinates[0]}
+                          address={item.address}
+                          zoom={14}
+                          className="h-48"
+                        />
+                      </div>
+                    )}
                   <div className="space-y-4">
                     {userInfo && !isOwner && (
                       <>
