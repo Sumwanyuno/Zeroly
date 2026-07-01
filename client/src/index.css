@@ -159,6 +159,70 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* ============================================================
+   Zeroly Glassmorphic Theme Variables
+   Consumed by glass-panel, glass-card, and custom glassmorphic
+   components across the app. next-themes toggles .dark on <html>,
+   which switches the active variable set automatically.
+   ============================================================ */
+
+/* Dark theme (default) — OLED-friendly deep blacks */
+:root {
+  --zeroly-bg-primary: rgba(10, 10, 15, 0.95);
+  --zeroly-glass-bg: rgba(255, 255, 255, 0.05);
+  --zeroly-glass-hover-bg: rgba(255, 255, 255, 0.09);
+  --zeroly-text-primary: #f0f0f0;
+  --zeroly-text-secondary: rgba(240, 240, 240, 0.6);
+  --zeroly-border-color: rgba(255, 255, 255, 0.10);
+  --zeroly-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --zeroly-glow-emerald: rgba(16, 185, 129, 0.35);
+}
+
+/* Light theme — crisp whites with soft glass */
+.dark {
+  /* .dark variables are already defined above for shadcn.
+     Zeroly overrides go in the block below. */
+  --zeroly-bg-primary: rgba(10, 10, 15, 0.95);
+  --zeroly-glass-bg: rgba(255, 255, 255, 0.05);
+  --zeroly-glass-hover-bg: rgba(255, 255, 255, 0.09);
+  --zeroly-text-primary: #f0f0f0;
+  --zeroly-text-secondary: rgba(240, 240, 240, 0.6);
+  --zeroly-border-color: rgba(255, 255, 255, 0.10);
+  --zeroly-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --zeroly-glow-emerald: rgba(16, 185, 129, 0.35);
+}
+
+/* Override for light mode — applied when .dark class is absent */
+:root:not(.dark) {
+  --zeroly-bg-primary: rgba(240, 245, 255, 0.95);
+  --zeroly-glass-bg: rgba(255, 255, 255, 0.60);
+  --zeroly-glass-hover-bg: rgba(255, 255, 255, 0.80);
+  --zeroly-text-primary: #1a1a2e;
+  --zeroly-text-secondary: rgba(26, 26, 46, 0.60);
+  --zeroly-border-color: rgba(0, 0, 0, 0.10);
+  --zeroly-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+  --zeroly-glow-emerald: rgba(5, 150, 105, 0.20);
+}
+
+/* Smooth theme transition — runs on all elements except
+   those where abrupt changes are intentional (e.g., images) */
+*,
+*::before,
+*::after {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+img,
+video,
+svg {
+  /* Don't animate media — looks wrong */
+  transition: none !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
