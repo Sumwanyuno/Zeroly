@@ -2,6 +2,7 @@
 import Chat from "../models/Chat.js";
 import Message from "../models/Message.js";
 import Item from "../models/Item.js";
+import { moderateChatMessage } from "../services/aiService.js";
 
 export const startChat = async(req, res) => {
     try {
@@ -36,6 +37,23 @@ export const getMessages = async(req, res) => {
 export const sendMessage = async(req, res) => {
     try {
         const { text } = req.body;
+
+        // Perform AI Safety Moderation
+        const moderationResult = await moderateChatMessage(text);
+        
+        if (!moderationResult.isSafe) {
+            // Intercept and block the message
+            // Optionally, emit a system warning to the sender directly via Socket.io
+            req.app.get('io')?.to(req.user._id.toString()).emit('system_warning', {
+                reason: moderationResult.reason || "Message blocked by AI Moderation Shield."
+            });
+            
+            return res.status(400).json({ 
+                message: "Message blocked by safety shield", 
+                reason: moderationResult.reason 
+            });
+        }
+
         const message = new Message({
             chat: req.params.chatId,
             text,

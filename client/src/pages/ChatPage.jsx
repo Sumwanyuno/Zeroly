@@ -4,6 +4,7 @@ import { AuthContext } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 import api from "../api.js";
 import { Send, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 const ChatPage = () => {
   const { chatId } = useParams();
@@ -90,6 +91,14 @@ const ChatPage = () => {
       setText("");
     } catch (error) {
       console.error("Failed to send message:", error);
+      if (error.response?.status === 400) {
+        toast.error("⚠️ Message Blocked", {
+          description: error.response.data.reason || "Safety shield activated.",
+          duration: 6000,
+        });
+      } else {
+        toast.error("Failed to send message.");
+      }
     }
   };
 

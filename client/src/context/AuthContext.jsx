@@ -41,6 +41,15 @@ export const AuthProvider = ({ children }) => {
           window.dispatchEvent(new CustomEvent('new_notification'));
         });
 
+        // Listen for global security warnings
+        socketInstance.on("system_warning", (warning) => {
+          console.warn("Security Shield Warning:", warning);
+          toast.error("⚠️ Security Shield Alert", {
+            description: warning.reason || "Your action was blocked by our security system.",
+            duration: 7000,
+          });
+        });
+
         socketInstance.on("disconnect", (reason) => {
           console.log("Socket disconnected:", reason);
           if (reason === 'io server disconnect') {
