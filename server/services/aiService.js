@@ -157,3 +157,45 @@ export const checkRateLimit = async (identifier, limit, windowSeconds) => {
         return { success: true }; // Fail open
     }
 };
+
+/**
+ * Uses Groq to moderate chat messages, blocking phishing, abusive language, or extreme PII sharing.
+ */
+export const moderateChatMessage = async (text) => {
+    try {
+        if (!process.env.GROQ_API_KEY) return { isSafe: true }; // Fallback to safe if no API key
+        
+        logger.debug('Moderating chat message with AI...');
+
+        const completion = await groq.chat.completions.create({
+            messages: [
+                {
+                    role: "system",
+                    content: "You are a strict security moderation AI for a community bartering platform. Analyze the following chat message. Determine if it contains phishing/scam links, extremely offensive language, or unsolicited sensitive PII (like credit cards). If it violates these rules, return a JSON object: { \"isSafe\": false, \"reason\": \"<short explanation>\" }. If it is a normal, safe conversation (even if they share a phone number or email for pickup), return { \"isSafe\": true }. ONLY RETURN STRICT VALID JSON. NO MARKDOWN. NO BACKTICKS."
+                },
+                {
+                    role: "user",
+                    content: text
+                }
+            ],
+            model: "llama-3.1-8b-instant",
+            temperature: 0.1,
+            max_tokens: 100,
+        });
+
+        const resultText = completion.choices[0]?.message?.content || "";
+        // Clean markdown backticks if model returns them
+        const cleanedText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
+        
+        const result = JSON.parse(cleanedText);
+        return {
+            isSafe: result.isSafe === true,
+            reason: result.reason || "Message violated community security guidelines."
+        };
+    } catch (error) {
+        logger.error({ err: error }, 'Groq chat moderation failed, defaulting to safe');
+        // Fail open to avoid breaking chat entirely if AI goes down
+        return { isSafe: true };
+    }
+};
+
