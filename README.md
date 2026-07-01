@@ -2,6 +2,22 @@
 
 *Turn unused goods into community good, lead a zero-waste lifestyle, and gamify sustainability.*
 
+## 📚 Table of Contents
+
+- [🌟 About the Project](#-about-the-project)
+- [✨ Key Features](#-key-features)
+- [🏗️ System Architecture & Workflow](#️%EF%B8%8F-system-architecture--workflow)
+- [🏆 The EcoCoin Economy & Progress Tiers](#-the-ecocoin-economy--progress-tiers)
+- [🛠️ The Tech Stack](#️%EF%B8%8F-the-tech-stack)
+  - [Frontend Architecture](#frontend-architecture)
+  - [Backend Infrastructure](#backend-infrastructure)
+- [🔒 Security & Logging](#-security--logging)
+- [📁 Repository Structure](#-repository-structure)
+- [🚀 Step-by-Step Installation & Local Setup](#-step-by-step-installation--local-setup)
+- [🤝 Contributing](#-contributing)
+- [📡 API Endpoints Reference](#-api-endpoints-reference)
+- [📖 Documentation](#documentation)
+- [🧑‍💻 Team](#%E2%80%8D-team)
 
 ## 🌟 About the Project
 
