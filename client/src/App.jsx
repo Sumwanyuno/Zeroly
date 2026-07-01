@@ -26,6 +26,7 @@ import FAQPage from "./pages/FAQPage";
 import ContactPage from "./pages/ContactPage"; 
 import LeaderboardPage from "./pages/LeaderboardPage"; 
 import WalletPage from "./pages/WalletPage";
+import { useRegisterSW } from "virtual:pwa-register/react";
 
 
 import { AuthProvider, AuthContext } from "./context/AuthContext"; 
@@ -34,6 +35,39 @@ function App() {
   const { socket } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // PWA Registration
+  const {
+    offlineReady: [offlineReady, setOfflineReady],
+    needRefresh: [needRefresh, setNeedRefresh],
+    updateServiceWorker,
+  } = useRegisterSW({
+    onRegistered(r) {
+      console.log('SW Registered: ' + r)
+    },
+    onRegisterError(error) {
+      console.log('SW registration error', error)
+    },
+  });
+
+  useEffect(() => {
+    if (offlineReady) {
+      toast.success("App ready to work offline", {
+        description: "You can now install Zeroly and use it without a connection.",
+        duration: 5000,
+        onDismiss: () => setOfflineReady(false),
+      });
+    } else if (needRefresh) {
+      toast("New content available!", {
+        description: "Click to update and refresh.",
+        action: {
+          label: "Reload",
+          onClick: () => updateServiceWorker(true),
+        },
+        duration: Infinity,
+      });
+    }
+  }, [offlineReady, needRefresh, setOfflineReady, updateServiceWorker]);
 
   useEffect(() => {
     if (!socket) return;
