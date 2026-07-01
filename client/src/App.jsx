@@ -27,6 +27,7 @@ import ContactPage from "./pages/ContactPage";
 import LeaderboardPage from "./pages/LeaderboardPage"; 
 import WalletPage from "./pages/WalletPage";
 import { useRegisterSW } from "virtual:pwa-register/react";
+import NotFound from "./pages/NotFound";
 
 
 import { AuthProvider, AuthContext } from "./context/AuthContext"; 
@@ -127,7 +128,7 @@ function App() {
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />{" "}
-         
+                    <Route path="*" element={<NotFound />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/profile" element={<ProfilePage />} />
@@ -137,15 +138,8 @@ function App() {
             <Route path="/wallet" element={<WalletPage />} />
           </Route>
        
-          <Route
-            path="*"
-            element={
-              <h1 className="text-center text-3xl mt-20">
-                404 - Page Not Found
-              </h1>
-            }
-          />
         </Routes>
+
       </main>
 
       <Footer />
