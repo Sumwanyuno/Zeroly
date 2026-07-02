@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import GridOverlay from "../components/GridOverlay";
 import api from "../api.js";
 import { toast } from "sonner";
 import { Coins, ArrowUpRight, ArrowDownRight, CreditCard, RefreshCw } from "lucide-react";
@@ -126,7 +127,7 @@ const WalletPage = () => {
 
   return (
     <div className="bg-background min-h-screen py-12 font-sans relative z-0">
-      <div className="fixed inset-0 -z-10 h-full w-full bg-grid-pattern pointer-events-none opacity-40"></div>
+      <GridOverlay />
       
       <div className="container mx-auto px-4 max-w-5xl">
         <h1 className="text-4xl font-extrabold text-foreground mb-8">EcoSeeds Wallet</h1>

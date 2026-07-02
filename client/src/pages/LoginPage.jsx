@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Leaf, LogIn, Eye, EyeOff } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
+import GridOverlay from "../components/GridOverlay";
 import {
   Dialog,
   DialogContent,
@@ -106,7 +107,7 @@ const LoginPage = () => {
       
       {/* Left Side - Branding / Graphic (Hidden on mobile) */}
       <div className="hidden lg:flex w-1/2 relative bg-primary/5 flex-col justify-between p-12 border-r border-border/50">
-        <div className="absolute inset-0 bg-grid-pattern pointer-events-none opacity-50"></div>
+        <GridOverlay dark />
         
         {/* Abstract glowing blobs */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[100px] pointer-events-none"></div>

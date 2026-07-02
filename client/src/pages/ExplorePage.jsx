@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import ItemCard from "../components/ItemCard";
+import GridOverlay from "../components/GridOverlay";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../api.js";
 import { Input } from "@/components/ui/input";
@@ -280,7 +281,7 @@ const ExplorePage = () => {
 
   return (
     <div className="bg-background min-h-screen font-sans transition-colors duration-300 relative z-0 pt-20">
-      <div className="fixed inset-0 -z-10 h-full w-full bg-grid-pattern pointer-events-none"></div>
+      <GridOverlay />
 
       <div className="container mx-auto p-4 py-8 md:px-8">
         <motion.div 

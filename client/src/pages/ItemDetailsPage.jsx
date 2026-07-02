@@ -4,6 +4,7 @@ import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import Reviews from "../components/Reviews";
 import StarRating from "../components/StarRating"; 
+import GridOverlay from "../components/GridOverlay";
 import api from "../api.js";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -159,7 +160,7 @@ const ItemDetailsPage = () => {
 
   return (
     <div className="bg-background min-h-screen py-12 font-sans relative z-0">
-      <div className="fixed inset-0 -z-10 h-full w-full bg-grid-pattern pointer-events-none opacity-40"></div>
+      <GridOverlay />
       
       <div className="container mx-auto px-4 md:px-8 max-w-6xl">
         <motion.div 

@@ -12,6 +12,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { User, Mail, Package, Sprout, Leaf, TreePine, Crown, Coins } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import EditItemModal from "../components/EditItemModal";
+import GridOverlay from "../components/GridOverlay";
 
 const API_BASE_URL = "http://localhost:5001/api"; 
 
@@ -147,7 +148,7 @@ const ProfilePage = () => {
 
   return (
     <div className="bg-background min-h-screen font-sans transition-colors duration-300 relative z-0 pt-10 pb-20">
-      <div className="fixed inset-0 -z-10 h-full w-full bg-grid-pattern pointer-events-none"></div>
+      <GridOverlay />
 
       <div className="container mx-auto p-4 md:px-8 max-w-7xl">
         {/* Profile Details Header */}
