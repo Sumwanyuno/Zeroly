@@ -146,9 +146,17 @@ const [confirmPasswordError, setConfirmPasswordError] = useState('');
             <h2 className="text-3xl font-bold text-foreground mb-2 text-center lg:text-left">
               Create an account
             </h2>
-            <p className="text-muted-foreground mb-8 text-center lg:text-left">
+            <p className="text-muted-foreground mb-4 text-center lg:text-left">
               Fill in your details to get started with Zeroly.
             </p>
+            <div className="flex justify-center lg:justify-start mb-6">
+              <Link
+                to="/"
+                className="inline-flex items-center justify-center rounded-full border border-border/50 bg-background px-4 py-2 text-sm font-medium text-foreground transition hover:bg-primary/5"
+              >
+                Back to Home
+              </Link>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
