@@ -27,6 +27,18 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    badges: {
+        type: [String],
+        default: [],
+    },
+    handoversCompleted: {
+        type: Number,
+        default: 0,
+    },
+    rapidResponses: {
+        type: Number,
+        default: 0,
+    },
 }, {
     timestamps: true,
 });

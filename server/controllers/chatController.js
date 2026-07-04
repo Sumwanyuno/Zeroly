@@ -2,6 +2,7 @@
 import Chat from "../models/Chat.js";
 import Message from "../models/Message.js";
 import Item from "../models/Item.js";
+import User from "../models/User.js";
 
 export const startChat = async(req, res) => {
     try {
@@ -42,6 +43,40 @@ export const sendMessage = async(req, res) => {
             sender: req.user._id,
         });
         await message.save();
+
+        const chat = await Chat.findById(req.params.chatId);
+        if (chat) {
+            // Speedy Responder badge logic
+            const senderUser = await User.findById(req.user._id);
+            if (senderUser && !senderUser.badges.includes("Speedy Responder")) {
+                const oneHourInMs = 60 * 60 * 1000;
+                const timeSinceChatCreation = new Date() - new Date(chat.createdAt);
+                
+                if (timeSinceChatCreation <= oneHourInMs) {
+                    const userMessagesCount = await Message.countDocuments({
+                        chat: req.params.chatId,
+                        sender: req.user._id
+                    });
+                    
+                    if (userMessagesCount === 1) {
+                        senderUser.rapidResponses += 1;
+                        if (senderUser.rapidResponses >= 5) {
+                            senderUser.badges.push("Speedy Responder");
+                        }
+                        await senderUser.save();
+                    }
+                }
+            }
+
+            const receiverId = chat.participants.find(p => p.toString() !== req.user._id.toString());
+            if (receiverId) {
+                req.app.get('io')?.to(receiverId.toString()).emit('receive_message', {
+                    chatId: chat._id,
+                    senderName: req.user.name,
+                    text: text
+                });
+            }
+        }
         res.status(201).json(message);
     } catch (err) {
         res.status(500).json({ message: "Failed to send message" });
