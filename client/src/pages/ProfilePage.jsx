@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { User, Mail, Package, Sprout, Leaf, TreePine, Crown, Coins } from "lucide-react";
+import { User, Mail, Package, Sprout, Leaf, TreePine, Crown, Coins, Zap, Recycle, Award } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import EditItemModal from "../components/EditItemModal";
 
@@ -20,6 +20,15 @@ const getTierInfo = (points) => {
   if (points >= 51) return { name: "Bloom", icon: <TreePine className="w-5 h-5 text-emerald-500" aria-label="Bloom tier icon" role="img" />, color: "text-emerald-500", bg: "bg-emerald-500/10", next: 151 };
   if (points >= 21) return { name: "Sprout", icon: <Sprout className="w-5 h-5 text-green-500" aria-label="Sprout tier icon" role="img" />, color: "text-green-500", bg: "bg-green-500/10", next: 51 };
   return { name: "Seed", icon: <Leaf className="w-5 h-5 text-amber-600" aria-label="Seed tier icon" role="img" />, color: "text-amber-600", bg: "bg-amber-600/10", next: 21 };
+};
+
+const getBadgeInfo = (badgeName) => {
+  switch (badgeName) {
+    case "First Seed Planted": return { icon: <Sprout className="w-6 h-6 text-emerald-500 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />, bg: "bg-emerald-500/10", border: "border-emerald-500/30", description: "Awarded when you successfully list your first item." };
+    case "Speedy Responder": return { icon: <Zap className="w-6 h-6 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]" />, bg: "bg-yellow-500/10", border: "border-yellow-500/30", description: "Awarded when you reply to 5 different item requests in under an hour." };
+    case "Zero-Waste Hero": return { icon: <Recycle className="w-6 h-6 text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" />, bg: "bg-blue-500/10", border: "border-blue-500/30", description: "Awarded when you reach a milestone of 10 successful item handovers." };
+    default: return { icon: <Award className="w-6 h-6 text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" />, bg: "bg-primary/10", border: "border-primary/30", description: "Special achievement badge." };
+  }
 };
 
 const ProfilePage = () => {
@@ -215,6 +224,49 @@ const ProfilePage = () => {
                     />
                   </div>
                 </div>
+
+                {/* Earned Badges Section */}
+                {userProfile.badges && userProfile.badges.length > 0 && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mt-6"
+                  >
+                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">Earned Badges</h3>
+                    <div className="flex flex-wrap gap-4">
+                      {userProfile.badges.map((badge, idx) => {
+                        const info = getBadgeInfo(badge);
+                        return (
+                          <motion.div
+                            key={idx}
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ delay: 0.3 + (idx * 0.1), type: "spring", stiffness: 200, damping: 15 }}
+                            className={`group relative flex items-center gap-3 px-4 py-2.5 rounded-xl border backdrop-blur-md ${info.bg} ${info.border} hover:shadow-lg transition-all duration-300 hover:-translate-y-1`}
+                          >
+                            <div className="relative">
+                              {info.icon}
+                              {/* Glowing background effect for the icon */}
+                              <div className={`absolute inset-0 blur-md opacity-40 ${info.bg} -z-10`}></div>
+                            </div>
+                            <span className="text-sm font-extrabold text-foreground tracking-tight">{badge}</span>
+                            
+                            {/* Custom Tooltip */}
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-56 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50">
+                              <div className="bg-popover/90 backdrop-blur-xl text-popover-foreground text-xs p-3 rounded-xl shadow-2xl border border-border/50 text-center font-medium leading-relaxed">
+                                {info.description}
+                                {/* Tooltip Arrow */}
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-border/50"></div>
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-popover/90"></div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
               </div>
               
               <div className="flex gap-4 lg:self-center shrink-0 mt-6 lg:mt-0">

@@ -244,6 +244,12 @@ export const verifyHandshake = async(req, res) => {
             const ownerUser = await User.findById(request.owner);
             if (ownerUser) {
                 ownerUser.points += itemCost;
+                
+                ownerUser.handoversCompleted += 1;
+                if (ownerUser.handoversCompleted >= 10 && !ownerUser.badges.includes("Zero-Waste Hero")) {
+                    ownerUser.badges.push("Zero-Waste Hero");
+                }
+
                 await ownerUser.save();
             }
 

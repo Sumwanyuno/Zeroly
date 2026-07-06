@@ -47,6 +47,11 @@ export const createItem = async(req, res) => {
         const user = await User.findById(req.user._id);
         if (user) {
             user.itemCount += 1;
+
+            if (user.itemCount === 1 && !user.badges.includes("First Seed Planted")) {
+                user.badges.push("First Seed Planted");
+            }
+
             await user.save();
         }
 
