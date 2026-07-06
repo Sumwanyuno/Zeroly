@@ -104,7 +104,7 @@ const ItemDetailsPage = () => {
         },
       };
   
-      const response = await axios.post(`${API_BASE_URL}/requests`, { itemId: item._id }, config);
+      await axios.post(`${API_BASE_URL}/requests`, { itemId: item._id }, config);
       
       // Request successful - update with server data
       toast.success("Request sent successfully!");

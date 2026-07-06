@@ -2,6 +2,7 @@ import Request from "../models/Request.js";
 import Item from "../models/Item.js";
 import User from "../models/User.js";
 import Transaction from "../models/Transaction.js";
+import Notification from "../models/Notification.js";
 import logger from "../utils/logger.js";
 
 export const updateRequestStatus = async(req, res) => {
@@ -41,6 +42,17 @@ export const updateRequestStatus = async(req, res) => {
                     requestId: request._id
                 });
             }
+
+            // Create Notification for the requester
+            const notification = await Notification.create({
+                user: request.requester,
+                type: 'request_update',
+                title: 'Request Accepted!',
+                message: `Your request for ${item.name} was accepted!`,
+                relatedItem: item._id,
+                relatedRequest: request._id,
+            });
+            req.app.get('io')?.to(request.requester.toString()).emit('notification', notification);
         } else if (status === "Declined") {
             // When request is declined, make item available again
             const item = await Item.findByIdAndUpdate(
@@ -60,6 +72,17 @@ export const updateRequestStatus = async(req, res) => {
                     requestId: request._id
                 });
             }
+            
+            // Create Notification for the requester
+            const notification = await Notification.create({
+                user: request.requester,
+                type: 'request_update',
+                title: 'Request Declined',
+                message: `Your request for ${item.name} was declined.`,
+                relatedItem: item._id,
+                relatedRequest: request._id,
+            });
+            req.app.get('io')?.to(request.requester.toString()).emit('notification', notification);
         }
 
         res.json(request);
@@ -160,6 +183,17 @@ export const createRequest = async(req, res) => {
             version: item.version,
             requester: requesterId
         });
+
+        // Emit notification to item owner
+        const notification = await Notification.create({
+            user: item.user,
+            type: 'new_request',
+            title: 'New Item Request',
+            message: `${requesterUser.name} has requested your item: ${item.name}`,
+            relatedItem: item._id,
+            relatedRequest: createdRequest._id,
+        });
+        req.app.get('io')?.to(item.user.toString()).emit('notification', notification);
 
         res.status(201).json(createdRequest);
     } catch (error) {

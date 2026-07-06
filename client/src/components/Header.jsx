@@ -24,10 +24,7 @@ const Header = () => {
     }
   };
 
-  const baseButtonClasses =
-    "px-6 py-2 rounded-full font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200 ease-in-out transform hover:scale-105";
-  const primaryButtonClasses = `${baseButtonClasses} bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-400 dark:bg-emerald-500 dark:hover:bg-emerald-600`;
-  const secondaryButtonClasses = `${baseButtonClasses} bg-emerald-700 text-white hover:bg-emerald-800 focus:ring-emerald-500 dark:bg-emerald-600 dark:hover:bg-emerald-700`;
+
   const redButtonClasses = "px-5 py-2 rounded-full font-bold text-sm transition-all duration-300 border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white shadow-[0_0_15px_rgba(239,68,68,0.1)] hover:shadow-[0_0_20px_rgba(239,68,68,0.3)]";
   const glassyNavButton = "px-4 py-2 rounded-full font-medium text-sm transition-all duration-300 bg-secondary/50 hover:bg-secondary border border-border/50 shadow-sm backdrop-blur-md";
 

@@ -1,7 +1,8 @@
-// client/src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect } from "react";
 import { initSocket } from "../socket.js";
+import { toast } from "sonner";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -29,6 +30,26 @@ export const AuthProvider = ({ children }) => {
           console.error("Socket connection error:", error);
         });
 
+        // Listen for global real-time notifications
+        socketInstance.on("notification", (notification) => {
+          console.log("Received real-time notification:", notification);
+          toast.success(notification.title || "New Notification", {
+            description: notification.message,
+            duration: 5000,
+          });
+          // Dispatch a custom window event so NotificationBtn can auto-refresh its list
+          window.dispatchEvent(new CustomEvent('new_notification'));
+        });
+
+        // Listen for global security warnings
+        socketInstance.on("system_warning", (warning) => {
+          console.warn("Security Shield Warning:", warning);
+          toast.error("⚠️ Security Shield Alert", {
+            description: warning.reason || "Your action was blocked by our security system.",
+            duration: 7000,
+          });
+        });
+
         socketInstance.on("disconnect", (reason) => {
           console.log("Socket disconnected:", reason);
           if (reason === 'io server disconnect') {
@@ -49,6 +70,7 @@ export const AuthProvider = ({ children }) => {
         setSocket(null);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo?.token]);
 
   const login = (data) => {

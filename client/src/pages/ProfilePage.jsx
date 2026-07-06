@@ -16,10 +16,10 @@ import EditItemModal from "../components/EditItemModal";
 const API_BASE_URL = "http://localhost:5001/api"; 
 
 const getTierInfo = (points) => {
-  if (points >= 151) return { name: "Canopy", icon: <Crown className="w-5 h-5 text-yellow-500" />, color: "text-yellow-500", bg: "bg-yellow-500/10", next: null };
-  if (points >= 51) return { name: "Bloom", icon: <TreePine className="w-5 h-5 text-emerald-500" />, color: "text-emerald-500", bg: "bg-emerald-500/10", next: 151 };
-  if (points >= 21) return { name: "Sprout", icon: <Sprout className="w-5 h-5 text-green-500" />, color: "text-green-500", bg: "bg-green-500/10", next: 51 };
-  return { name: "Seed", icon: <Leaf className="w-5 h-5 text-amber-600" />, color: "text-amber-600", bg: "bg-amber-600/10", next: 21 };
+  if (points >= 151) return { name: "Canopy", icon: <Crown className="w-5 h-5 text-yellow-500" aria-label="Canopy tier icon" role="img" />, color: "text-yellow-500", bg: "bg-yellow-500/10", next: null };
+  if (points >= 51) return { name: "Bloom", icon: <TreePine className="w-5 h-5 text-emerald-500" aria-label="Bloom tier icon" role="img" />, color: "text-emerald-500", bg: "bg-emerald-500/10", next: 151 };
+  if (points >= 21) return { name: "Sprout", icon: <Sprout className="w-5 h-5 text-green-500" aria-label="Sprout tier icon" role="img" />, color: "text-green-500", bg: "bg-green-500/10", next: 51 };
+  return { name: "Seed", icon: <Leaf className="w-5 h-5 text-amber-600" aria-label="Seed tier icon" role="img" />, color: "text-amber-600", bg: "bg-amber-600/10", next: 21 };
 };
 
 const getBadgeInfo = (badgeName) => {
@@ -165,14 +165,14 @@ const ProfilePage = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-12"
         >
-          <Card className="bg-card/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden relative">
+          <Card className="bg-card/80 dark:bg-card/75 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden relative">
             <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
             
             <CardHeader className="pb-6 border-b border-border/40 relative z-10">
               <CardTitle className="text-3xl font-extrabold flex items-center gap-3 tracking-tight">
                 <div className="p-3 rounded-2xl bg-primary/10 text-primary border border-primary/20 shadow-inner">
-                  <User className="w-6 h-6" />
+                  <User className="w-6 h-6" aria-hidden="true" />
                 </div>
                 Your Dashboard
               </CardTitle>
@@ -184,13 +184,17 @@ const ProfilePage = () => {
                     {userProfile.name}
                   </h1>
                   <p className="text-muted-foreground flex items-center gap-2 text-lg">
-                    <Mail className="w-5 h-5" />
+                    <Mail className="w-5 h-5" aria-hidden="true" />
                     {userProfile.email}
                   </p>
                 </div>
 
                 {/* Embedded Progress Bar */}
-                <div className="bg-background/60 backdrop-blur-md rounded-2xl p-5 border border-border/40 mt-6 max-w-xl shadow-sm group hover:border-primary/30 transition-colors duration-300">
+                <div 
+                  className="bg-background/85 backdrop-blur-md rounded-2xl p-5 border border-border/40 mt-6 max-w-xl shadow-sm group hover:border-primary/30 transition-colors duration-300"
+                  tabIndex={0}
+                  aria-label={`${currentUserTier.name} Tier status. Total points: ${userProfile.points || 0} EcoCoins.`}
+                >
                   <div className="flex items-center gap-5 mb-5">
                     <div className={`p-4 rounded-2xl shadow-inner border border-white/5 ${currentUserTier.bg} ${currentUserTier.color}`}>
                       {currentUserTier.icon}
@@ -200,7 +204,7 @@ const ProfilePage = () => {
                         <span className={currentUserTier.color}>{currentUserTier.name}</span> Tier
                       </h4>
                       <p className="text-sm font-semibold flex items-center gap-1.5 text-primary bg-primary/10 w-fit px-2.5 py-0.5 rounded-full mt-1 border border-primary/20">
-                        <Coins className="w-4 h-4" /> {userProfile.points || 0} EcoCoins
+                        <Coins className="w-4 h-4" aria-hidden="true" /> {userProfile.points || 0} EcoCoins
                       </p>
                     </div>
                   </div>
@@ -210,7 +214,14 @@ const ProfilePage = () => {
                       <span className="text-muted-foreground">Progress to {currentUserTier.next ? "Next Tier" : "Max Tier"}</span>
                       <span className="text-primary">{currentUserTier.next ? `${userProfile.points || 0} / ${currentUserTier.next}` : "MAX"}</span>
                     </div>
-                    <Progress value={progressToNext} className="h-2.5 bg-primary/10" />
+                    <Progress 
+                      value={progressToNext} 
+                      className="h-2.5 bg-primary/10"
+                      aria-valuenow={Math.round(progressToNext)}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label="Progress to next tier"
+                    />
                   </div>
                 </div>
 

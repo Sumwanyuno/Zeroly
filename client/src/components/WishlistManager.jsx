@@ -42,7 +42,7 @@ const WishlistManager = () => {
       setKeywords(newKwds);
       setIsActive(newActive);
       toast.success("Wishlist updated");
-    } catch (error) {
+    } catch {
       toast.error("Failed to update wishlist");
     } finally {
       setSaving(false);
