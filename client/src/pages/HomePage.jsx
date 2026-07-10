@@ -1,6 +1,7 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Hero from "../components/Hero";
+import GridOverlay from "../components/GridOverlay";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Leaf, MapPin, HandHeart } from "lucide-react";
@@ -29,7 +30,7 @@ const HomePage = () => {
 
   return (
     <div className="bg-background min-h-screen font-sans transition-colors duration-300 relative z-0">
-      <div className="fixed inset-0 -z-10 h-full w-full bg-grid-pattern pointer-events-none"></div>
+      <GridOverlay />
       
       <Hero ref={heroSectionRef} />
 

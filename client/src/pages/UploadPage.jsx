@@ -3,6 +3,7 @@ import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import MapPicker from "../components/MapPicker";
+import GridOverlay from "../components/GridOverlay";
 import api from "../api.js";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -201,7 +202,7 @@ const UploadPage = () => {
 
   return (
     <div className="bg-background min-h-screen py-12 font-sans relative z-0 overflow-hidden">
-      <div className="fixed inset-0 -z-10 h-full w-full bg-grid-pattern pointer-events-none opacity-50"></div>
+      <GridOverlay />
       
       <div className="container mx-auto px-4">
         <motion.div 
