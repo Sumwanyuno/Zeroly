@@ -56,13 +56,11 @@ const [confirmPasswordError, setConfirmPasswordError] = useState('');
 }
     setLoading(true);
     try {
-      console.log({name, email, password}); // ------------------------------
       const { data } = await api.post("/users/register", {
         name,
         email,
         password,
       });
-      console.log(data);
       
       if (typeof login === "function") {
         login(data);
