@@ -51,7 +51,7 @@ const LoginPage = () => {
     
     setForgotPasswordLoading(true);
     try {
-      await api.post("/api/users/forgot-password", { email: forgotPasswordEmail });
+      await api.post("/users/forgot-password", { email: forgotPasswordEmail });
       toast.success("Password reset link sent to your email!");
       setIsForgotModalOpen(false);
       setForgotPasswordEmail("");
@@ -72,7 +72,7 @@ const LoginPage = () => {
     setLoading(true);
     
     try {
-      const { data } = await api.post("/api/users/login", { 
+      const { data } = await api.post("/users/login", { 
         email,
         password,
       });
@@ -286,7 +286,7 @@ const LoginPage = () => {
                 onSuccess={async (credentialResponse) => {
                   try {
                     setLoading(true);
-                    const { data } = await api.post("/api/users/google-login", {
+                    const { data } = await api.post("/users/google-login", {
                       token: credentialResponse.credential,
                     });
             

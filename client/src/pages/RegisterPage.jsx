@@ -56,12 +56,14 @@ const [confirmPasswordError, setConfirmPasswordError] = useState('');
 }
     setLoading(true);
     try {
-      const { data } = await api.post("/api/users/register", {
+      console.log({name, email, password}); // ------------------------------
+      const { data } = await api.post("/users/register", {
         name,
         email,
         password,
       });
-
+      console.log(data);
+      
       if (typeof login === "function") {
         login(data);
         toast.success("Registration successful! Welcome to Zeroly!");
@@ -303,7 +305,7 @@ const [confirmPasswordError, setConfirmPasswordError] = useState('');
                 onSuccess={async (credentialResponse) => {
                   try {
                     setLoading(true);
-                    const { data } = await api.post("/api/users/google-login", {
+                    const { data } = await api.post("/users/google-login", {
                       token: credentialResponse.credential,
                     });
             

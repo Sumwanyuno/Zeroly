@@ -22,7 +22,7 @@ const NotificationBtn = () => {
       const config = {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
-      const { data } = await api.get("/api/notifications", config);
+      const { data } = await api.get("/notifications", config);
       setNotifications(data);
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
@@ -75,7 +75,7 @@ const NotificationBtn = () => {
       const config = {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
-      await api.put(`/api/notifications/${id}/read`, {}, config);
+      await api.put(`/notifications/${id}/read`, {}, config);
       setNotifications(notifications.map(n => n._id === id ? { ...n, isRead: true } : n));
     } catch (err) {
       toast.error("Failed to mark as read");
@@ -88,7 +88,7 @@ const NotificationBtn = () => {
       const config = {
         headers: { Authorization: `Bearer ${userInfo.token}` },
       };
-      await api.put(`/api/notifications/read-all`, {}, config);
+      await api.put(`/notifications/read-all`, {}, config);
       setNotifications(notifications.map(n => ({ ...n, isRead: true })));
       toast.success("All caught up!");
     } catch (err) {

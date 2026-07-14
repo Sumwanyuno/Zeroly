@@ -11,7 +11,7 @@ const MessagesPage = () => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const { data } = await api.get("/api/chat/my", {
+        const { data } = await api.get("/chat/my", {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         setChats(data);
