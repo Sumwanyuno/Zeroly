@@ -1,7 +1,7 @@
 // client/src/components/Footer.jsx
 
 import React from "react";
-import { Link, useNavigate } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowUp } from "lucide-react";
 
 // Inline SVGs for brand icons
@@ -19,10 +19,10 @@ const YoutubeIcon = ({ className }) => (
 );
 
 const Footer = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const scrollToHero = (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     console.log("Footer pointer clicked. Attempting to navigate to /#hero-section");
 
     if (window.location.pathname === '/') {
@@ -43,7 +43,7 @@ const Footer = () => {
     <footer className="bg-emerald-800 text-white py-12">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-     
+
           <div>
             <h3 className="text-xl font-bold mb-4">Products & Services</h3>
             <p className="text-sm text-emerald-100/80 leading-relaxed">
@@ -70,7 +70,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li className="mb-2">
-                <Link to="/about" className="hover:text-white transition-colors">
+                <Link to="/#about-us-section" className="hover:text-white transition-colors">
                   About us
                 </Link>
               </li>
@@ -82,7 +82,7 @@ const Footer = () => {
             </ul>
           </div>
 
-       
+
           <div>
             <h4 className="font-bold text-lg mb-4">Contact Us</h4>
             <div className="text-sm text-emerald-100/80 space-y-2">
@@ -101,7 +101,7 @@ const Footer = () => {
             </div>
           </div>
 
-      
+
           <div>
             <h4 className="font-bold text-lg mb-4">Join Our Community</h4>
             <p className="mb-4 text-sm text-emerald-100/80">Follow us on social media to stay updated.</p>
@@ -138,10 +138,10 @@ const Footer = () => {
           <p className="text-sm sm:mr-4 text-emerald-100/80">
             Designed by Team Zeroly
           </p>
-         
+
           <a
-            href="/#hero-section" 
-            onClick={scrollToHero} 
+            href="/#hero-section"
+            onClick={scrollToHero}
             className="text-emerald-300 hover:text-white transition-colors duration-300 mt-2 sm:mt-0 p-2 bg-emerald-900/50 hover:bg-emerald-700 rounded-full"
             title="Back to Top"
           >

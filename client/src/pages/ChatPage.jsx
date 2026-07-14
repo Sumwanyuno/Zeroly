@@ -20,7 +20,7 @@ const ChatPage = () => {
   useEffect(() => {
     const fetchMsgs = async () => {
       try {
-        const { data } = await api.get(`/api/chat/${chatId}/messages`, {
+        const { data } = await api.get(`/chat/${chatId}/messages`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         setMessages(data);
@@ -32,7 +32,7 @@ const ChatPage = () => {
     // Also fetch chat info for the header (we can just pull it from /my and filter, or a new endpoint if we had one. Let's just pull from /my for now as a quick hack)
     const fetchInfo = async () => {
       try {
-        const { data } = await api.get("/api/chat/my", {
+        const { data } = await api.get("/chat/my", {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const currentChat = data.find(c => c._id === chatId);
@@ -74,7 +74,7 @@ const ChatPage = () => {
 
     try {
       const { data } = await api.post(
-        `/api/chat/${chatId}/messages`,
+        `/chat/${chatId}/messages`,
         { text },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
